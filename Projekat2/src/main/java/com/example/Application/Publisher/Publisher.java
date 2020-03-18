@@ -1,11 +1,11 @@
-package com.example.Application.Country;
+package com.example.Application.Publisher;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "country")
-public class Country {
+@Table(name = "publisher")
+public class Publisher {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -13,7 +13,7 @@ public class Country {
     @NotNull
     private String name;
 
-    public Country() {
+    public Publisher() {
     }
 
     public Integer getId() {

@@ -1,19 +1,20 @@
-package com.example.Application.Country;
+package com.example.Application.Copy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "country")
-public class Country {
+@Table(name = "copy")
+public class Copy {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name = "book_name")
     @NotNull
-    private String name;
+    private String bookName;
 
-    public Country() {
+    public Copy() {
     }
 
     public Integer getId() {
@@ -24,11 +25,11 @@ public class Country {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getBookName() {
+        return bookName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 }
