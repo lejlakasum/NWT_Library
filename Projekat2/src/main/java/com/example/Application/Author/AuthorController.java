@@ -1,10 +1,9 @@
-package com.example.Application.Country;
+package com.example.Application.Author;
 
+import com.example.Application.Country.Country;
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.ExceptionClasses.NotFoundException;
-import com.example.Application.Genre.Genre;
-import com.example.Application.Genre.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
@@ -16,16 +15,16 @@ import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
 
 @RestController
-@RequestMapping("/countries")
-public class CountryController {
+@RequestMapping("/authors")
+public class AuthorController {
 
     @Autowired
-    CountryService countryService;
+    AuthorService authorService;
 
     @GetMapping()
-    public CollectionModel<EntityModel<Country>> GetAll() {
+    CollectionModel<EntityModel<Author>> GetAll() {
         try {
-            return countryService.GetAll();
+            return authorService.GetAll();
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -33,9 +32,9 @@ public class CountryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Country>> GetById(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Author>> GetById(@PathVariable Integer id) {
         try {
-            return countryService.GetById(id);
+            return authorService.GetById(id);
         }
         catch (NotFoundException ex) {
             throw ex;
@@ -46,14 +45,18 @@ public class CountryController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Country>> Add(@RequestBody Country newCountry) throws URISyntaxException {
+    ResponseEntity<EntityModel<Author>> Add(@RequestBody Author newAuthor) throws URISyntaxException {
 
         try {
-            return countryService.Add(newCountry);
+            return authorService.Add(newAuthor);
         }
         catch (ConstraintViolationException ex) {
 
             throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -61,13 +64,16 @@ public class CountryController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Country>> Update(@RequestBody Country newCountry, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Author>> Update(@RequestBody Author newAuthor, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return countryService.Update(newCountry, id);
+            return authorService.Update(newAuthor, id);
         }
         catch (ConstraintViolationException ex) {
 
             throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -75,12 +81,12 @@ public class CountryController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<EntityModel<Country>> Delete(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Author>> Delete(@PathVariable Integer id) {
         try {
-            return countryService.Delete(id);
+            return authorService.Delete(id);
         }
         catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("country", id);
+            throw new NotFoundException("author", id);
         }
         catch (Exception ex) {
             throw new InternalServerException();

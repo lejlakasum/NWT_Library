@@ -10,20 +10,22 @@ import java.sql.Date;
 @Table(name = "author")
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Variable firstName must not be null")
     @Column(name = "first_name")
     private String firstName;
 
-    @NotNull
+    @NotNull(message = "Variable lastName must not be null")
     @Column(name = "last_name")
     private String lastName;
 
+    @NotNull(message = "Variable birthDate must not be null!")
     @Column(name = "birth_date")
     private Date birthDate;
 
+    @NotNull(message = "Variable country must not be null")
     @ManyToOne
     @JoinColumn(name = "country_id")
     private Country country;

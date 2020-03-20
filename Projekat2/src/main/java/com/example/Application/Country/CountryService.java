@@ -1,8 +1,6 @@
 package com.example.Application.Country;
 
 import com.example.Application.ExceptionClasses.NotFoundException;
-import com.example.Application.Genre.Genre;
-import com.example.Application.Genre.GenreController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -42,7 +40,7 @@ public class CountryService {
                 .body(assembler.toModel(country));
     }
 
-    public ResponseEntity<EntityModel<Country>> AddCountry(Country newCountry) {
+    public ResponseEntity<EntityModel<Country>> Add(Country newCountry) {
         EntityModel<Country> entityModel = assembler.toModel(countryRepository.save(newCountry));
 
         return ResponseEntity
@@ -50,7 +48,7 @@ public class CountryService {
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Country>> ModifyCountry(Country newCountry, Integer id) {
+    public ResponseEntity<EntityModel<Country>> Update(Country newCountry, Integer id) {
         Country updatedCountry = countryRepository.findById(id)
                 .map(country -> {
                     country.setName(newCountry.getName());
@@ -68,7 +66,7 @@ public class CountryService {
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Country>> DeleteCountry(Integer id) {
+    public ResponseEntity<EntityModel<Country>> Delete(Integer id) {
 
         countryRepository.deleteById(id);
 
