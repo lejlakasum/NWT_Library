@@ -1,5 +1,4 @@
-package com.example.demo.Fee;
-
+package com.example.demo.Role;
 
 import com.example.demo.Exception.BadRequestException;
 import com.example.demo.Exception.InternalServerException;
@@ -10,29 +9,30 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
 
 @RestController
-@RequestMapping("/fees")
-public class FeeController {
+@RequestMapping("/roles")
+public class RoleController {
 
     @Autowired
-    FeeService feeService;
+    RoleService roleService;
 
     @GetMapping()
-    CollectionModel<EntityModel<Fee>> GetAll(){
+    CollectionModel<EntityModel<Role>> GetAll(){
         try {
-            return feeService.GetAll();
+            return roleService.GetAll();
         }catch (Exception e){
             throw new InternalServerException();
         }
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<EntityModel<Fee>> GetById(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Role>> GetById(@PathVariable Integer id) {
         try {
-            return feeService.GetById(id);
+            return roleService.GetById(id);
         }catch (NotFoundException e){
             throw e;
         }catch (Exception e){
@@ -41,9 +41,9 @@ public class FeeController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Fee>> AddFee(@RequestBody Fee newFee) throws URISyntaxException{
+    ResponseEntity<EntityModel<Role>> AddRole(@RequestBody Role newRole) throws URISyntaxException {
         try {
-            return feeService.AddFee(newFee);
+            return roleService.AddRole(newRole);
         }
         catch (ConstraintViolationException e){
             throw new BadRequestException(e.getMessage());
@@ -53,9 +53,9 @@ public class FeeController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Fee>> ModifyFee(@RequestBody Fee newFee, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Role>> ModifyRole(@RequestBody Role newRole, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return feeService.ModifyFee(newFee,id);
+            return roleService.ModifyRole(newRole,id);
 
         }catch (ConstraintViolationException e){
             throw new BadRequestException(e.getMessage());
@@ -65,11 +65,11 @@ public class FeeController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<EntityModel<Fee>> DeleteFee(@PathVariable Integer id){
+    ResponseEntity<EntityModel<Role>> DeleteRole(@PathVariable Integer id){
         try {
-            return feeService.DeleteFee(id);
+            return roleService.DeleteRole(id);
         }catch (EmptyResultDataAccessException e){
-            throw new NotFoundException("fee",id);
+            throw new NotFoundException("role",id);
         }catch (Exception e){
             throw new InternalServerException();
         }
