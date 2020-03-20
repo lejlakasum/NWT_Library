@@ -1,6 +1,8 @@
 package com.example.demo.Profile;
 
-import javax.management.relation.Role;
+
+import com.example.demo.Role.Role;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
