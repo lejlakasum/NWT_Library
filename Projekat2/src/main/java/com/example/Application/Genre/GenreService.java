@@ -1,5 +1,6 @@
 package com.example.Application.Genre;
 
+import com.example.Application.ExceptionClasses.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -33,12 +34,14 @@ public class GenreService {
                 linkTo(methodOn(GenreController.class).GetAll()).withSelfRel());
     }
 
-    public EntityModel<Genre> GetById(Integer id) {
+    public ResponseEntity<EntityModel<Genre>> GetById(Integer id) {
 
         Genre genre = genreRepository.findById(id)
-                .get();
+                .orElseThrow(() -> new NotFoundException("genre", id));
 
-        return assembler.toModel(genre);
+        return ResponseEntity
+                .ok()
+                .body(assembler.toModel(genre));
     }
 
     public ResponseEntity<EntityModel<Genre>> AddGenre(Genre newGenre) {
@@ -72,17 +75,5 @@ public class GenreService {
         genreRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
-    }
-}
-
-@Component
-class GenreModelAssembler implements RepresentationModelAssembler<Genre, EntityModel<Genre>> {
-
-    @Override
-    public EntityModel<Genre> toModel(Genre genre) {
-
-        return new EntityModel<>(genre,
-                linkTo(methodOn(GenreController.class).GetById(genre.getId())).withSelfRel(),
-                linkTo(methodOn(GenreController.class).GetAll()).withRel("genres"));
     }
 }
