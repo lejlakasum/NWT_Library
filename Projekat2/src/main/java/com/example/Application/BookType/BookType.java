@@ -1,14 +1,16 @@
 package com.example.Application.BookType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "book_type")
 public class BookType {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Variable name must not be null.")
     private String name;
 
     @Column(name = "latency_fee")
