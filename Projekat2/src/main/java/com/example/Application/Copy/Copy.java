@@ -7,11 +7,11 @@ import javax.validation.constraints.NotNull;
 @Table(name = "copy")
 public class Copy {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "book_name")
-    @NotNull
+    @NotNull(message = "Variable bookName must not be null.")
     private String bookName;
 
     public Copy() {
