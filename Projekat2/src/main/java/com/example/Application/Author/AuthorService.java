@@ -1,5 +1,9 @@
 package com.example.Application.Author;
 
+import com.example.Application.Copy.Copy;
+import com.example.Application.Copy.CopyController;
+import com.example.Application.Copy.CopyModelAssembler;
+import com.example.Application.CopyAuthors.CopyAuthorsService;
 import com.example.Application.Country.Country;
 import com.example.Application.Country.CountryController;
 import com.example.Application.Country.CountryRepository;
@@ -25,6 +29,10 @@ public class AuthorService {
     AuthorModelAssembler assembler;
     @Autowired
     CountryRepository countryRepository;
+    @Autowired
+    CopyAuthorsService copyAuthorsService;
+    @Autowired
+    CopyModelAssembler copyModelAssembler;
 
     public CollectionModel<EntityModel<Author>> GetAll() {
         List<EntityModel<Author>> authors = authorRepository.findAll().stream()
@@ -43,6 +51,20 @@ public class AuthorService {
         return ResponseEntity
                 .ok()
                 .body(assembler.toModel(author));
+    }
+
+    public CollectionModel<EntityModel<Copy>> GetCopies(Integer authorId) throws NoSuchFieldException {
+        Boolean copyExists = authorRepository.existsById(authorId);
+        if(!copyExists) {
+            throw new NotFoundException("author", authorId);
+        }
+
+        List<EntityModel<Copy>> copies = copyAuthorsService.GetCopiesByAuthor(authorId).stream()
+                .map(copyModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(copies,
+                linkTo(methodOn(AuthorController.class).GetCopiesByAuthor(authorId)).withSelfRel());
     }
 
     public ResponseEntity<EntityModel<Author>> Add(Author newAuthor) {

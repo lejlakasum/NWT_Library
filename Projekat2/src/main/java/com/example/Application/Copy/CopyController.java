@@ -1,5 +1,6 @@
 package com.example.Application.Copy;
 
+import com.example.Application.Author.Author;
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.ExceptionClasses.NotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/copies")
@@ -33,6 +35,19 @@ public class CopyController {
     public ResponseEntity<EntityModel<Copy>> GetById(@PathVariable Integer id) {
         try {
             return copyService.GetById(id);
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
+    @GetMapping("/{id}/authors")
+    public CollectionModel<EntityModel<Author>> GetAuthorsByCopy(@PathVariable Integer id) {
+        try {
+            return copyService.GetAuthors(id);
         }
         catch (NotFoundException ex) {
             throw ex;

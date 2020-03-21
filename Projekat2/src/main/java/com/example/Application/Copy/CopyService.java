@@ -1,6 +1,9 @@
 package com.example.Application.Copy;
 
-import com.example.Application.Country.CountryController;
+import com.example.Application.Author.Author;
+import com.example.Application.Author.AuthorController;
+import com.example.Application.Author.AuthorModelAssembler;
+import com.example.Application.CopyAuthors.CopyAuthorsService;
 import com.example.Application.ExceptionClasses.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -21,6 +24,10 @@ public class CopyService {
     private CopyRepository copyRepository;
     @Autowired
     CopyModelAssembler assembler;
+    @Autowired
+    CopyAuthorsService copyAuthorsService;
+    @Autowired
+    AuthorModelAssembler authorModelAssembler;
 
     public CollectionModel<EntityModel<Copy>> GetAll() {
         List<EntityModel<Copy>> copies = copyRepository.findAll().stream()
@@ -28,7 +35,7 @@ public class CopyService {
                 .collect(Collectors.toList());
 
         return new CollectionModel<>(copies,
-                linkTo(methodOn(CountryController.class).GetAll()).withSelfRel());
+                linkTo(methodOn(CopyController.class).GetAll()).withSelfRel());
     }
 
     public ResponseEntity<EntityModel<Copy>> GetById(Integer id) {
@@ -39,6 +46,21 @@ public class CopyService {
         return ResponseEntity
                 .ok()
                 .body(assembler.toModel(copy));
+    }
+
+    public CollectionModel<EntityModel<Author>> GetAuthors(Integer copyId) {
+
+        Boolean copyExists = copyRepository.existsById(copyId);
+        if(!copyExists) {
+            throw new NotFoundException("copy", copyId);
+        }
+
+        List<EntityModel<Author>> authors = copyAuthorsService.GetAuthorsByCopy(copyId).stream()
+                .map(authorModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(authors,
+                linkTo(methodOn(CopyController.class).GetAuthorsByCopy(copyId)).withSelfRel());
     }
 
     public ResponseEntity<EntityModel<Copy>> Add(Copy newCopy) {

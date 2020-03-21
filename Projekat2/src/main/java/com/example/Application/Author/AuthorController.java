@@ -1,5 +1,6 @@
 package com.example.Application.Author;
 
+import com.example.Application.Copy.Copy;
 import com.example.Application.Country.Country;
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
@@ -22,7 +23,7 @@ public class AuthorController {
     AuthorService authorService;
 
     @GetMapping()
-    CollectionModel<EntityModel<Author>> GetAll() {
+    public CollectionModel<EntityModel<Author>> GetAll() {
         try {
             return authorService.GetAll();
         }
@@ -35,6 +36,19 @@ public class AuthorController {
     ResponseEntity<EntityModel<Author>> GetById(@PathVariable Integer id) {
         try {
             return authorService.GetById(id);
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
+    @GetMapping("/{id}/copies")
+    public CollectionModel<EntityModel<Copy>> GetCopiesByAuthor(@PathVariable Integer id) {
+        try {
+            return authorService.GetCopies(id);
         }
         catch (NotFoundException ex) {
             throw ex;

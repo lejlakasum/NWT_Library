@@ -1,8 +1,10 @@
 package com.example.Application.Copy;
 
-import com.example.Application.Genre.Genre;
+import com.example.Application.Author.Author;
 import com.sun.xml.bind.v2.model.core.ID;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -17,4 +19,5 @@ public interface CopyRepository extends CrudRepository<Copy, Integer> {
     Copy findById(ID id);
 
     void deleteById(ID id);
+
 }
