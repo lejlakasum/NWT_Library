@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 @Table(name = "publisher")
 public class Publisher {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Variable name must not be null")
     private String name;
 
     public Publisher() {
