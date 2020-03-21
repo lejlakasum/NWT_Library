@@ -25,6 +25,7 @@ public class PaidFee {
     @JoinColumn(name = "fee_id")
     private Fee fee;
 
+    @Column(name = "payment_date")
     private Date paymentDate;
 
     @ManyToOne

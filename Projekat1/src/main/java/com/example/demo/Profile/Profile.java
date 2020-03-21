@@ -20,11 +20,14 @@ public class Profile {
     private Role role;
 
     @NotNull
+    @Column(name = "first_name")
     private String firstName;
 
     @NotNull
+    @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "birth_date")
     private Date birthDate;
 
     public Profile() {

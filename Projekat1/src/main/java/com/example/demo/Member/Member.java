@@ -22,6 +22,7 @@ public class Member {
     @JoinColumn(name = "membership_type_id")
     private MembershipType membershipTypeId;
 
+    @Column(name = "join_date")
     private Date joinDate;
 
     private Boolean active;
