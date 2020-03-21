@@ -1,5 +1,4 @@
-package com.example.Application.Genre;
-
+package com.example.Application.Book;
 
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
@@ -15,16 +14,16 @@ import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
 
 @RestController
-@RequestMapping("/genres")
-public class GenreController {
+@RequestMapping("/books")
+public class BookController {
 
     @Autowired
-    GenreService genreService;
+    BookService bookService;
 
     @GetMapping()
-    public CollectionModel<EntityModel<Genre>> GetAll() {
+    CollectionModel<EntityModel<Book>> GetAll() {
         try {
-            return genreService.GetAll();
+            return bookService.GetAll();
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -32,9 +31,9 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Genre>> GetById(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Book>> GetById(@PathVariable Integer id) {
         try {
-            return genreService.GetById(id);
+            return bookService.GetById(id);
         }
         catch (NotFoundException ex) {
             throw ex;
@@ -45,14 +44,18 @@ public class GenreController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Genre>> AddGenre(@RequestBody Genre newGenre) throws URISyntaxException {
+    ResponseEntity<EntityModel<Book>> Add(@RequestBody Book newBook) throws URISyntaxException {
 
         try {
-            return genreService.AddGenre(newGenre);
+            return bookService.Add(newBook);
         }
         catch (ConstraintViolationException ex) {
 
             throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -60,13 +63,16 @@ public class GenreController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Genre>> ModifyGenre(@RequestBody Genre newGenre, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Book>> Update(@RequestBody Book newBook, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return genreService.ModifyGenre(newGenre, id);
+            return bookService.Update(newBook, id);
         }
         catch (ConstraintViolationException ex) {
 
             throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerException();
@@ -74,12 +80,12 @@ public class GenreController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<EntityModel<Genre>> DeleteGenre(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Book>> Delete(@PathVariable Integer id) {
         try {
-            return genreService.DeleteGenre(id);
+            return bookService.Delete(id);
         }
         catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("genre", id);
+            throw new NotFoundException("book", id);
         }
         catch (Exception ex) {
             throw new InternalServerException();

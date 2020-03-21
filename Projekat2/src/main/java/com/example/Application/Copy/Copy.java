@@ -1,11 +1,14 @@
 package com.example.Application.Copy;
 
+import com.example.Application.Country.Country;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "copy")
-public class Copy {
+public class Copy extends RepresentationModel<Copy> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

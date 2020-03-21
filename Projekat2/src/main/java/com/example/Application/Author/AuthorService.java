@@ -72,10 +72,7 @@ public class AuthorService {
                     author.setCountry(country);
                     return authorRepository.save(author);
                 })
-                .orElseGet(() -> {
-                    newAuthor.setId(id);
-                    return authorRepository.save(newAuthor);
-                });
+                .orElseThrow(()->new NotFoundException("author", id));
 
         EntityModel<Author> entityModel = assembler.toModel(updatedAuthor);
 
