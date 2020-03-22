@@ -1,6 +1,5 @@
 package com.example.demo.Profile;
 
-
 import com.example.demo.Role.Role;
 
 import javax.persistence.*;
@@ -15,10 +14,6 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-
     @NotNull
     @Column(name = "first_name")
     private String firstName;
@@ -29,6 +24,11 @@ public class Profile {
 
     @Column(name = "birth_date")
     private Date birthDate;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
 
     public Profile() {
     }
