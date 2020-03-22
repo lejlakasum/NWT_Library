@@ -21,7 +21,7 @@ public class ProfileController {
     ProfileService profileService;
 
     @GetMapping()
-    CollectionModel<EntityModel<Profile>> GetAll(){
+    public CollectionModel<EntityModel<Profile>> GetAll(){
         try {
             return profileService.GetAll();
         }catch (Exception e){
@@ -30,7 +30,7 @@ public class ProfileController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<EntityModel<Profile>> GetById(@PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Profile>> GetById(@PathVariable Integer id) {
         try {
             return profileService.GetById(id);
         }catch (NotFoundException e){

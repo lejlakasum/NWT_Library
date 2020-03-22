@@ -21,7 +21,7 @@ public class FeeController {
     FeeService feeService;
 
     @GetMapping()
-    CollectionModel<EntityModel<Fee>> GetAll(){
+    public CollectionModel<EntityModel<Fee>> GetAll(){
         try {
             return feeService.GetAll();
         }catch (Exception e){
@@ -30,7 +30,7 @@ public class FeeController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<EntityModel<Fee>> GetById(@PathVariable Integer id) {
+    public ResponseEntity<EntityModel<Fee>> GetById(@PathVariable Integer id) {
         try {
             return feeService.GetById(id);
         }catch (NotFoundException e){

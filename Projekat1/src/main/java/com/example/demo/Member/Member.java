@@ -2,13 +2,14 @@ package com.example.demo.Member;
 
 import com.example.demo.MembershipType.MembershipType;
 import com.example.demo.Profile.Profile;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends RepresentationModel<Member> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

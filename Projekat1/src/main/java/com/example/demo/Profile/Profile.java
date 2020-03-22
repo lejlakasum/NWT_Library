@@ -1,6 +1,7 @@
 package com.example.demo.Profile;
 
 import com.example.demo.Role.Role;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,7 +9,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "profile")
-public class Profile {
+public class Profile extends RepresentationModel<Profile> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

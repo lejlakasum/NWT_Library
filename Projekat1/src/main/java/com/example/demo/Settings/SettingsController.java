@@ -1,4 +1,4 @@
-package com.example.demo.MembershipType;
+package com.example.demo.Settings;
 
 import com.example.demo.Exception.BadRequestException;
 import com.example.demo.Exception.InternalServerException;
@@ -14,24 +14,24 @@ import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
 
 @RestController
-@RequestMapping("/membershiptypes")
-public class MembershipTypeContoller {
+@RequestMapping("/settingsbase")
+public class SettingsController {
     @Autowired
-    MembershipTypeService membershipTypeService;
+    SettingsService settingsService;
 
     @GetMapping()
-    public CollectionModel<EntityModel<MembershipType>> GetAll(){
+    CollectionModel<EntityModel<Settings>> GetAll(){
         try {
-            return membershipTypeService.GetAll();
+            return settingsService.GetAll();
         }catch (Exception e){
             throw new InternalServerException();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<MembershipType>> GetById(@PathVariable Integer id) {
+    ResponseEntity<EntityModel<Settings>> GetById(@PathVariable Integer id) {
         try {
-            return membershipTypeService.GetById(id);
+            return settingsService.GetById(id);
         }catch (NotFoundException e){
             throw e;
         }catch (Exception e){
@@ -40,11 +40,12 @@ public class MembershipTypeContoller {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<MembershipType>> AddMembershipType(@RequestBody MembershipType newMembershipType) throws URISyntaxException {
+    ResponseEntity<EntityModel<Settings>> AddSettings(@RequestBody Settings newSettings) throws URISyntaxException {
         try {
-            return membershipTypeService.AddMembershipType(newMembershipType);
-        }
-        catch (ConstraintViolationException e){
+            return settingsService.AddSettings(newSettings);
+        }catch (NotFoundException e){
+            throw e;
+        }catch (ConstraintViolationException e){
             throw new BadRequestException(e.getMessage());
         }catch (Exception e){
             throw new InternalServerException();
@@ -52,10 +53,12 @@ public class MembershipTypeContoller {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<MembershipType>> ModifyMembershipType(@RequestBody MembershipType newMembershipType, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Settings>> ModifySettings(@RequestBody Settings newSettings, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return membershipTypeService.ModifyMembershipType(newMembershipType,id);
+            return settingsService.ModifySettings(newSettings,id);
 
+        }catch (NotFoundException e){
+            throw e;
         }catch (ConstraintViolationException e){
             throw new BadRequestException(e.getMessage());
         }catch (Exception e){
@@ -64,11 +67,11 @@ public class MembershipTypeContoller {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<EntityModel<MembershipType>> DeleteMembershipType(@PathVariable Integer id){
+    ResponseEntity<EntityModel<Settings>> DeleteSettings(@PathVariable Integer id){
         try {
-            return membershipTypeService.DeleteMembershipType(id);
+            return settingsService.DeleteSettings(id);
         }catch (EmptyResultDataAccessException e){
-            throw new NotFoundException("membership type",id);
+            throw new NotFoundException("settings",id);
         }catch (Exception e){
             throw new InternalServerException();
         }
