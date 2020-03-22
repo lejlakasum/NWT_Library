@@ -3,6 +3,7 @@ package com.example.Application.Book;
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.ExceptionClasses.NotFoundException;
+import com.example.Application.Member.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
@@ -34,6 +35,19 @@ public class BookController {
     ResponseEntity<EntityModel<Book>> GetById(@PathVariable Integer id) {
         try {
             return bookService.GetById(id);
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
+    @GetMapping("/{id}/members")
+    CollectionModel<EntityModel<Member>> GetMembers(@PathVariable Integer id) {
+        try {
+            return bookService.GetMembersByBook(id);
         }
         catch (NotFoundException ex) {
             throw ex;

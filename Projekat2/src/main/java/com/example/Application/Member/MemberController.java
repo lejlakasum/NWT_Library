@@ -1,5 +1,7 @@
 package com.example.Application.Member;
 
+import com.example.Application.Author.Author;
+import com.example.Application.Book.Book;
 import com.example.Application.ExceptionClasses.BadRequestException;
 import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.ExceptionClasses.NotFoundException;
@@ -40,6 +42,19 @@ public class MemberController {
             }
         }
 
+        @GetMapping("/{id}/borrowings")
+        public CollectionModel<EntityModel<Book>> GetBorrowings(@PathVariable Integer id) {
+            try {
+                return memberService.GetBorrowings(id);
+            }
+            catch (NotFoundException ex) {
+                throw ex;
+            }
+            catch (Exception ex) {
+                throw new InternalServerException();
+            }
+        }
+
         @PostMapping()
         ResponseEntity<EntityModel<Member>> Add(@RequestBody Member newMember) throws URISyntaxException {
 
@@ -53,6 +68,24 @@ public class MemberController {
             }
         }
 
+    @PostMapping("/{idmember}/borrowings/{idbook}")
+    public CollectionModel<EntityModel<Book>> AddAuthorToCopy(@PathVariable Integer idmember, @PathVariable Integer idbook) {
+        try {
+            memberService.AddBorrowingToMember(idmember, idbook);
+            return memberService.GetBorrowings(idmember);
+        }
+        catch (ConstraintViolationException ex) {
+
+            throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
         @PutMapping("/{id}")
         ResponseEntity<EntityModel<Member>> Update(@RequestBody Member newMember, @PathVariable Integer id) throws URISyntaxException {
             try {
@@ -64,6 +97,24 @@ public class MemberController {
                 throw new InternalServerException();
             }
         }
+
+    @PutMapping("/{idmember}/borrowings/{idbook}")
+    public CollectionModel<EntityModel<Book>> ReturnBook(@PathVariable Integer idmember, @PathVariable Integer idbook) {
+        try {
+            memberService.ReturnBook(idmember, idbook);
+            return memberService.GetBorrowings(idmember);
+        }
+        catch (ConstraintViolationException ex) {
+
+            throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
 
         @DeleteMapping("/{id}")
         ResponseEntity<EntityModel<Member>> Delete(@PathVariable Integer id) {

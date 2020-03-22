@@ -2,11 +2,15 @@ package com.example.Application.Book;
 
 import com.example.Application.BookType.BookType;
 import com.example.Application.BookType.BookTypeRepository;
+import com.example.Application.Borrowing.BorrowingService;
 import com.example.Application.Copy.Copy;
+import com.example.Application.Copy.CopyController;
 import com.example.Application.Copy.CopyRepository;
 import com.example.Application.ExceptionClasses.NotFoundException;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
+import com.example.Application.Member.Member;
+import com.example.Application.Member.MemberModelAssembler;
 import com.example.Application.Publisher.Publisher;
 import com.example.Application.Publisher.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +41,10 @@ public class BookService {
     GenreRepository genreRepository;
     @Autowired
     PublisherRepository  publisherRepository;
+    @Autowired
+    BorrowingService borrowingService;
+    @Autowired
+    MemberModelAssembler memberModelAssembler;
 
     public CollectionModel<EntityModel<Book>> GetAll() {
         List<EntityModel<Book>> books = bookRepository.findAll().stream()
@@ -55,6 +63,21 @@ public class BookService {
         return ResponseEntity
                 .ok()
                 .body(assembler.toModel(book));
+    }
+
+    public CollectionModel<EntityModel<Member>> GetMembersByBook(Integer bookId) {
+
+        Boolean bookExist = bookRepository.existsById(bookId);
+        if(!bookExist) {
+            throw new NotFoundException("book", bookId);
+        }
+
+        List<EntityModel<Member>> members = borrowingService.GetBorrowingByBook(bookId).stream()
+                .map(memberModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(members,
+                linkTo(methodOn(BookController.class).GetMembers(bookId)).withSelfRel());
     }
 
     public ResponseEntity<EntityModel<Book>> Add(Book newBook) {

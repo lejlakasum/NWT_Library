@@ -5,13 +5,13 @@ import com.example.Application.Member.Member;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "book_member_borrowing")
 public class Borrowing {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -29,6 +29,13 @@ public class Borrowing {
     private Boolean returned;
 
     public Borrowing() {
+    }
+
+    public Borrowing(Book book, Member member, @NotNull Date borrowingDate, Boolean returned) {
+        this.book = book;
+        this.member = member;
+        this.borrowingDate = borrowingDate;
+        this.returned = returned;
     }
 
     public Integer getId() {

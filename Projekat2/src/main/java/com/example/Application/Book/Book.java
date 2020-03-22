@@ -49,6 +49,17 @@ public class Book {
     public Book() {
     }
 
+    public Book(Integer id, @NotNull(message = "Variable isbn must not be null") String isbn, @NotNull(message = "Variable copy must not be null") Copy copy, @NotNull(message = "Variable bookType must not be null") BookType bookType, @NotNull(message = "Variable genre must not be null") Genre genre, @NotNull(message = "Variable publisher must not be null") Publisher publisher, Date publishedDate, @NotNull(message = "Variable available must not be null") Boolean available) {
+        this.id = id;
+        this.isbn = isbn;
+        this.copy = copy;
+        this.bookType = bookType;
+        this.genre = genre;
+        this.publisher = publisher;
+        this.publishedDate = publishedDate;
+        this.available = available;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -1,5 +1,12 @@
 package com.example.Application.Member;
 
+import com.example.Application.Author.Author;
+import com.example.Application.Book.Book;
+import com.example.Application.Book.BookModelAssembler;
+import com.example.Application.Book.BookRepository;
+import com.example.Application.Borrowing.Borrowing;
+import com.example.Application.Borrowing.BorrowingService;
+import com.example.Application.Copy.CopyController;
 import com.example.Application.ExceptionClasses.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -8,6 +15,8 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +29,12 @@ public class MemberService {
     private MemberRepository memberRepository;
     @Autowired
     MemberModelAssembler assembler;
+    @Autowired
+    BorrowingService borrowingService;
+    @Autowired
+    BookModelAssembler bookModelAssembler;
+    @Autowired
+    BookRepository bookRepository;
 
     public CollectionModel<EntityModel<Member>> GetAll() {
         List<EntityModel<Member>> members = memberRepository.findAll().stream()
@@ -40,12 +55,38 @@ public class MemberService {
                 .body(assembler.toModel(member));
     }
 
+    public CollectionModel<EntityModel<Book>> GetBorrowings(Integer memberId) {
+        Boolean memberExist = memberRepository.existsById(memberId);
+        if(!memberExist) {
+            throw new NotFoundException("member", memberId);
+        }
+
+        List<EntityModel<Book>> books = borrowingService.GetBorrowingByMember(memberId).stream()
+                .map(bookModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return new CollectionModel<>(books,
+                linkTo(methodOn(MemberController.class).GetBorrowings(memberId)).withSelfRel());
+    }
+
     public ResponseEntity<EntityModel<Member>> Add(Member newMember) {
         EntityModel<Member> entityModel = assembler.toModel(memberRepository.save(newMember));
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+    }
+
+    public void AddBorrowingToMember(Integer memberId, Integer bookId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()->new NotFoundException("member", memberId));
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()->new NotFoundException("book", bookId));
+
+        Borrowing borrowing = new Borrowing(book, member, new Date(), false);
+
+        borrowingService.Add(borrowing);
     }
 
     public ResponseEntity<EntityModel<Member>> Update(Member newMember, Integer id) {
@@ -63,6 +104,10 @@ public class MemberService {
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+    }
+
+    public void ReturnBook(Integer memberId, Integer bookId) {
+        borrowingService.UpdateReturned(bookId, memberId);
     }
 
     public ResponseEntity<EntityModel<Member>> Delete(Integer id) {

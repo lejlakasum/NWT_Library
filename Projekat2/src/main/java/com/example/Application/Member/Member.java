@@ -30,6 +30,13 @@ public class Member {
     public Member() {
     }
 
+    public Member(@NotNull(message = "Variable id must not be null.") Integer id, @Size(min = 2, max = 25, message = "FirstName must be between 2 and 25.") @NotNull(message = "Variable firstName must not be null.") String firstName, @Size(min = 2, max = 30, message = "LastName must be between 2 and 25.") @NotNull(message = "Variable lastName must not be null.") String lastName, @NotNull(message = "Variable active must not be null.") Boolean active) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.active = active;
+    }
+
     public Integer getId() {
         return id;
     }
