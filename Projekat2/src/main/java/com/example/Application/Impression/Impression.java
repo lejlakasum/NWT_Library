@@ -9,13 +9,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "book_member_impression")
+@Table(name = "impression")
 public class Impression {
 
     private static final String RATING_ERROR_MSG = "Rating must be between 1 and 5";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -36,4 +36,50 @@ public class Impression {
     @Column(name = "impression")
     private String comment;
 
+    public Impression(Book book, Member member, @Min(value = 1, message = RATING_ERROR_MSG) @Max(value = 5, message = RATING_ERROR_MSG) @NotNull Integer rating, @NotNull String comment) {
+        this.book = book;
+        this.member = member;
+        this.rating = rating;
+        this.comment = comment;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

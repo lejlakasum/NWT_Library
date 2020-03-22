@@ -1,5 +1,8 @@
 package com.example.Application.Member;
 
+import com.example.Application.BookType.BookType;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,7 +12,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends RepresentationModel<Member> {
     @Id
     @NotNull(message = "Variable id must not be null.")
     private Integer id;

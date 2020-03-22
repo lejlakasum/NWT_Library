@@ -6,11 +6,17 @@ import com.example.Application.Borrowing.BorrowingService;
 import com.example.Application.Copy.Copy;
 import com.example.Application.Copy.CopyController;
 import com.example.Application.Copy.CopyRepository;
+import com.example.Application.Country.CountryController;
 import com.example.Application.ExceptionClasses.NotFoundException;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
+import com.example.Application.Impression.Impression;
+import com.example.Application.Impression.ImpressionDTO;
+import com.example.Application.Impression.ImpressionService;
 import com.example.Application.Member.Member;
+import com.example.Application.Member.MemberController;
 import com.example.Application.Member.MemberModelAssembler;
+import com.example.Application.Member.MemberRepository;
 import com.example.Application.Publisher.Publisher;
 import com.example.Application.Publisher.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +51,10 @@ public class BookService {
     BorrowingService borrowingService;
     @Autowired
     MemberModelAssembler memberModelAssembler;
+    @Autowired
+    ImpressionService impressionService;
+    @Autowired
+    MemberRepository memberRepository;
 
     public CollectionModel<EntityModel<Book>> GetAll() {
         List<EntityModel<Book>> books = bookRepository.findAll().stream()
@@ -80,6 +90,19 @@ public class BookService {
                 linkTo(methodOn(BookController.class).GetMembers(bookId)).withSelfRel());
     }
 
+    public List<ImpressionDTO> GetImpressionsByBook(Integer bookId) {
+        List<ImpressionDTO> impressions = impressionService.GetImpressionsByBook(bookId);
+
+        for (ImpressionDTO impression : impressions) {
+            impression.getMember()
+                    .add(linkTo(methodOn(MemberController.class)
+                            .GetById(impression.getMember().getId()))
+                            .withSelfRel());
+        }
+
+        return impressions;
+    }
+
     public ResponseEntity<EntityModel<Book>> Add(Book newBook) {
 
         Integer copyId = newBook.getCopy().getId();
@@ -109,6 +132,25 @@ public class BookService {
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+    }
+
+    public List<ImpressionDTO> AddImpression(Integer bookId, ImpressionDTO newImpression) {
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()->new NotFoundException("book", bookId));
+
+        Integer memberId = newImpression.getMember().getId();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()->new NotFoundException("member", memberId));
+
+        Impression impression = new Impression( book,
+                                                member,
+                                                newImpression.getRating(),
+                                                newImpression.getComment());
+
+        impressionService.AddImpression(impression);
+
+        return impressionService.GetImpressionsByBook(bookId);
     }
 
     public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) {
