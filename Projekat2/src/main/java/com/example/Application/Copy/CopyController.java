@@ -57,6 +57,24 @@ public class CopyController {
         }
     }
 
+    @PostMapping("/{idcopy}/authors/{idauthor}")
+    public CollectionModel<EntityModel<Author>> AddAuthorToCopy(@PathVariable Integer idcopy, @PathVariable Integer idauthor) {
+        try {
+            copyService.AddAuthorToCopy(idcopy, idauthor);
+            return copyService.GetAuthors(idcopy);
+        }
+        catch (ConstraintViolationException ex) {
+
+            throw new BadRequestException(ex.getMessage());
+        }
+        catch (NotFoundException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
     @PostMapping()
     ResponseEntity<EntityModel<Copy>> Add(@RequestBody Copy newCopy) throws URISyntaxException {
 
@@ -80,6 +98,20 @@ public class CopyController {
         catch (ConstraintViolationException ex) {
 
             throw new BadRequestException(ex.getMessage());
+        }
+        catch (Exception ex) {
+            throw new InternalServerException();
+        }
+    }
+
+    @DeleteMapping("/{idcopy}/authors/{idauthor}")
+    public CollectionModel<EntityModel<Author>> DeleteAuthorToCopy(@PathVariable Integer idcopy, @PathVariable Integer idauthor) {
+        try {
+            copyService.DeleteAuthorFromCopy(idcopy, idauthor);
+            return copyService.GetAuthors(idcopy);
+        }
+        catch (NotFoundException ex) {
+            throw ex;
         }
         catch (Exception ex) {
             throw new InternalServerException();

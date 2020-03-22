@@ -20,6 +20,11 @@ public class Copy extends RepresentationModel<Copy> {
     public Copy() {
     }
 
+    public Copy(Integer id, String bookName) {
+        this.id = id;
+        this.bookName = bookName;
+    }
+
     public Integer getId() {
         return id;
     }

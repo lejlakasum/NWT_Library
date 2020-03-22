@@ -26,6 +26,11 @@ public class CopyAuthors {
     public CopyAuthors() {
     }
 
+    public CopyAuthors(@NotNull(message = "Variable copy must not be null.") Copy copy, @NotNull(message = "Variable author must not be null.") Author author) {
+        this.copy = copy;
+        this.author = author;
+    }
+
     public Integer getId() {
         return id;
     }

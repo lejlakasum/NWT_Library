@@ -3,6 +3,8 @@ package com.example.Application.Copy;
 import com.example.Application.Author.Author;
 import com.example.Application.Author.AuthorController;
 import com.example.Application.Author.AuthorModelAssembler;
+import com.example.Application.Author.AuthorRepository;
+import com.example.Application.CopyAuthors.CopyAuthors;
 import com.example.Application.CopyAuthors.CopyAuthorsService;
 import com.example.Application.ExceptionClasses.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class CopyService {
     @Autowired
     private CopyRepository copyRepository;
+    @Autowired
+    AuthorRepository authorRepository;
     @Autowired
     CopyModelAssembler assembler;
     @Autowired
@@ -63,6 +67,18 @@ public class CopyService {
                 linkTo(methodOn(CopyController.class).GetAuthorsByCopy(copyId)).withSelfRel());
     }
 
+    public void AddAuthorToCopy(Integer copyId, Integer authorId) {
+
+        Copy copy = copyRepository.findById(copyId)
+                .orElseThrow(()-> new NotFoundException("copy", copyId));
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(()-> new NotFoundException("author", authorId));
+
+        CopyAuthors copyAuthors = new CopyAuthors(copy, author);
+        copyAuthorsService.Add(copyAuthors);
+
+    }
+
     public ResponseEntity<EntityModel<Copy>> Add(Copy newCopy) {
         EntityModel<Copy> entityModel = assembler.toModel(copyRepository.save(newCopy));
 
@@ -87,6 +103,16 @@ public class CopyService {
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+    }
+
+    public void DeleteAuthorFromCopy(Integer copyId, Integer authorId) {
+
+        Copy copy = copyRepository.findById(copyId)
+                .orElseThrow(()-> new NotFoundException("copy", copyId));
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(()-> new NotFoundException("author", authorId));
+
+        copyAuthorsService.Delete(copyId, authorId);
     }
 
     public ResponseEntity<EntityModel<Copy>> Delete(Integer id) {
