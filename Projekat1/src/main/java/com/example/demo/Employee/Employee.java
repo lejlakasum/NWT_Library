@@ -1,15 +1,17 @@
 package com.example.demo.Employee;
 
 import com.example.demo.Profile.Profile;
+import com.example.demo.Role.Role;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="employee")
-public class Employee {
+public class Employee extends RepresentationModel<Employee> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

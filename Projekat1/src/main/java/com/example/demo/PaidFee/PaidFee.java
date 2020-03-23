@@ -1,10 +1,12 @@
 package com.example.demo.PaidFee;
 
+import com.example.demo.Book.Book;
 import com.example.demo.Fee.Fee;
 import com.example.demo.Member.Member;
 
 import javax.persistence.*;
-import java.awt.print.Book;
+
+
 import java.util.Date;
 
 @Entity
@@ -12,7 +14,7 @@ import java.util.Date;
 public class PaidFee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -23,6 +25,7 @@ public class PaidFee {
     @JoinColumn(name = "fee_id")
     private Fee fee;
 
+    @Column(name = "payment_date")
     private Date paymentDate;
 
     @ManyToOne

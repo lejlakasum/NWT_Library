@@ -1,29 +1,35 @@
 package com.example.demo.Profile;
 
-import javax.management.relation.Role;
+import com.example.demo.Role.Role;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
 @Table(name = "profile")
-public class Profile {
+public class Profile extends RepresentationModel<Profile> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @NotNull
+    @Column(name = "first_name")
+    private String firstName;
+
+    @NotNull
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "birth_date")
+    private Date birthDate;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @NotNull
-    private String firstName;
-
-    @NotNull
-    private String lastName;
-
-    private Date birthDate;
 
     public Profile() {
     }

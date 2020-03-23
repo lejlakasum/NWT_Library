@@ -2,16 +2,17 @@ package com.example.demo.Member;
 
 import com.example.demo.MembershipType.MembershipType;
 import com.example.demo.Profile.Profile;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends RepresentationModel<Member> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -22,6 +23,7 @@ public class Member {
     @JoinColumn(name = "membership_type_id")
     private MembershipType membershipTypeId;
 
+    @Column(name = "join_date")
     private Date joinDate;
 
     private Boolean active;
