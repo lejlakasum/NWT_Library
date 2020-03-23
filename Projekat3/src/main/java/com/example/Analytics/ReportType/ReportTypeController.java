@@ -75,7 +75,7 @@ public class ReportTypeController {
         }
     }
 
-    @PostMapping()
+    @DeleteMapping("/{id}")
     ResponseEntity<EntityModel<ReportType>> Delete(@PathVariable Integer id) {
         try {
             return reportTypeService.Delete(id);

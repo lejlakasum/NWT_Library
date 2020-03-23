@@ -1,4 +1,4 @@
-package com.example.Reservation;
+package com.example.Reservation.Reservation;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

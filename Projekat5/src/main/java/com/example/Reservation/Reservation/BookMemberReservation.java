@@ -1,7 +1,7 @@
-package com.example.Reservation;
+package com.example.Reservation.Reservation;
 
-import com.example.MemberId.MemberId;
-import com.example.BookId.BookId;
+import com.example.Reservation.MemberId.MemberId;
+import com.example.Reservation.BookId.BookId;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,8 +10,8 @@ import java.util.Date;
 @Table(name = "reservation_book_member")
 public class BookMemberReservation {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @JoinTable(name = "member_id")
     private MemberId memberId;
@@ -25,19 +25,19 @@ public class BookMemberReservation {
     public BookMemberReservation() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public com.example.MemberId.MemberId getMemberId() {
+    public MemberId getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(com.example.MemberId.MemberId memberId) {
+    public void setMemberId(MemberId memberId) {
         this.memberId = memberId;
     }
 
