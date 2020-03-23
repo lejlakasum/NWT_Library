@@ -1,16 +1,19 @@
 package com.example.Application.Publisher;
 
+import com.example.Application.Country.Country;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "publisher")
-public class Publisher {
+public class Publisher extends RepresentationModel<Publisher> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Variable name must not be null")
     private String name;
 
     public Publisher() {

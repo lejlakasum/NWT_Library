@@ -1,20 +1,28 @@
 package com.example.Application.Copy;
 
+import com.example.Application.Country.Country;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "copy")
-public class Copy {
+public class Copy extends RepresentationModel<Copy> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "book_name")
-    @NotNull
+    @NotNull(message = "Variable bookName must not be null.")
     private String bookName;
 
     public Copy() {
+    }
+
+    public Copy(Integer id, String bookName) {
+        this.id = id;
+        this.bookName = bookName;
     }
 
     public Integer getId() {

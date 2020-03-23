@@ -1,14 +1,19 @@
 package com.example.Application.BookType;
 
+import com.example.Application.Country.Country;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "book_type")
-public class BookType {
+public class BookType extends RepresentationModel<BookType> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull(message = "Variable name must not be null.")
     private String name;
 
     @Column(name = "latency_fee")

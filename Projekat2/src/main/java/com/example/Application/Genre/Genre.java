@@ -1,13 +1,16 @@
 package com.example.Application.Genre;
 
+import com.example.Application.Country.Country;
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "genre")
-public class Genre {
+public class Genre extends RepresentationModel<Genre> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull
