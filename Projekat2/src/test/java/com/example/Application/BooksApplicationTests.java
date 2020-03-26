@@ -8,9 +8,11 @@ import com.example.Application.Copy.Copy;
 import com.example.Application.Copy.CopyRepository;
 import com.example.Application.Country.Country;
 import com.example.Application.Country.CountryRepository;
+import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
 import com.example.Application.Member.Member;
+import com.example.Application.Member.MemberRepository;
 import com.example.Application.Publisher.Publisher;
 import com.example.Application.Publisher.PublisherRepository;
 import org.junit.Assert;
@@ -24,8 +26,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -47,6 +51,8 @@ class BooksApplicationTests {
 	CountryRepository countryRepository;
 	@Autowired
 	PublisherRepository publisherRepository;
+	@Autowired
+	MemberRepository memberRepository;
 
 	@Test
 	void contextLoads() {
@@ -558,6 +564,106 @@ class BooksApplicationTests {
 		//Test getById error
 		try {
 			result = restTemplate.getForEntity(uri, Publisher.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testMember() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/members";
+		URI uri = new URI(baseUrl);
+
+		Integer testId = 10000;
+		String testFirstName = "UnitTestFirst";
+		String testLastName = "UnitTestLast";
+		Boolean testActive = true;
+		Member newMember = new Member(testId, testFirstName, testLastName, testActive);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Member> request = new HttpEntity<>(newMember, headers);
+
+		//Test post
+		ResponseEntity<Member> result = restTemplate.postForEntity(uri, request, Member.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(createdId, testId);
+		Assert.assertEquals(result.getBody().getFirstName(), testFirstName);
+		Assert.assertEquals(result.getBody().getFirstName(), memberRepository.findById(createdId).get().getFirstName());
+
+		//Test post error
+		Member errorMember = new Member(testId, null, testLastName, testActive);
+
+		request = new HttpEntity<>(errorMember, headers);
+		try {
+			restTemplate.postForEntity(uri, request, Member.class);
+			Assert.fail();
+		}
+		catch(HttpClientErrorException ex) {
+			Assert.assertEquals(400, ex.getRawStatusCode());
+		}
+		catch (Exception ex) {
+
+		}
+
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri = new URI(byIdUrl);
+
+		//Test getById
+		result = restTemplate.getForEntity(uri, Member.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getFirstName(), testFirstName);
+
+		//Test updateById
+		String testUpdateFirstName = "UnitTestUpdateMember";
+		Member updateMember = new Member(testId, testUpdateFirstName, testLastName, testActive);
+
+		request = new HttpEntity<>(updateMember, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getFirstName(), testUpdateFirstName);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			List<Member> members = memberRepository.findAll();
+			Boolean contains = false;
+			for (Member member : members) {
+				if(member.getId() == createdId) {
+					contains = true;
+					break;
+				}
+			}
+			Assert.assertEquals(false, contains);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, Member.class);
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {
