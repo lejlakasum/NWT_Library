@@ -7,6 +7,7 @@ import com.example.Application.BookType.BookTypeRepository;
 import com.example.Application.Copy.Copy;
 import com.example.Application.Copy.CopyRepository;
 import com.example.Application.Country.Country;
+import com.example.Application.Country.CountryRepository;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
 import com.example.Application.Member.Member;
@@ -41,6 +42,8 @@ class BooksApplicationTests {
 	BookTypeRepository bookTypeRepository;
 	@Autowired
 	CopyRepository copyRepository;
+	@Autowired
+	CountryRepository countryRepository;
 
 	@Test
 	void contextLoads() {
@@ -366,6 +369,99 @@ class BooksApplicationTests {
 		//Test getById error
 		try {
 			result = restTemplate.getForEntity(uri, Copy.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testCountry() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/countries";
+		URI uri = new URI(baseUrl);
+
+		String testName = "UnitTestCountry";
+		Country newCountry = new Country(testName);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Country> request = new HttpEntity<>(newCountry, headers);
+
+		//Test post
+		ResponseEntity<Country> result = restTemplate.postForEntity(uri, request, Country.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+		Assert.assertEquals(result.getBody().getName(), countryRepository.findById(createdId).get().getName());
+
+		//Test post error
+		Country errorCountry = new Country();
+		errorCountry.setName(null);
+		request = new HttpEntity<>(errorCountry, headers);
+		try {
+			restTemplate.postForEntity(uri, request, Country.class);
+			Assert.fail();
+		}
+		catch(HttpClientErrorException ex) {
+			Assert.assertEquals(400, ex.getRawStatusCode());
+		}
+
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri = new URI(byIdUrl);
+
+		//Test getById
+		result = restTemplate.getForEntity(uri, Country.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+
+		//Test updateById
+		String testUpdateName = "UnitTestUpdateCountry";
+		Country updateCountry = new Country(testUpdateName);
+
+		request = new HttpEntity<>(updateCountry, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(countryRepository.findById(createdId).get().getName(), testUpdateName);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			List<Country> countries = countryRepository.findAll();
+			Boolean contains = false;
+			for (Country country : countries) {
+				if(country.getId() == createdId) {
+					contains = true;
+					break;
+				}
+			}
+			Assert.assertEquals(false, contains);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, Country.class);
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {
