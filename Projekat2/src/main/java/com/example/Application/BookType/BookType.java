@@ -25,6 +25,12 @@ public class BookType extends RepresentationModel<BookType> {
     public BookType() {
     }
 
+    public BookType(@NotNull String name, Double latencyFee, Boolean libraryReadOnly) {
+        this.name = name;
+        this.latencyFee = latencyFee;
+        this.libraryReadOnly = libraryReadOnly;
+    }
+
     public Integer getId() {
         return id;
     }

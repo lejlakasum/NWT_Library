@@ -3,6 +3,7 @@ package com.example.Application;
 import com.example.Application.Author.Author;
 import com.example.Application.Book.Book;
 import com.example.Application.BookType.BookType;
+import com.example.Application.BookType.BookTypeRepository;
 import com.example.Application.Copy.Copy;
 import com.example.Application.Country.Country;
 import com.example.Application.Genre.Genre;
@@ -22,8 +23,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.constraints.AssertTrue;
-import javax.xml.crypto.URIReferenceException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -37,6 +36,8 @@ class BooksApplicationTests {
 
 	@Autowired
 	GenreRepository genreRepository;
+	@Autowired
+	BookTypeRepository bookTypeRepository;
 
 	@Test
 	void contextLoads() {
@@ -169,6 +170,92 @@ class BooksApplicationTests {
 		//Test getById error
 		try {
 			result = restTemplate.getForEntity(uri, Genre.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testBookType() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/booktypes";
+		URI uri = new URI(baseUrl);
+
+		String testName = "UnitTestBookType";
+		BookType newBookType = new BookType(testName, 5.0, false);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<BookType> request = new HttpEntity<>(newBookType, headers);
+
+		//Test post
+		ResponseEntity<BookType> result = restTemplate.postForEntity(uri, request, BookType.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+		Assert.assertEquals(result.getBody().getName(), bookTypeRepository.findById(createdId).get().getName());
+
+		//Test post error
+		BookType errorBookType = new BookType();
+		errorBookType.setName(null);
+		request = new HttpEntity<>(errorBookType, headers);
+		try {
+			restTemplate.postForEntity(uri, request, BookType.class);
+			Assert.fail();
+		}
+		catch(HttpClientErrorException ex) {
+			Assert.assertEquals(400, ex.getRawStatusCode());
+		}
+
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri = new URI(byIdUrl);
+
+		//Test getById
+		result = restTemplate.getForEntity(uri, BookType.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+
+		//Test updateById
+		String testUpdateName = "UnitTestUpdateBookType";
+		BookType updateBookType = new BookType(testUpdateName,5.0, false);
+
+		request = new HttpEntity<>(updateBookType, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(bookTypeRepository.findById(createdId).get().getName(), testUpdateName);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			List<BookType> bookTypes = bookTypeRepository.findAll();
+			Assert.assertEquals(false, bookTypes.contains(testUpdateName));
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, BookType.class);
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {
