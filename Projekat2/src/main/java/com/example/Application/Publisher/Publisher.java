@@ -19,6 +19,10 @@ public class Publisher extends RepresentationModel<Publisher> {
     public Publisher() {
     }
 
+    public Publisher(@NotNull String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

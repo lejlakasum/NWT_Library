@@ -12,6 +12,7 @@ import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
 import com.example.Application.Member.Member;
 import com.example.Application.Publisher.Publisher;
+import com.example.Application.Publisher.PublisherRepository;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +45,8 @@ class BooksApplicationTests {
 	CopyRepository copyRepository;
 	@Autowired
 	CountryRepository countryRepository;
+	@Autowired
+	PublisherRepository publisherRepository;
 
 	@Test
 	void contextLoads() {
@@ -462,6 +465,99 @@ class BooksApplicationTests {
 		//Test getById error
 		try {
 			result = restTemplate.getForEntity(uri, Country.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testPublisher() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/publishers";
+		URI uri = new URI(baseUrl);
+
+		String testName = "UnitTestPublisher";
+		Publisher newPublisher = new Publisher(testName);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Publisher> request = new HttpEntity<>(newPublisher, headers);
+
+		//Test post
+		ResponseEntity<Publisher> result = restTemplate.postForEntity(uri, request, Publisher.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+		Assert.assertEquals(result.getBody().getName(), publisherRepository.findById(createdId).get().getName());
+
+		//Test post error
+		Publisher errorPublisher = new Publisher();
+		errorPublisher.setName(null);
+		request = new HttpEntity<>(errorPublisher, headers);
+		try {
+			restTemplate.postForEntity(uri, request, Publisher.class);
+			Assert.fail();
+		}
+		catch(HttpClientErrorException ex) {
+			Assert.assertEquals(400, ex.getRawStatusCode());
+		}
+
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri = new URI(byIdUrl);
+
+		//Test getById
+		result = restTemplate.getForEntity(uri, Publisher.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getName(), testName);
+
+		//Test updateById
+		String testUpdateName = "UnitTestUpdatePublisher";
+		Publisher updatePublisher = new Publisher(testUpdateName);
+
+		request = new HttpEntity<>(updatePublisher, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(publisherRepository.findById(createdId).get().getName(), testUpdateName);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			List<Publisher> publishers = publisherRepository.findAll();
+			Boolean contains = false;
+			for (Publisher publisher : publishers) {
+				if(publisher.getId() == createdId) {
+					contains = true;
+					break;
+				}
+			}
+			Assert.assertEquals(false, contains);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, Publisher.class);
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {
