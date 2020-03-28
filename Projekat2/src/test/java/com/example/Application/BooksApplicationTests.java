@@ -1,14 +1,16 @@
 package com.example.Application;
 
 import com.example.Application.Author.Author;
+import com.example.Application.Author.AuthorRepository;
 import com.example.Application.Book.Book;
+import com.example.Application.Book.BookRepository;
 import com.example.Application.BookType.BookType;
 import com.example.Application.BookType.BookTypeRepository;
 import com.example.Application.Copy.Copy;
 import com.example.Application.Copy.CopyRepository;
+import com.example.Application.CopyAuthors.CopyAuthors;
 import com.example.Application.Country.Country;
 import com.example.Application.Country.CountryRepository;
-import com.example.Application.ExceptionClasses.InternalServerException;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
 import com.example.Application.Member.Member;
@@ -26,12 +28,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -53,6 +54,10 @@ class BooksApplicationTests {
 	PublisherRepository publisherRepository;
 	@Autowired
 	MemberRepository memberRepository;
+	@Autowired
+	AuthorRepository authorRepository;
+	@Autowired
+	BookRepository bookRepository;
 
 	@Test
 	void contextLoads() {
@@ -664,6 +669,207 @@ class BooksApplicationTests {
 		//Test getById error
 		try {
 			result = restTemplate.getForEntity(uri, Member.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testCopyAuthors() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/authors";
+		URI uri = new URI(baseUrl);
+
+		List<Country> countries = countryRepository.findAll();
+		Country country = new Country();
+		if(countries.size()!=0) {
+			country = countries.get(0);
+		}
+
+		String testFirstName = "TestFirstName";
+		String testLastName = "TestLastName";
+		Date testBirthDate = new Date();
+		Author testAuthor = new Author(testFirstName, testLastName, testBirthDate, country);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Author> request = new HttpEntity<>(testAuthor, headers);
+
+		//Test post author
+		ResponseEntity<Author> result = restTemplate.postForEntity(uri, request, Author.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getFirstName(), testFirstName);
+		Assert.assertEquals(result.getBody().getFirstName(), authorRepository.findById(createdId).get().getFirstName());
+
+		// Test get all copies by author
+		uri = new URI(baseUrl + "/" + createdId + "/copies");
+		ResponseEntity<Copy> copyResult = restTemplate.getForEntity(uri, Copy.class);
+		Assert.assertEquals(200, copyResult.getStatusCodeValue());
+
+		//Test post author to copy
+		List<Copy> copies = copyRepository.findAll();
+		Copy copy = new Copy();
+		if(copies.size()!=0) {
+			copy = copies.get(0);
+		}
+
+		uri = new URI("http://localhost:" + randomServerPort + "/copies/" + copy.getId() + "/authors/" + createdId);
+
+		CopyAuthors newCopyAuthors = new CopyAuthors(copy, testAuthor);
+		HttpEntity<CopyAuthors> requestCopyAuthor = new HttpEntity<>(newCopyAuthors, headers);
+		ResponseEntity<CopyAuthors> resultCopyAuthor = restTemplate.postForEntity(uri, requestCopyAuthor, CopyAuthors.class);
+
+		Integer copyAuthorCreatedId = resultCopyAuthor.getBody().getId();
+
+		Assert.assertEquals(200, resultCopyAuthor.getStatusCodeValue());
+
+		//Test delete author from copy
+		try {
+			restTemplate.delete(uri);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test delete author by id
+		uri = new URI(baseUrl + "/" + createdId);
+		try {
+			restTemplate.delete(uri);
+			List<Author> authors = authorRepository.findAll();
+			Boolean contains = false;
+			for (Author author : authors) {
+				if(author.getId() == createdId) {
+					contains = true;
+					break;
+				}
+			}
+			Assert.assertEquals(false, contains);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+	}
+
+	@Test
+	public void testBook() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/books";
+		URI uri = new URI(baseUrl);
+
+		String testISBN = "UnitTestISBN";
+		Date testPublishedDate = new Date();
+		Boolean testAvailable = true;
+
+		List<Copy> copies = copyRepository.findAll();
+		Copy copy = new Copy();
+		if(copies.size()!=0) {
+			copy = copies.get(0);
+		}
+
+		List<BookType> bookTypes = bookTypeRepository.findAll();
+		BookType bookType = new BookType();
+		if(bookTypes.size()!=0) {
+			bookType = bookTypes.get(0);
+		}
+
+		List<Genre> genres = genreRepository.findAll();
+		Genre genre = new Genre();
+		if(genres.size()!=0) {
+			genre = genres.get(0);
+		}
+
+		List<Publisher> publishers = publisherRepository.findAll();
+		Publisher publisher = new Publisher();
+		if(publishers.size()!=0) {
+			publisher = publishers.get(0);
+		}
+
+
+		Book newBook = new Book(testISBN, copy, bookType, genre, publisher, testPublishedDate, testAvailable);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Book> request = new HttpEntity<>(newBook, headers);
+
+		//Test post
+		ResponseEntity<Book> result = restTemplate.postForEntity(uri, request, Book.class);
+
+		Integer createdId = result.getBody().getId();
+
+		Assert.assertEquals(201, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getIsbn(), testISBN);
+		Assert.assertEquals(result.getBody().getIsbn(), bookRepository.findById(createdId).get().getIsbn());
+
+		//Test post error
+		Book errorBook = new Book();
+		errorBook.setIsbn(null);
+		request = new HttpEntity<>(errorBook, headers);
+		try {
+			restTemplate.postForEntity(uri, request, Book.class);
+			Assert.fail();
+		}
+		catch(Exception ex) {
+
+		}
+
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri = new URI(byIdUrl);
+
+		//Test getById
+		result = restTemplate.getForEntity(uri, Book.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getIsbn(), testISBN);
+
+		//Test updateById
+		String testUpdateISBN = "UnitTestUpdateBookISBN";
+		Book updateBook = new Book(testUpdateISBN, copy, bookType, genre, publisher, testPublishedDate, testAvailable);
+
+		request = new HttpEntity<>(updateBook, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(bookRepository.findById(createdId).get().getIsbn(), testUpdateISBN);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			List<Book> books = bookRepository.findAll();
+			Boolean contains = false;
+			for (Book book : books) {
+				if(book.getId() == createdId) {
+					contains = true;
+					break;
+				}
+			}
+			Assert.assertEquals(false, contains);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, Book.class);
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {

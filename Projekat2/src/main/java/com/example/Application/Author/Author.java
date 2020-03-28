@@ -4,7 +4,7 @@ import com.example.Application.Country.Country;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "author")
@@ -33,7 +33,14 @@ public class Author {
     public Author() {
     }
 
-    public Author(Integer id, @NotNull(message = "Variable firstName must not be null") String firstName, @NotNull(message = "Variable lastName must not be null") String lastName, @NotNull(message = "Variable birthDate must not be null!") Date birthDate, @NotNull(message = "Variable country must not be null") Country country) {
+    public Author(String firstName, String lastName, Date birthDate, Country country) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.country = country;
+    }
+
+    public Author(Integer id, String firstName, String lastName, Date birthDate, Country country) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
