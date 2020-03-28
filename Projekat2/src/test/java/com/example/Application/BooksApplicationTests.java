@@ -66,54 +66,6 @@ class BooksApplicationTests {
 	}
 
 	@Test
-	public void testGetAllMethodsSuccess() throws URISyntaxException {
-		RestTemplate restTemplate = new RestTemplate();
-
-		final String baseUrl = "http://localhost:" + randomServerPort;
-
-		//Test genres;
-		URI uri = new URI(baseUrl + "/genres");
-		ResponseEntity<Genre> resultGenre = restTemplate.getForEntity(uri, Genre.class);
-		Assert.assertEquals(200, resultGenre.getStatusCodeValue());
-
-		//Test countries
-		uri = new URI(baseUrl + "/countries");
-		ResponseEntity<Country> resultCountry = restTemplate.getForEntity(uri, Country.class);
-		Assert.assertEquals(200, resultCountry.getStatusCodeValue());
-
-		//Test authors
-		uri = new URI(baseUrl + "/authors");
-		ResponseEntity<Author> resultAuthor = restTemplate.getForEntity(uri, Author.class);
-		Assert.assertEquals(200, resultAuthor.getStatusCodeValue());
-
-		//Test books
-		uri = new URI(baseUrl + "/books");
-		ResponseEntity<Book> resultBook = restTemplate.getForEntity(uri, Book.class);
-		Assert.assertEquals(200, resultBook.getStatusCodeValue());
-
-		//Test bookType
-		uri = new URI(baseUrl + "/booktypes");
-		ResponseEntity<BookType> resultBookType = restTemplate.getForEntity(uri, BookType.class);
-		Assert.assertEquals(200, resultBookType.getStatusCodeValue());
-
-		//Test copies
-		uri = new URI(baseUrl + "/copies");
-		ResponseEntity<Copy> resultCopy = restTemplate.getForEntity(uri, Copy.class);
-		Assert.assertEquals(200, resultCopy.getStatusCodeValue());
-
-		//Test members
-		uri = new URI(baseUrl + "/members");
-		ResponseEntity<Member> resultMember = restTemplate.getForEntity(uri, Member.class);
-		Assert.assertEquals(200, resultMember.getStatusCodeValue());
-
-		//Test publishers
-		uri = new URI(baseUrl + "/publishers");
-		ResponseEntity<Publisher> resultPublisher = restTemplate.getForEntity(uri, Publisher.class);
-		Assert.assertEquals(200, resultPublisher.getStatusCodeValue());
-
-	}
-
-	@Test
 	public void testGenre() throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -737,6 +689,40 @@ class BooksApplicationTests {
 		Assert.assertEquals(result.getBody().getFirstName(), testFirstName);
 		Assert.assertEquals(result.getBody().getFirstName(), authorRepository.findById(createdId).get().getFirstName());
 
+
+		//Test post error
+		Author errorAuthor = new Author(testFirstName, testLastName, testBirthDate, country);
+		errorAuthor.setFirstName(null);
+
+		request = new HttpEntity<>(errorAuthor, headers);
+		try {
+			restTemplate.postForEntity(uri, request, Author.class);
+			Assert.fail();
+		}
+		catch(HttpClientErrorException ex) {
+			Assert.assertEquals(400, ex.getRawStatusCode());
+		}
+
+		//Test getById
+		uri = new URI(baseUrl + "/" + createdId);
+		result = restTemplate.getForEntity(uri, Author.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+		Assert.assertEquals(result.getBody().getFirstName(), testFirstName);
+
+		//Test updateById
+		String testUpdateFirstName = "UnitTestUpdateAuthor";
+		Author updateAuthor = new Author(testUpdateFirstName, testLastName, testBirthDate, country);
+
+		request = new HttpEntity<>(updateAuthor, headers);
+		try {
+			restTemplate.put(uri, request);
+			Assert.assertEquals(authorRepository.findById(createdId).get().getFirstName(), testUpdateFirstName);
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
 		// Test get all copies by author
 		uri = new URI(baseUrl + "/" + createdId + "/copies");
 		ResponseEntity<Copy> copyResult = restTemplate.getForEntity(uri, Copy.class);
@@ -783,6 +769,25 @@ class BooksApplicationTests {
 		}
 		catch (HttpClientErrorException ex) {
 			Assert.fail();
+		}
+
+		//Test deleteById error id does not exist
+		try {
+			uri = new URI(baseUrl + "/" + createdId);
+			restTemplate.delete(uri);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			result = restTemplate.getForEntity(uri, Author.class);
+			Assert.fail();
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.assertEquals(404, ex.getRawStatusCode());
 		}
 	}
 
@@ -926,6 +931,54 @@ class BooksApplicationTests {
 		catch (HttpClientErrorException ex) {
 			Assert.assertEquals(404, ex.getRawStatusCode());
 		}
+	}
+
+	@Test
+	public void testGetAllMethodsSuccess() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort;
+
+		//Test genres;
+		URI uri = new URI(baseUrl + "/genres");
+		ResponseEntity<Genre> resultGenre = restTemplate.getForEntity(uri, Genre.class);
+		Assert.assertEquals(200, resultGenre.getStatusCodeValue());
+
+		//Test countries
+		uri = new URI(baseUrl + "/countries");
+		ResponseEntity<Country> resultCountry = restTemplate.getForEntity(uri, Country.class);
+		Assert.assertEquals(200, resultCountry.getStatusCodeValue());
+
+		//Test authors
+		uri = new URI(baseUrl + "/authors");
+		ResponseEntity<Author> resultAuthor = restTemplate.getForEntity(uri, Author.class);
+		Assert.assertEquals(200, resultAuthor.getStatusCodeValue());
+
+		//Test books
+		uri = new URI(baseUrl + "/books");
+		ResponseEntity<Book> resultBook = restTemplate.getForEntity(uri, Book.class);
+		Assert.assertEquals(200, resultBook.getStatusCodeValue());
+
+		//Test bookType
+		uri = new URI(baseUrl + "/booktypes");
+		ResponseEntity<BookType> resultBookType = restTemplate.getForEntity(uri, BookType.class);
+		Assert.assertEquals(200, resultBookType.getStatusCodeValue());
+
+		//Test copies
+		uri = new URI(baseUrl + "/copies");
+		ResponseEntity<Copy> resultCopy = restTemplate.getForEntity(uri, Copy.class);
+		Assert.assertEquals(200, resultCopy.getStatusCodeValue());
+
+		//Test members
+		uri = new URI(baseUrl + "/members");
+		ResponseEntity<Member> resultMember = restTemplate.getForEntity(uri, Member.class);
+		Assert.assertEquals(200, resultMember.getStatusCodeValue());
+
+		//Test publishers
+		uri = new URI(baseUrl + "/publishers");
+		ResponseEntity<Publisher> resultPublisher = restTemplate.getForEntity(uri, Publisher.class);
+		Assert.assertEquals(200, resultPublisher.getStatusCodeValue());
+
 	}
 
 }
