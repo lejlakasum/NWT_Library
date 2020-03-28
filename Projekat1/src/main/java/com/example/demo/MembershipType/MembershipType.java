@@ -19,6 +19,10 @@ public class MembershipType extends RepresentationModel<MembershipType> {
     public MembershipType() {
     }
 
+    public MembershipType(String ime){
+        this.name=ime;
+    }
+
     public Integer getId() {
         return id;
     }
