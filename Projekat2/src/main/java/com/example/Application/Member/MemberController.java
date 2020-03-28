@@ -69,7 +69,7 @@ public class MemberController {
         }
 
     @PostMapping("/{idmember}/borrowings/{idbook}")
-    public CollectionModel<EntityModel<Book>> AddAuthorToCopy(@PathVariable Integer idmember, @PathVariable Integer idbook) {
+    public CollectionModel<EntityModel<Book>> AddBorrowing(@PathVariable Integer idmember, @PathVariable Integer idbook) {
         try {
             memberService.AddBorrowingToMember(idmember, idbook);
             return memberService.GetBorrowings(idmember);

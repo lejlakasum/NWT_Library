@@ -6,6 +6,7 @@ import com.example.Application.Book.Book;
 import com.example.Application.Book.BookRepository;
 import com.example.Application.BookType.BookType;
 import com.example.Application.BookType.BookTypeRepository;
+import com.example.Application.Borrowing.Borrowing;
 import com.example.Application.Copy.Copy;
 import com.example.Application.Copy.CopyRepository;
 import com.example.Application.CopyAuthors.CopyAuthors;
@@ -13,6 +14,7 @@ import com.example.Application.Country.Country;
 import com.example.Application.Country.CountryRepository;
 import com.example.Application.Genre.Genre;
 import com.example.Application.Genre.GenreRepository;
+import com.example.Application.Impression.ImpressionDTO;
 import com.example.Application.Member.Member;
 import com.example.Application.Member.MemberRepository;
 import com.example.Application.Publisher.Publisher;
@@ -618,7 +620,35 @@ class BooksApplicationTests {
 
 		}
 
+		//Test borrowing
+		List<Book> books = bookRepository.findAll();
+		Book book = new Book();
+		if(books.size()!=0) {
+			book = books.get(0);
+		}
+		Date testDate = new Date();
+		Boolean testReturned = false;
+
 		String byIdUrl = baseUrl + "/" + createdId;
+		URI borrowingURI = new URI(byIdUrl + "/borrowings/" + book.getId());
+		Borrowing borrowing = new Borrowing(book, newMember, testDate, testReturned);
+		HttpEntity<Borrowing> requestBorrowing = new HttpEntity<>(borrowing, headers);
+
+		try {
+			ResponseEntity<Book> resultImpression = restTemplate.postForEntity(borrowingURI, requestBorrowing, Book.class);
+			Assert.assertEquals(200, resultImpression.getStatusCodeValue());
+		}
+		catch (Exception ex) {
+			Assert.fail();
+		}
+
+		try {
+			restTemplate.put(borrowingURI, request);
+		}
+		catch (Exception ex) {
+			Assert.fail();
+		}
+
 		uri = new URI(byIdUrl);
 
 		//Test getById
@@ -819,7 +849,28 @@ class BooksApplicationTests {
 
 		}
 
+		//Test insert impression
+		List<Member> members = memberRepository.findAll();
+		Member member = new Member();
+		if(members.size()!=0) {
+			member = members.get(0);
+		}
+		String testComment = "TestComment";
+		Integer testRating = 4;
+
 		String byIdUrl = baseUrl + "/" + createdId;
+		URI impressionURI = new URI(byIdUrl + "/impressions");
+		ImpressionDTO impressionDTO = new ImpressionDTO(testComment, testRating, member);
+		HttpEntity<ImpressionDTO> requestImpression = new HttpEntity<>(impressionDTO, headers);
+
+		try {
+			ResponseEntity<ImpressionDTO[]> resultImpression = restTemplate.postForEntity(impressionURI, requestImpression, ImpressionDTO[].class);
+			Assert.assertEquals(200, resultImpression.getStatusCodeValue());
+		}
+		catch (Exception ex) {
+			Assert.fail();
+		}
+
 		uri = new URI(byIdUrl);
 
 		//Test getById

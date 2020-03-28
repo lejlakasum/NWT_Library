@@ -8,6 +8,9 @@ public class ImpressionDTO {
     Integer rating;
     Member member;
 
+    public ImpressionDTO() {
+    }
+
     public ImpressionDTO(String comment, Integer rating, Member member) {
         this.comment = comment;
         this.rating = rating;
