@@ -978,7 +978,5 @@ class BooksApplicationTests {
 		uri = new URI(baseUrl + "/publishers");
 		ResponseEntity<Publisher> resultPublisher = restTemplate.getForEntity(uri, Publisher.class);
 		Assert.assertEquals(200, resultPublisher.getStatusCodeValue());
-
 	}
-
 }
