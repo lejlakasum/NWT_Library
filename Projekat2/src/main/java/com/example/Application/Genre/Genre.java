@@ -19,6 +19,10 @@ public class Genre extends RepresentationModel<Genre> {
     public Genre() {
     }
 
+    public Genre(@NotNull String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

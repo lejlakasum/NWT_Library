@@ -18,6 +18,10 @@ public class Country extends RepresentationModel<Country> {
     public Country() {
     }
 
+    public Country(@NotNull String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
