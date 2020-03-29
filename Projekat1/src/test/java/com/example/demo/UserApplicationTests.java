@@ -10,6 +10,7 @@ import com.example.demo.Member.Member;
 import com.example.demo.Member.MemberRepository;
 import com.example.demo.MembershipType.MembershipType;
 import com.example.demo.MembershipType.MembershipTypeRepository;
+import com.example.demo.PaidFee.PaidFee;
 import com.example.demo.PaidFee.PaidFeeRepository;
 import com.example.demo.Profile.Profile;
 import com.example.demo.Profile.ProfileRepository;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -473,11 +475,262 @@ class UserApplicationTests {
 		try {
 			ResponseEntity<Employee> result=restTemplate.getForEntity(uriEmployee,Employee.class);
 			Assert.fail();
+		}catch (HttpClientErrorException e) {
+			Assert.assertEquals(404, e.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testSettings () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String urlEmployee = "http://localhost:" + randomServerPort + "/employees";
+		final String urlRole = "http://localhost:" + randomServerPort + "/roles";
+		final String urlProfile = "http://localhost:" + randomServerPort + "/profiles";
+		final String urlSettings = "http://localhost:" + randomServerPort + "/settingsbase";
+		URI uriRole = new URI(urlRole);
+		URI uriProfile = new URI(urlProfile);
+		URI uriEmployee = new URI(urlEmployee);
+		URI uriSettings = new URI(urlSettings);
+
+		String name="Testname";
+		String value="TestValue";
+		String description="TestDescription";
+		Date testDate=new Date();
+		Double testnaVrijednost=15.5;
+
+		Role role=new Role("uloga");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		HttpEntity<Role> request=new HttpEntity<>(role,headers);
+		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
+		role.setId(resultRole.getBody().getId());
+
+		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
+		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+		profil.setId(resultProfile.getBody().getId());
+
+		Employee employee=new Employee(profil,testnaVrijednost);
+		HttpEntity<Employee> requestEmployee=new HttpEntity<>(employee,headers);
+		ResponseEntity<Employee> resultEmployee= restTemplate.postForEntity(uriEmployee,requestEmployee, Employee.class);
+		employee.setId(resultEmployee.getBody().getId());
+
+		Settings settings=new Settings(employee,name,value,description);
+		HttpEntity<Settings> requestSettings=new HttpEntity<>(settings,headers);
+		ResponseEntity<Settings> resultSettings= restTemplate.postForEntity(uriSettings,requestSettings, Settings.class);
+
+		//Test post
+		Integer createdId=0;
+
+		try {
+			ResponseEntity<Settings> result = restTemplate.postForEntity(uriSettings,requestSettings, Settings.class);
+			createdId=result.getBody().getId();
+			Assert.assertEquals(201, result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getEmployee(),employee);
+			Assert.assertEquals(result.getBody().getEmployee(),settingsRepository.findById(createdId).get().getEmployee());
+			Assert.assertEquals(result.getBody().getDescription(),description);
+			Assert.assertEquals(result.getBody().getDescription(),settingsRepository.findById(createdId).get().getDescription());
+			Assert.assertEquals(result.getBody().getName(),name);
+			Assert.assertEquals(result.getBody().getName(),settingsRepository.findById(createdId).get().getName());
+			Assert.assertEquals(result.getBody().getValue(),value);
+			Assert.assertEquals(result.getBody().getValue(),settingsRepository.findById(createdId).get().getValue());
+
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test post error
+		Settings errorSetting=new Settings(employee,name,null,description);
+		requestSettings=new HttpEntity<>(errorSetting,headers);
+		try{
+			restTemplate.postForEntity(uriSettings,requestSettings,Settings.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(400,e.getRawStatusCode());
+		}
+
+		String byIdUrl=urlSettings+"/"+createdId;
+		uriSettings=new URI(byIdUrl);
+
+		//Test getById
+		try {
+			ResponseEntity<Settings> result=restTemplate.getForEntity(uriSettings,Settings.class);
+			Assert.assertEquals(200,result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getEmployee(),employee);
+			Assert.assertEquals(result.getBody().getValue(),value);
+			Assert.assertEquals(result.getBody().getName(),name);
+			Assert.assertEquals(result.getBody().getDescription(),description);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test updateById
+		String testUpdate="TestUpdateValue";
+		Settings updateSettings=new Settings(employee,name,testUpdate,description);
+
+		requestSettings=new HttpEntity<>(updateSettings,headers);
+		try{
+			restTemplate.put(uriSettings,requestSettings);
+			Assert.assertEquals(settingsRepository.findById(createdId).get().getValue(),testUpdate);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test delete
+		try {
+			restTemplate.delete(uriSettings);
+			List<Settings> setings=settingsRepository.findAll();
+			Boolean sadrzi=false;
+			for (Settings postavke :setings){
+				if (postavke.getId()==createdId){
+					sadrzi=true;
+					break;
+				}
+			}
+			Assert.assertEquals(false,sadrzi);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test deleteById error
+		try {
+			restTemplate.delete(uriSettings);
+			Assert.fail();
 		}catch (HttpClientErrorException e){
 			Assert.assertEquals(404,e.getRawStatusCode());
 		}
 
+		//Test getById error
+		try {
+			ResponseEntity<Settings> result=restTemplate.getForEntity(uriSettings,Settings.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e) {
+			Assert.assertEquals(404, e.getRawStatusCode());
+		}
+	}
 
+	@Test
+	public void testMember () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String urlMember= "http://localhost:" + randomServerPort + "/members";
+		final String urlRole = "http://localhost:" + randomServerPort + "/roles";
+		final String urlProfile = "http://localhost:" + randomServerPort + "/profiles";
+		final String urlMembershipType = "http://localhost:" + randomServerPort + "/membershiptypes";
+		URI uriRole = new URI(urlRole);
+		URI uriProfile = new URI(urlProfile);
+		URI uriMember = new URI(urlMember);
+		URI uriMembershipType=new URI(urlMembershipType);
+
+		Date testDate=new Date();
+		Boolean active=true;
+
+		Role role=new Role("uloga");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		HttpEntity<Role> request=new HttpEntity<>(role,headers);
+		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
+		role.setId(resultRole.getBody().getId());
+
+		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
+		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+		profil.setId(resultProfile.getBody().getId());
+
+		MembershipType membershipType=new MembershipType("Clan");
+		HttpEntity<MembershipType> requestMembershipType=new HttpEntity<>(membershipType,headers);
+		ResponseEntity<MembershipType> resultMembrshipType = restTemplate.postForEntity(uriMembershipType,requestMembershipType, MembershipType.class);
+		membershipType.setId(resultMembrshipType.getBody().getId());
+
+		Member member=new Member(profil,membershipType,testDate,active);
+		HttpEntity<Member> requestMember=new HttpEntity<>(member,headers);
+		ResponseEntity<Member> resultMember= restTemplate.postForEntity(uriMember,requestMember, Member.class);
+
+		//Test post
+		Integer createdId=0;
+
+		try {
+			ResponseEntity<Member> result = restTemplate.postForEntity(uriMember,requestMember, Member.class);
+			createdId=resultMember.getBody().getId();
+			Assert.assertEquals(201, result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getProfile(),profil);
+			Assert.assertEquals(result.getBody().getProfile(),memberRepository.findById(createdId).get().getProfile());
+			Assert.assertEquals(result.getBody().getMembershipType(),membershipType);
+			Assert.assertEquals(result.getBody().getMembershipType(),memberRepository.findById(createdId).get().getMembershipType());
+			Assert.assertEquals(result.getBody().getJoinDate(),testDate);
+			Assert.assertEquals(result.getBody().getActive(),active);
+			Assert.assertEquals(result.getBody().getActive(),memberRepository.findById(createdId).get().getActive());
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test post error
+		Member errorMember=new Member(profil,membershipType,testDate,null);
+		requestMember=new HttpEntity<>(errorMember,headers);
+		try{
+			restTemplate.postForEntity(uriMember,requestMember,Member.class);
+			Assert.fail();
+		}catch (Exception e){
+		}
+
+		String byIdUrl=urlMember+"/"+createdId;
+		uriMember=new URI(byIdUrl);
+
+		//Test getById
+		try {
+			ResponseEntity<Member> result=restTemplate.getForEntity(uriMember,Member.class);
+			Assert.assertEquals(200,result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getMembershipType(),membershipType);
+			Assert.assertEquals(result.getBody().getProfile(),profil);
+			Assert.assertEquals(result.getBody().getActive(),active);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test updateById
+		Boolean updateActive=false;
+		Member updateMember=new Member(profil,membershipType,testDate,updateActive);
+
+		requestMember=new HttpEntity<>(updateMember,headers);
+		try{
+			restTemplate.put(uriMember,requestMember);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getActive(),updateActive);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test delete
+		try {
+			restTemplate.delete(uriMember);
+			List<Member> members=memberRepository.findAll();
+			Boolean sadrzi=false;
+			for (Member clanovi :members){
+				if (clanovi.getId()==createdId){
+					sadrzi=true;
+					break;
+				}
+			}
+			Assert.assertEquals(false,sadrzi);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test deleteById error
+		try {
+			restTemplate.delete(uriMember);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			ResponseEntity<Member> result=restTemplate.getForEntity(uriMember,Member.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
 	}
 
 	@Test
@@ -576,6 +829,264 @@ class UserApplicationTests {
 	}
 
 	@Test
+	public void testPaidFee () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String urlMember= "http://localhost:" + randomServerPort + "/members";
+		final String urlRole = "http://localhost:" + randomServerPort + "/roles";
+		final String urlProfile = "http://localhost:" + randomServerPort + "/profiles";
+		final String urlMembershipType = "http://localhost:" + randomServerPort + "/membershiptypes";
+		final String urlBook = "http://localhost:" + randomServerPort + "/books";
+		final String urlFee = "http://localhost:" + randomServerPort + "/fees";
+		final String urlPaidFee="http://localhost:" + randomServerPort + "/paidfees";
+		URI uriRole = new URI(urlRole);
+		URI uriProfile = new URI(urlProfile);
+		URI uriMember = new URI(urlMember);
+		URI uriMembershipType=new URI(urlMembershipType);
+		URI uriBook = new URI(urlBook);
+		URI uriFee = new URI(urlFee);
+		URI uriPaidFee=new URI(urlPaidFee);
+
+		Date testDate=new Date();
+		Boolean active=true;
+
+		Role role=new Role("uloga");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		HttpEntity<Role> request=new HttpEntity<>(role,headers);
+		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
+		role.setId(resultRole.getBody().getId());
+
+		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
+		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+		profil.setId(resultProfile.getBody().getId());
+
+		MembershipType membershipType=new MembershipType("Clan");
+		HttpEntity<MembershipType> requestMembershipType=new HttpEntity<>(membershipType,headers);
+		ResponseEntity<MembershipType> resultMembrshipType = restTemplate.postForEntity(uriMembershipType,requestMembershipType, MembershipType.class);
+		membershipType.setId(resultMembrshipType.getBody().getId());
+
+		Member member=new Member(profil,membershipType,testDate,active);
+		HttpEntity<Member> requestMember=new HttpEntity<>(member,headers);
+		ResponseEntity<Member> resultMember= restTemplate.postForEntity(uriMember,requestMember, Member.class);
+		member.setId(resultMember.getBody().getId());
+
+		Book book=new Book("testisbn");
+		HttpEntity<Book> requestBook=new HttpEntity<>(book,headers);
+		ResponseEntity<Book> resultBook= restTemplate.postForEntity(uriBook,requestBook, Book.class);
+		book.setId(resultBook.getBody().getId());
+
+		Fee fee=new Fee("feeTest",45.2);
+		HttpEntity<Fee> requestFee=new HttpEntity<>(fee,headers);
+		ResponseEntity<Fee> resultFee= restTemplate.postForEntity(uriFee,requestFee, Fee.class);
+		fee.setId(resultFee.getBody().getId());
+
+		PaidFee paidfee=new PaidFee(member,fee,testDate,book);
+		HttpEntity<PaidFee> requestPaidFee=new HttpEntity<>(paidfee,headers);
+		ResponseEntity<PaidFee> resultPaidFee= restTemplate.postForEntity(uriPaidFee,requestPaidFee, PaidFee.class);
+
+		//Test post
+		Integer createdId=0;
+
+		try {
+			ResponseEntity<PaidFee> result = restTemplate.postForEntity(uriPaidFee,requestPaidFee, PaidFee.class);
+			createdId=resultPaidFee.getBody().getId();
+			Assert.assertEquals(201, result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getMember(),member);
+			Assert.assertEquals(result.getBody().getMember(),paidFeeRepository.findById(createdId).get().getMember());
+			Assert.assertEquals(result.getBody().getBook(),book);
+			Assert.assertEquals(result.getBody().getBook(),paidFeeRepository.findById(createdId).get().getBook());
+			Assert.assertEquals(result.getBody().getPaymentDate(),testDate);
+			Assert.assertEquals(result.getBody().getFee(),fee);
+			Assert.assertEquals(result.getBody().getFee(),paidFeeRepository.findById(createdId).get().getFee());
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test post error
+		Book updateBook=new Book();
+		updateBook.setId(0);
+		updateBook.setIsbn("test");
+		PaidFee errorPaidFee=new PaidFee(member,fee,testDate,updateBook);
+		requestPaidFee=new HttpEntity<>(errorPaidFee,headers);
+		try{
+			restTemplate.postForEntity(uriPaidFee,requestPaidFee,PaidFee.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+
+		String byIdUrl=urlPaidFee+"/"+createdId;
+		uriPaidFee=new URI(byIdUrl);
+
+		//Test getById
+		try {
+			ResponseEntity<PaidFee> result=restTemplate.getForEntity(uriPaidFee,PaidFee.class);
+			Assert.assertEquals(200,result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getMember(),member);
+			Assert.assertEquals(result.getBody().getFee(),fee);
+			Assert.assertEquals(result.getBody().getBook(),book);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test update error
+		Book novaBook=new Book();
+		novaBook.setId(0);
+
+		PaidFee updatePaidFee=new PaidFee(member,fee,testDate,novaBook);
+
+		requestPaidFee=new HttpEntity<>(updatePaidFee,headers);
+		try{
+			restTemplate.put(uriPaidFee,requestPaidFee);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+		//Test delete
+		try {
+			restTemplate.delete(uriPaidFee);
+			List<PaidFee> paidFees=paidFeeRepository.findAll();
+			Boolean sadrzi=false;
+			for (PaidFee fees :paidFees){
+				if (fees.getId()==createdId){
+					sadrzi=true;
+					break;
+				}
+			}
+			Assert.assertEquals(false,sadrzi);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test deleteById error
+		try {
+			restTemplate.delete(uriPaidFee);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			ResponseEntity<PaidFee> result=restTemplate.getForEntity(uriPaidFee,PaidFee.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+	}
+
+	@Test
+	public void testProfile () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String urlRole = "http://localhost:" + randomServerPort + "/roles";
+		final String urlProfile = "http://localhost:" + randomServerPort + "/profiles";
+		URI uriRole = new URI(urlRole);
+		URI uriProfile = new URI(urlProfile);
+
+		Role role=new Role("uloga");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		HttpEntity<Role> request=new HttpEntity<>(role,headers);
+		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
+		role.setId(resultRole.getBody().getId());
+
+		String firstname="Dolores";
+		String lastname="Jureta";
+		Date testDate=new Date();
+		Profile profil=new Profile(firstname,lastname,testDate, role);
+		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
+		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+
+		//Test post
+		Integer createdId=0;
+
+		try {
+			ResponseEntity<Profile> result = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+			createdId=resultProfile.getBody().getId();
+			Assert.assertEquals(201, result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getRole(),role);
+			Assert.assertEquals(result.getBody().getRole(),profileRepository.findById(createdId).get().getRole());
+			Assert.assertEquals(result.getBody().getFirstName(),firstname);
+			Assert.assertEquals(result.getBody().getFirstName(),profileRepository.findById(createdId).get().getFirstName());
+			Assert.assertEquals(result.getBody().getLastName(),lastname);
+			Assert.assertEquals(result.getBody().getLastName(),profileRepository.findById(createdId).get().getLastName());
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test post error
+		Profile errorProfile=new Profile(null,lastname,testDate,role);
+		requestProfile=new HttpEntity<>(errorProfile,headers);
+		try{
+			restTemplate.postForEntity(uriProfile,requestProfile,Profile.class);
+			Assert.fail();
+		}catch (Exception e){
+		}
+
+		String byIdUrl=urlProfile+"/"+createdId;
+		uriProfile=new URI(byIdUrl);
+
+		//Test getById
+		try {
+			ResponseEntity<Profile> result=restTemplate.getForEntity(uriProfile,Profile.class);
+			Assert.assertEquals(200,result.getStatusCodeValue());
+			Assert.assertEquals(result.getBody().getRole(),role);
+			Assert.assertEquals(result.getBody().getLastName(),lastname);
+			Assert.assertEquals(result.getBody().getFirstName(),firstname);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test updateById
+		String firstnameUpdate="DoloresTest";
+		Profile updateProfile=new Profile(firstnameUpdate,lastname,testDate,role);
+
+		requestProfile=new HttpEntity<>(updateProfile,headers);
+		try{
+			restTemplate.put(uriProfile,requestProfile);
+			Assert.assertEquals(profileRepository.findById(createdId).get().getFirstName(),firstnameUpdate);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test delete
+		try {
+			restTemplate.delete(uriProfile);
+			List<Profile> profiles=profileRepository.findAll();
+			Boolean sadrzi=false;
+			for (Profile profili :profiles){
+				if (profili.getId()==createdId){
+					sadrzi=true;
+					break;
+				}
+			}
+			Assert.assertEquals(false,sadrzi);
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test deleteById error
+		try {
+			restTemplate.delete(uriProfile);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+
+		//Test getById error
+		try {
+			ResponseEntity<Profile> result=restTemplate.getForEntity(uriProfile,Profile.class);
+			Assert.fail();
+		}catch (HttpClientErrorException e){
+			Assert.assertEquals(404,e.getRawStatusCode());
+		}
+	}
+
+
+	@Test
 	public void testGetMembershipTypeSuccess () throws URISyntaxException {
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -583,6 +1094,88 @@ class UserApplicationTests {
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<MembershipType> result = restTemplate.getForEntity(uri, MembershipType.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	@Test
+	public void testGetMemberTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/members";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Member> result = restTemplate.getForEntity(uri, Member.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	@Test
+	public void testGetProfileTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/profiles";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Profile> result = restTemplate.getForEntity(uri, Profile.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+	@Test
+	public void testGetRoleTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/roles";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Role> result = restTemplate.getForEntity(uri, Role.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+	@Test
+	public void testGetEmployeeTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/employees";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Employee> result = restTemplate.getForEntity(uri, Employee.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	@Test
+	public void testGetPaidFeeTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/paidfees";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<PaidFee> result = restTemplate.getForEntity(uri, PaidFee.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	@Test
+	public void testGetFeeTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/fees";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Fee> result = restTemplate.getForEntity(uri, Fee.class);
+
+		Assert.assertEquals(200, result.getStatusCodeValue());
+	}
+
+	@Test
+	public void testGetSettingsTypeSuccess () throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/settingsbase";
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<Settings> result = restTemplate.getForEntity(uri, Settings.class);
 
 		Assert.assertEquals(200, result.getStatusCodeValue());
 	}

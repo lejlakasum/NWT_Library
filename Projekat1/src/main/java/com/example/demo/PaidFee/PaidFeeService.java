@@ -94,7 +94,7 @@ public class PaidFeeService {
                     paidFee.setMember(member);
                     paidFee.setFee(fee);
                     paidFee.setBook(book);
-                    paidFee.setPaymentDate(paidFee.getPaymentDate());
+                    paidFee.setPaymentDate(newPaidFee.getPaymentDate());
                     return paidFeeRepository.save(paidFee);
                 })
                 .orElseThrow(()->new NotFoundException("paid fee",id));

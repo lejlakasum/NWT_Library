@@ -53,11 +53,11 @@ public class MemberService {
         Integer profileId=newMember.getProfile().getId();
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
-        Integer membershipTypeId=newMember.getMembershipTypeId().getId();
+        Integer membershipTypeId=newMember.getMembershipType().getId();
         MembershipType membershipType=membershipTypeRepository.findById(membershipTypeId)
                 .orElseThrow(()->new NotFoundException("membership type", membershipTypeId));
         newMember.setProfile(profile);
-        newMember.setMembershipTypeId(membershipType);
+        newMember.setMembershipType(membershipType);
         newMember.setActive(newMember.getActive());
         newMember.setJoinDate(newMember.getJoinDate());
 
@@ -73,16 +73,16 @@ public class MemberService {
         Integer profileId=newMember.getProfile().getId();
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
-        Integer membershipTypeId=newMember.getMembershipTypeId().getId();
+        Integer membershipTypeId=newMember.getMembershipType().getId();
         MembershipType membershipType=membershipTypeRepository.findById(membershipTypeId)
                 .orElseThrow(()->new NotFoundException("membership type", membershipTypeId));
 
         Member modifiedMember=memberRepository.findById(id)
                 .map(member -> {
                     member.setProfile(profile);
-                    member.setMembershipTypeId(membershipType);
-                    member.setActive(member.getActive());
-                    member.setJoinDate(member.getJoinDate());
+                    member.setMembershipType(membershipType);
+                    member.setActive(newMember.getActive());
+                    member.setJoinDate(newMember.getJoinDate());
                     return memberRepository.save(member);
                 })
                 .orElseThrow(()->new NotFoundException("member",id));
