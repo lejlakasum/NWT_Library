@@ -1,10 +1,10 @@
 package com.example.demo.Employee;
 
 import com.example.demo.Profile.Profile;
-import com.example.demo.Role.Role;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="employee")
@@ -18,9 +18,15 @@ public class Employee extends RepresentationModel<Employee> {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    private double salary;
+    @NotNull
+    private Double salary;
 
     public Employee() {
+    }
+
+    public Employee(Profile profil, Double vrijednost){
+        this.profile=profil;
+        this.salary=vrijednost;
     }
 
     public Integer getId() {
@@ -39,12 +45,11 @@ public class Employee extends RepresentationModel<Employee> {
         this.profile = profile;
     }
 
-    public double getSalary() {
+    public Double getSalary() {
         return salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(Double salary) {
         this.salary = salary;
     }
-
 }
