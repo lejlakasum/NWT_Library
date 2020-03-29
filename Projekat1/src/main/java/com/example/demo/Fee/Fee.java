@@ -21,6 +21,11 @@ public class Fee extends RepresentationModel<Fee> {
     public Fee() {
     }
 
+    public Fee(String name, Double v){
+        this.name=name;
+        this.value=v;
+    }
+
     public Integer getId() {
         return id;
     }

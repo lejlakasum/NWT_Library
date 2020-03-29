@@ -19,6 +19,10 @@ public class Book extends RepresentationModel<Book> {
     public Book() {
     }
 
+    public Book(String isbn){
+        this.isbn=isbn;
+    }
+
     public Integer getId() {
         return id;
     }

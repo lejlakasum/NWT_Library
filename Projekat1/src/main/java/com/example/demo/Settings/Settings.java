@@ -28,6 +28,13 @@ public class Settings {
     public Settings() {
     }
 
+    public Settings(Employee employee,String name, String value,String description){
+        this.employee=employee;
+        this.name=name;
+        this.value=value;
+        this.description=description;
+    }
+
     public Integer getId() {
         return id;
     }

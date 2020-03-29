@@ -35,6 +35,13 @@ public class PaidFee {
     public PaidFee() {
     }
 
+    public PaidFee(Member member,Fee fee,Date date, Book book){
+        this.member=member;
+        this.fee=fee;
+        this.paymentDate=date;
+        this.book=book;
+    }
+
     public Integer getId() {
         return id;
     }

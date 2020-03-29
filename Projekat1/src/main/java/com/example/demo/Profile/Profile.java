@@ -34,6 +34,13 @@ public class Profile extends RepresentationModel<Profile> {
     public Profile() {
     }
 
+    public Profile(String ime, String prezime, Date datum, Role rola){
+        this.firstName=ime;
+        this.lastName=prezime;
+        this.birthDate=datum;
+        this.role=rola;
+    }
+
     public Integer getId() {
         return id;
     }

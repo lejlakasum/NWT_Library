@@ -25,13 +25,13 @@ public class MemberModelAssembler implements RepresentationModelAssembler<Member
                             .GetAll())
                             .withRel("profiles"));
         }
-        if(!member.getMembershipTypeId().hasLinks()){
-                member.getMembershipTypeId()
+        if(!member.getMembershipType().hasLinks()){
+                member.getMembershipType()
                         .add(linkTo(methodOn(MembershipTypeContoller.class)
                                 .GetById(member.getProfile().getId()))
                                 .withSelfRel());
 
-                member.getMembershipTypeId()
+                member.getMembershipType()
                         .add(linkTo(methodOn(MembershipTypeContoller.class)
                                 .GetAll())
                                 .withRel("membership types"));
