@@ -14,6 +14,6 @@ public class ReportTypeModelAssembler implements RepresentationModelAssembler<Re
     @Override
     public EntityModel<ReportType> toModel(ReportType reportType) {
 
-        return new EntityModel<>(reportType, linkTo(methodOn(ReportTypeController.class).GetById(reportType.getId())).withSelfRel(), linkTo(methodOn(ReportTypeController.class).GetAll()).withRel("report_types"));
+        return new EntityModel<>(reportType, linkTo(methodOn(ReportTypeController.class).GetById(reportType.getId())).withSelfRel(), linkTo(methodOn(ReportTypeController.class).GetAll()).withRel("report_type"));
     }
 }

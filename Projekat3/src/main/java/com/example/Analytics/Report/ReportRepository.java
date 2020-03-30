@@ -1,6 +1,7 @@
 package com.example.Analytics.Report;
 
 import com.sun.xml.internal.bind.v2.model.core.ID;
+import org.hibernate.EntityMode;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

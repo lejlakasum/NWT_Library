@@ -1,7 +1,5 @@
 package com.example.Analytics.Report;
 
-
-
 import com.example.Analytics.ReportType.ReportTypeController;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
