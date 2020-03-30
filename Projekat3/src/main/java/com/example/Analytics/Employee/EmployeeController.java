@@ -59,7 +59,7 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<EntityModel<Employee>> Update(@RequestBody Employee newEmployee, @PathVariable Integer id) throws URISyntaxException {
         try {
             return employeeService.Update(newEmployee, id);

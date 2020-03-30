@@ -60,7 +60,7 @@ public class ReportController {
         }
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<EntityModel<Report>> Update(@RequestBody Report newReport, @PathVariable Integer id) throws URISyntaxException {
         try {
             return reportService.Update(newReport, id);

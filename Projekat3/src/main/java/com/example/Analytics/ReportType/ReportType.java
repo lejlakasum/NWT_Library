@@ -23,6 +23,10 @@ public class ReportType {
         this.name = name;
     }
 
+    public ReportType(@Size(min = 2, max = 25, message = "Size must be between 2 and 25.") @NotNull(message = "Variable name must not be null") String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

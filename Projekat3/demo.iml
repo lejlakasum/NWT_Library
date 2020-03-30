@@ -118,5 +118,7 @@
     <orderEntry type="library" name="Maven: org.webjars.bower:github-com-polymer-polymer:2.0.0-rc.9" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.bower:github-com-webcomponents-shadycss:^v1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.webjars.bower:webcomponentsjs:^v1.0.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:2.1" level="project" />
   </component>
 </module>

@@ -42,6 +42,13 @@ public class Report {
         this.path = path;
     }
 
+    public Report(@NotNull(message = "Variable reportType must not be null") ReportType reportType, @NotNull(message = "Variable employeeId must not be null") Employee employee, @NotNull(message = "Variable creationDate must not be null") Date creationDate, @NotNull(message = "Variable path must not be null") String path) {
+        this.reportType = reportType;
+        this.employee = employee;
+        this.creationDate = creationDate;
+        this.path = path;
+    }
+
     public Integer getId() {
         return id;
     }
