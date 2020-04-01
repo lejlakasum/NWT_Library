@@ -23,9 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +64,9 @@ public class BookService {
     ImpressionService impressionService;
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public CollectionModel<EntityModel<Book>> GetAll() {
         List<EntityModel<Book>> books = bookRepository.findAll().stream()
@@ -103,7 +115,7 @@ public class BookService {
         return impressions;
     }
 
-    public ResponseEntity<EntityModel<Book>> Add(Book newBook) {
+    public ResponseEntity<EntityModel<Book>> Add(Book newBook) throws URISyntaxException {
 
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
@@ -129,6 +141,9 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(bookRepository.save(newBook));
 
+        BookDTO newBookDTO = new BookDTO(newBook.getId(), newBook.getIsbn());
+        InsertBookUserService(newBookDTO);
+
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
@@ -153,7 +168,7 @@ public class BookService {
         return impressionService.GetImpressionsByBook(bookId);
     }
 
-    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) {
+    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) throws URISyntaxException {
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
         Integer genreId = newBook.getGenre().getId();
@@ -186,15 +201,46 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(updatedBook);
 
+        BookDTO newBookDto = new BookDTO(newBook.getId(), newBook.getIsbn());
+        UpdateBookUserService(id, newBookDto);
+
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Book>> Delete(Integer id) {
+    public ResponseEntity<EntityModel<Book>> Delete(Integer id) throws URISyntaxException {
+
+        DeleteBookUserService(id);
 
         bookRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    //Private helper methods
+
+    private void InsertBookUserService(BookDTO newBook) throws URISyntaxException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
+
+        ResponseEntity<BookDTO> result = restTemplate.postForEntity("http://user-service/books", request, BookDTO.class);
+
+    }
+
+    private void UpdateBookUserService(Integer id, BookDTO newBook) throws URISyntaxException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
+
+        restTemplate.put("http://user-service/books/"+id, request);
+    }
+
+    private void DeleteBookUserService(Integer id) throws URISyntaxException {
+
+        restTemplate.delete("http://user-service/books/"+id);
     }
 }
