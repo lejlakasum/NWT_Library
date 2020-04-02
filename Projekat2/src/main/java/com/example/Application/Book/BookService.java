@@ -23,9 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +64,9 @@ public class BookService {
     ImpressionService impressionService;
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     public CollectionModel<EntityModel<Book>> GetAll() {
         List<EntityModel<Book>> books = bookRepository.findAll().stream()
@@ -129,9 +141,14 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(bookRepository.save(newBook));
 
-        return ResponseEntity
+        ResponseEntity<EntityModel<Book>> result = ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+
+        BookDTO newBookDTO = new BookDTO(result.getBody().getContent().getId(), newBook.getIsbn());
+        InsertBookUserService(newBookDTO);
+
+        return result;
     }
 
     public List<ImpressionDTO> AddImpression(Integer bookId, ImpressionDTO newImpression) {
@@ -186,6 +203,9 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(updatedBook);
 
+        BookDTO newBookDto = new BookDTO(id, newBook.getIsbn());
+        UpdateBookUserService(id, newBookDto);
+
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
@@ -193,8 +213,36 @@ public class BookService {
 
     public ResponseEntity<EntityModel<Book>> Delete(Integer id) {
 
+        DeleteBookUserService(id);
+
         bookRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    //Private helper methods
+
+    private void InsertBookUserService(BookDTO newBook) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
+
+        ResponseEntity<BookDTO> result = restTemplate.postForEntity("http://user-service/books", request, BookDTO.class);
+
+    }
+
+    private void UpdateBookUserService(Integer id, BookDTO newBook) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
+
+        restTemplate.put("http://user-service/books/"+id, request);
+    }
+
+    private void DeleteBookUserService(Integer id) {
+
+        restTemplate.delete("http://user-service/books/"+id);
     }
 }

@@ -3,6 +3,7 @@ package com.example.Application;
 import com.example.Application.Author.Author;
 import com.example.Application.Author.AuthorRepository;
 import com.example.Application.Book.Book;
+import com.example.Application.Book.BookDTO;
 import com.example.Application.Book.BookRepository;
 import com.example.Application.BookType.BookType;
 import com.example.Application.BookType.BookTypeRepository;
@@ -60,6 +61,9 @@ class BooksApplicationTests {
 	AuthorRepository authorRepository;
 	@Autowired
 	BookRepository bookRepository;
+
+	@Autowired
+	RestTemplate restTemplateEureka;
 
 	@Test
 	void contextLoads() {
@@ -978,5 +982,78 @@ class BooksApplicationTests {
 		uri = new URI(baseUrl + "/publishers");
 		ResponseEntity<Publisher> resultPublisher = restTemplate.getForEntity(uri, Publisher.class);
 		Assert.assertEquals(200, resultPublisher.getStatusCodeValue());
+	}
+
+	@Test
+	public void testUserServiceIntegration() throws URISyntaxException {
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String baseUrl = "http://localhost:" + randomServerPort + "/books";
+		URI uri = new URI(baseUrl);
+
+		String testISBN = "UnitTestISBN";
+		Date testPublishedDate = new Date();
+		Boolean testAvailable = true;
+
+		List<Copy> copies = copyRepository.findAll();
+		Copy copy = new Copy();
+		if(copies.size()!=0) {
+			copy = copies.get(0);
+		}
+
+		List<BookType> bookTypes = bookTypeRepository.findAll();
+		BookType bookType = new BookType();
+		if(bookTypes.size()!=0) {
+			bookType = bookTypes.get(0);
+		}
+
+		List<Genre> genres = genreRepository.findAll();
+		Genre genre = new Genre();
+		if(genres.size()!=0) {
+			genre = genres.get(0);
+		}
+
+		List<Publisher> publishers = publisherRepository.findAll();
+		Publisher publisher = new Publisher();
+		if(publishers.size()!=0) {
+			publisher = publishers.get(0);
+		}
+
+
+		Book newBook = new Book(testISBN, copy, bookType, genre, publisher, testPublishedDate, testAvailable);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		HttpEntity<Book> request = new HttpEntity<>(newBook, headers);
+
+		//Test post
+		ResponseEntity<Book> result = restTemplate.postForEntity(uri, request, Book.class);
+
+		Integer createdId = result.getBody().getId();
+
+		ResponseEntity<BookDTO> resultFromUserService = restTemplateEureka.getForEntity("http://user-service/books/"+createdId, BookDTO.class);
+
+		Assert.assertEquals(createdId, resultFromUserService.getBody().getId());
+		Assert.assertEquals(result.getBody().getIsbn(), resultFromUserService.getBody().getIsbn());
+
+		//Test updateById
+		String byIdUrl = baseUrl + "/" + createdId;
+		uri=new URI(byIdUrl);
+
+		//Test deleteById
+		try {
+			restTemplate.delete(uri);
+			try {
+				resultFromUserService = restTemplateEureka.getForEntity("http://user-service/books/"+createdId, BookDTO.class);
+				Assert.fail();
+			}
+			catch (HttpClientErrorException ex) {
+				Assert.assertEquals(404, ex.getRawStatusCode());
+			}
+		}
+		catch (HttpClientErrorException ex) {
+			Assert.fail();
+		}
+
 	}
 }

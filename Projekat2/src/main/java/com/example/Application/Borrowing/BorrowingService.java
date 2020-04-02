@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
+import java.net.URISyntaxException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
