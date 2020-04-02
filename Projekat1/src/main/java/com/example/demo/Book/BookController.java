@@ -62,7 +62,7 @@ public class BookController {
         }catch (ConstraintViolationException e){
             throw new BadRequestException(e.getMessage());
         }catch (Exception e){
-            throw new InternalServerException();
+            throw e;
         }
     }
 

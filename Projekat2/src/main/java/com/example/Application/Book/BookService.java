@@ -115,7 +115,7 @@ public class BookService {
         return impressions;
     }
 
-    public ResponseEntity<EntityModel<Book>> Add(Book newBook) throws URISyntaxException {
+    public ResponseEntity<EntityModel<Book>> Add(Book newBook) {
 
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
@@ -141,12 +141,14 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(bookRepository.save(newBook));
 
-        BookDTO newBookDTO = new BookDTO(newBook.getId(), newBook.getIsbn());
-        InsertBookUserService(newBookDTO);
-
-        return ResponseEntity
+        ResponseEntity<EntityModel<Book>> result = ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+
+        BookDTO newBookDTO = new BookDTO(result.getBody().getContent().getId(), newBook.getIsbn());
+        InsertBookUserService(newBookDTO);
+
+        return result;
     }
 
     public List<ImpressionDTO> AddImpression(Integer bookId, ImpressionDTO newImpression) {
@@ -168,7 +170,7 @@ public class BookService {
         return impressionService.GetImpressionsByBook(bookId);
     }
 
-    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) throws URISyntaxException {
+    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) {
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
         Integer genreId = newBook.getGenre().getId();
@@ -201,7 +203,7 @@ public class BookService {
 
         EntityModel<Book> entityModel = assembler.toModel(updatedBook);
 
-        BookDTO newBookDto = new BookDTO(newBook.getId(), newBook.getIsbn());
+        BookDTO newBookDto = new BookDTO(id, newBook.getIsbn());
         UpdateBookUserService(id, newBookDto);
 
         return ResponseEntity
@@ -209,7 +211,7 @@ public class BookService {
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Book>> Delete(Integer id) throws URISyntaxException {
+    public ResponseEntity<EntityModel<Book>> Delete(Integer id) {
 
         DeleteBookUserService(id);
 
@@ -220,7 +222,7 @@ public class BookService {
 
     //Private helper methods
 
-    private void InsertBookUserService(BookDTO newBook) throws URISyntaxException {
+    private void InsertBookUserService(BookDTO newBook) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -230,7 +232,7 @@ public class BookService {
 
     }
 
-    private void UpdateBookUserService(Integer id, BookDTO newBook) throws URISyntaxException {
+    private void UpdateBookUserService(Integer id, BookDTO newBook) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -239,7 +241,7 @@ public class BookService {
         restTemplate.put("http://user-service/books/"+id, request);
     }
 
-    private void DeleteBookUserService(Integer id) throws URISyntaxException {
+    private void DeleteBookUserService(Integer id) {
 
         restTemplate.delete("http://user-service/books/"+id);
     }
