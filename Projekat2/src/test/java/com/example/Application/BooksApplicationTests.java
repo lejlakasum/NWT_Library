@@ -979,4 +979,8 @@ class BooksApplicationTests {
 		ResponseEntity<Publisher> resultPublisher = restTemplate.getForEntity(uri, Publisher.class);
 		Assert.assertEquals(200, resultPublisher.getStatusCodeValue());
 	}
+
+	public void testUserServiceIntegration() throws URISyntaxException {
+
+	}
 }
