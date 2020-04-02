@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class Book extends RepresentationModel<Book> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Integer id;
 
     @NotNull
