@@ -4,31 +4,48 @@ import com.example.Application.Country.Country;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "author")
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Variable firstName must not be null")
     @Column(name = "first_name")
     private String firstName;
 
-    @NotNull
+    @NotNull(message = "Variable lastName must not be null")
     @Column(name = "last_name")
     private String lastName;
 
+    @NotNull(message = "Variable birthDate must not be null!")
     @Column(name = "birth_date")
     private Date birthDate;
 
+    @NotNull(message = "Variable country must not be null")
     @ManyToOne
     @JoinColumn(name = "country_id")
     private Country country;
 
     public Author() {
+    }
+
+    public Author(String firstName, String lastName, Date birthDate, Country country) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.country = country;
+    }
+
+    public Author(Integer id, String firstName, String lastName, Date birthDate, Country country) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.country = country;
     }
 
     public Integer getId() {

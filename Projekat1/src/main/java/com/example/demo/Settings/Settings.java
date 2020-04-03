@@ -1,5 +1,7 @@
 package com.example.demo.Settings;
 
+import com.example.demo.Employee.Employee;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -8,12 +10,12 @@ import javax.validation.constraints.NotNull;
 public class Settings {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "settings_id")
-    private Settings settings;
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     @NotNull
     private String name;
@@ -26,6 +28,13 @@ public class Settings {
     public Settings() {
     }
 
+    public Settings(Employee employee,String name, String value,String description){
+        this.employee=employee;
+        this.name=name;
+        this.value=value;
+        this.description=description;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -34,12 +43,12 @@ public class Settings {
         this.id = id;
     }
 
-    public Settings getSettings() {
-        return settings;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setSettings(Settings settings) {
-        this.settings = settings;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public String getName() {

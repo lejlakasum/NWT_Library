@@ -1,14 +1,16 @@
 package com.example.demo.Fee;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "fee")
-public class Fee {
+public class Fee extends RepresentationModel<Fee> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull
@@ -17,6 +19,11 @@ public class Fee {
     private Double value;
 
     public Fee() {
+    }
+
+    public Fee(String name, Double v){
+        this.name=name;
+        this.value=v;
     }
 
     public Integer getId() {

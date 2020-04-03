@@ -2,16 +2,17 @@ package com.example.demo.Member;
 
 import com.example.demo.MembershipType.MembershipType;
 import com.example.demo.Profile.Profile;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends RepresentationModel<Member> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -20,13 +21,21 @@ public class Member {
 
     @ManyToOne
     @JoinColumn(name = "membership_type_id")
-    private MembershipType membershipTypeId;
+    private MembershipType membershipType;
 
+    @Column(name = "join_date")
     private Date joinDate;
 
     private Boolean active;
 
     public Member() {
+    }
+
+    public Member(Profile profile, MembershipType membershipType, Date date, Boolean active){
+        this.profile=profile;
+        this.membershipType=membershipType;
+        this.joinDate=date;
+        this.active=active;
     }
 
     public Integer getId() {
@@ -45,12 +54,12 @@ public class Member {
         this.profile = profile;
     }
 
-    public MembershipType getMembershipTypeId() {
-        return membershipTypeId;
+    public MembershipType getMembershipType() {
+        return membershipType;
     }
 
-    public void setMembershipTypeId(MembershipType membershipTypeId) {
-        this.membershipTypeId = membershipTypeId;
+    public void setMembershipType(MembershipType membershipType) {
+        this.membershipType = membershipType;
     }
 
     public Date getJoinDate() {

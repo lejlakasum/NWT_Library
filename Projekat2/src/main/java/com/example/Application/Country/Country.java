@@ -1,19 +1,25 @@
 package com.example.Application.Country;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "country")
-public class Country {
+public class Country extends RepresentationModel<Country> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotNull(message = "Variable name must not be null")
     private String name;
 
     public Country() {
+    }
+
+    public Country(@NotNull String name) {
+        this.name = name;
     }
 
     public Integer getId() {

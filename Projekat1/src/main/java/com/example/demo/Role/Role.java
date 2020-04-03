@@ -1,20 +1,26 @@
 package com.example.demo.Role;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "role")
-public class Role {
+public class Role extends RepresentationModel<Role> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull
     private String name;
 
     public Role() {
+    }
+
+    public Role(String name){
+        this.name=name;
     }
 
     public Integer getId() {
