@@ -100,6 +100,8 @@ public class MemberService {
 
         EntityModel<Member> entityModel=memberAssembler.toModel(modifiedMember);
 
+        MemberDTO newMemberDTO=new MemberDTO(id, profile.getFirstName(),profile.getLastName(),newMember.getActive());
+        UpdateMemberBookService(id,newMemberDTO);
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
@@ -120,6 +122,14 @@ public class MemberService {
         HttpEntity<MemberDTO> request = new HttpEntity<>(newMember, headers);
 
         ResponseEntity<MemberDTO> result=restTemplate.postForEntity("http://book-service/members",request,MemberDTO.class);
+    }
+
+    private void UpdateMemberBookService(Integer id,MemberDTO newMember){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<MemberDTO> request = new HttpEntity<>(newMember, headers);
+
+        restTemplate.put("http://book-service/members/"+id,request);
     }
 
     private void DeleteMemberBookService(Integer id){

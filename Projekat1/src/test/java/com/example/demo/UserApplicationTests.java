@@ -1251,9 +1251,25 @@ class UserApplicationTests {
 			Assert.fail();
 		}
 
-		//Test delete
+		//Test update
 		String urlById = urlMember + "/" + createdId;
 		uriMember=new URI(urlById);
+		Boolean updateActive=false;
+		Member updateMember=new Member(profil,membershipType,testDate,updateActive);
+
+		requestMember=new HttpEntity<>(updateMember,headers);
+		try{
+			restTemplate.put(uriMember,requestMember);
+			ResponseEntity<MemberDTO> modifiedFromBookService=restTemplateEureka.getForEntity("http://book-service/members/"+createdId,MemberDTO.class);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getActive(),updateActive);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getActive(),modifiedFromBookService.getBody().getActive());
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test delete
+		String urlId = urlMember + "/" + createdId;
+		uriMember=new URI(urlId);
 		try{
 			restTemplate.delete(uriMember);
 			try {
