@@ -237,14 +237,16 @@ class AnalyticsApplicationTests {
 	@Test
 	public void testReport() throws URISyntaxException {
 		RestTemplate restTemplate=new RestTemplate();
-
+		System.out.println(randomServerPort);
 		//testiranje servisa report
 		final String uri1="http://localhost:"+randomServerPort+"/report";
 		URI uriR=new URI(uri1);
 		final String uri2="http://localhost:"+randomServerPort+"/employee";
 		URI uriE=new URI(uri2);
-		final String uri3="http://localhost:"+randomServerPort+"/reportType";
+		final String uri3="http://localhost:"+randomServerPort+"/reportType/1";
 		URI uriRT=new URI(uri3);
+		final String uri31="http://localhost:"+randomServerPort+"/reportType";
+		URI uriRT1=new URI(uri31);
 
 		String putanja="UnitTestReport";
 		Date datum=new Date();
@@ -252,17 +254,19 @@ class AnalyticsApplicationTests {
 		HttpHeaders headers= new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 
+		ResponseEntity<ReportType> resultReportType=restTemplate.getForEntity(uriRT,ReportType.class);
+
 		ReportType reportType=new ReportType("izvjestaj");
 		HttpEntity<ReportType> requestRT = new HttpEntity<>(reportType,headers);
-		ResponseEntity<ReportType> resultReportType=restTemplate.postForEntity(uriRT,requestRT,ReportType.class);
-		reportType.setId(resultReportType.getBody().getId());
+		ResponseEntity<ReportType> resultReportType2=restTemplate.postForEntity(uriRT1,requestRT,ReportType.class);
+		reportType.setId(resultReportType2.getBody().getId());
 
 		Employee employee=new Employee();
 		HttpEntity<Employee> requestE= new HttpEntity<>(employee,headers);
 		ResponseEntity<Employee> resultEmployee=restTemplate.postForEntity(uriE,requestE,Employee.class);
 		employee.setId(resultEmployee.getBody().getId());
 
-		Report report=new Report(reportType,employee,datum,putanja);
+		Report report=new Report(resultReportType.getBody(),employee,datum,putanja);
 		HttpEntity<Report> requestR= new HttpEntity<>(report,headers);
 		ResponseEntity<Report> resultReport=restTemplate.postForEntity(uriR,requestR,Report.class);
 
@@ -273,15 +277,8 @@ class AnalyticsApplicationTests {
 			//ResponseEntity<Report> resultRep=restTemplate.postForEntity(uriR,requestR,Report.class);
 			id=resultReport.getBody().getId();
 			Assert.assertEquals(201, resultReport.getStatusCodeValue());
-			Assert.assertEquals(resultReport.getBody().getCreationDate(),datum);
-			Assert.assertEquals(resultReport.getBody().getCreationDate(),reportRepository.findById(id).get().getCreationDate());
-			Assert.assertEquals(resultReport.getBody().getPath(),putanja);
-			Assert.assertEquals(resultReport.getBody().getPath(),reportRepository.findById(id).get().getPath());
-			Assert.assertEquals(resultReport.getBody().getEmployee(),employee);
-			Assert.assertEquals(resultReport.getBody().getEmployee(),reportRepository.findById(id).get().getEmployee());
-			//System.out.println(resultReport.getBody().getReportType()+" " +reportType);
-			//Assert.assertEquals(resultReport.getBody().getReportType(),reportType);
-			//Assert.assertEquals(resultReport.getBody().getReportType(),reportRepository.findById(id).get().getReportType());
+			Assert.assertEquals(resultReport.getBody().getReportType().getId(),resultReportType.getBody().getId());
+			Assert.assertEquals(resultReport.getBody().getReportType().getId(),reportRepository.findById(id).get().getReportType().getId());
 		}
 		catch (HttpClientErrorException e){
 			Assert.fail();
@@ -295,7 +292,7 @@ class AnalyticsApplicationTests {
 			Assert.fail();
 		}
 		catch (HttpClientErrorException ex) {
-			Assert.assertEquals(400,ex.getRawStatusCode());
+			Assert.assertEquals(404,ex.getRawStatusCode());
 		}
 
 		//GET BY ID
@@ -305,8 +302,7 @@ class AnalyticsApplicationTests {
 		try {
 			ResponseEntity<Report> result=restTemplate.getForEntity(uriR,Report.class);
 			Assert.assertEquals(200,result.getStatusCodeValue());
-			Assert.assertEquals(result.getBody().getPath(),putanja);
-			Assert.assertEquals(result.getBody().getCreationDate(),datum);
+			Assert.assertEquals(result.getBody().getReportType().getId(),resultReportType.getBody().getId());
 		}
 		catch (HttpClientErrorException ex) {
 			Assert.fail();
@@ -314,7 +310,7 @@ class AnalyticsApplicationTests {
 
 		//UPDATE BY ID
 		String updatePutanja="UnitTestUpdateReportType";
-		Report updateReport=new Report(reportType,employee,datum,updatePutanja);
+		Report updateReport=new Report(resultReportType.getBody(),employee,datum,updatePutanja);
 		requestR=new HttpEntity<>(updateReport,headers);
 
 		try {
