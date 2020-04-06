@@ -3,6 +3,7 @@ package com.example.Analytics.Report;
 import com.example.Analytics.ExceptionClass.NotFoundException;
 import com.example.Analytics.ExceptionClass.BadRequestException;
 import com.example.Analytics.ExceptionClass.InternalServerException;
+import com.example.Analytics.ReportType.ReportType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.CollectionModel;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/report")
