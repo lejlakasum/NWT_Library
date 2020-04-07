@@ -1,13 +1,18 @@
-package com.example.demo.Member;
+package com.example.Application.Member;
+
+import com.example.Application.BookType.BookType;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 
-public class MemberDTO implements Serializable {
-
+@Entity
+@Table(name = "member")
+public class Member extends RepresentationModel<Member> {
     @Id
     @NotNull(message = "Variable id must not be null.")
     private Integer id;
@@ -25,10 +30,10 @@ public class MemberDTO implements Serializable {
     @NotNull(message = "Variable active must not be null.")
     private Boolean active;
 
-    public MemberDTO() {
+    public Member() {
     }
 
-    public MemberDTO(Integer id, String firstName, String lastName, Boolean active) {
+    public Member(Integer id, String firstName, String lastName, Boolean active) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
