@@ -7,6 +7,7 @@ import com.example.demo.Employee.EmployeeRepository;
 import com.example.demo.Fee.Fee;
 import com.example.demo.Fee.FeeRepository;
 import com.example.demo.Member.Member;
+import com.example.demo.Member.MemberDTO;
 import com.example.demo.Member.MemberRepository;
 import com.example.demo.MembershipType.MembershipType;
 import com.example.demo.MembershipType.MembershipTypeRepository;
@@ -70,6 +71,9 @@ class UserApplicationTests {
 
 	@Autowired
 	SettingsRepository settingsRepository;
+
+	@Autowired
+	RestTemplate restTemplateEureka;
 
 	@Test
 	void contextLoads() {
@@ -1192,4 +1196,90 @@ class UserApplicationTests {
 		Assert.assertEquals(200, result.getStatusCodeValue());
 	}
 
+	@Test
+	public void TestBookServiceIntegration() throws URISyntaxException{
+		RestTemplate restTemplate = new RestTemplate();
+
+		final String urlMember= "http://localhost:" + randomServerPort + "/members";
+		final String urlRole = "http://localhost:" + randomServerPort + "/roles";
+		final String urlProfile = "http://localhost:" + randomServerPort + "/profiles";
+		final String urlMembershipType = "http://localhost:" + randomServerPort + "/membershiptypes";
+		URI uriRole = new URI(urlRole);
+		URI uriProfile = new URI(urlProfile);
+		URI uriMember = new URI(urlMember);
+		URI uriMembershipType=new URI(urlMembershipType);
+
+		Date testDate=new Date();
+		Boolean active=true;
+
+		Role role=new Role("uloga");
+		HttpHeaders headers=new HttpHeaders();
+		headers.add("Content-Type","application/json");
+		HttpEntity<Role> request=new HttpEntity<>(role,headers);
+		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
+		role.setId(resultRole.getBody().getId());
+
+		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
+		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
+		profil.setId(resultProfile.getBody().getId());
+
+		MembershipType membershipType=new MembershipType("Clan");
+		HttpEntity<MembershipType> requestMembershipType=new HttpEntity<>(membershipType,headers);
+		ResponseEntity<MembershipType> resultMembrshipType = restTemplate.postForEntity(uriMembershipType,requestMembershipType, MembershipType.class);
+		membershipType.setId(resultMembrshipType.getBody().getId());
+
+		Member member=new Member(profil,membershipType,testDate,active);
+		HttpEntity<Member> requestMember=new HttpEntity<>(member,headers);
+		ResponseEntity<Member> resultMember= restTemplate.postForEntity(uriMember,requestMember, Member.class);
+
+		//Test post
+		Integer createdId=0;
+
+		ResponseEntity<Member> result = restTemplate.postForEntity(uriMember,requestMember, Member.class);
+		createdId=result.getBody().getId();
+		ResponseEntity<MemberDTO> resultFromBookService=restTemplateEureka.getForEntity("http://book-service/members/"+createdId,MemberDTO.class);
+
+		try {
+
+			Assert.assertEquals(createdId,resultFromBookService.getBody().getId());
+			Assert.assertEquals(result.getBody().getProfile().getFirstName(),resultFromBookService.getBody().getFirstName());
+			Assert.assertEquals(result.getBody().getProfile().getLastName(),resultFromBookService.getBody().getLastName());
+			Assert.assertEquals(result.getBody().getActive(),resultFromBookService.getBody().getActive());
+
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test update
+		String urlById = urlMember + "/" + createdId;
+		uriMember=new URI(urlById);
+		Boolean updateActive=false;
+		Member updateMember=new Member(profil,membershipType,testDate,updateActive);
+
+		requestMember=new HttpEntity<>(updateMember,headers);
+		try{
+			restTemplate.put(uriMember,requestMember);
+			ResponseEntity<MemberDTO> modifiedFromBookService=restTemplateEureka.getForEntity("http://book-service/members/"+createdId,MemberDTO.class);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getActive(),updateActive);
+			Assert.assertEquals(memberRepository.findById(createdId).get().getActive(),modifiedFromBookService.getBody().getActive());
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+
+		//Test delete
+		String urlId = urlMember + "/" + createdId;
+		uriMember=new URI(urlId);
+		try{
+			restTemplate.delete(uriMember);
+			try {
+				resultFromBookService=restTemplateEureka.getForEntity("http://book-service/members/"+createdId,MemberDTO.class);
+				Assert.fail();
+			}catch (HttpClientErrorException e){
+				Assert.assertEquals(404,e.getRawStatusCode());
+			}
+		}catch (HttpClientErrorException e){
+			Assert.fail();
+		}
+	}
 }
