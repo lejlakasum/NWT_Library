@@ -1,6 +1,6 @@
 package com.example.Reservation.Member;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
+import com.sun.xml.bind.v2.model.core.ID;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
