@@ -86,6 +86,7 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.1</version>
         </dependency>
+
     </dependencies>
 
 	<dependencyManagement>
@@ -96,6 +97,10 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -114,6 +119,11 @@
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
+		</repository>
+		<repository>
+			<id>repository.springframework.maven.snapshot</id>
+			<name>Spring Framework Maven Snapshot Repository</name>
+			<url>http://repo.spring.io/snapshot/</url>
 		</repository>
 	</repositories>
 
