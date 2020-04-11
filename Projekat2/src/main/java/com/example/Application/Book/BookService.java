@@ -74,7 +74,7 @@ public class BookService {
                 .collect(Collectors.toList());
 
         return new CollectionModel<>(books,
-                linkTo(methodOn(BookController.class).GetAll()).withSelfRel());
+                linkTo(methodOn(BookController.class).GetAll()).withSelfRel()); 
     }
 
     public ResponseEntity<EntityModel<Book>> GetById(Integer id) {
