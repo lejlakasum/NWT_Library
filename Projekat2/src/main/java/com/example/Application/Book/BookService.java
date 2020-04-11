@@ -74,7 +74,7 @@ public class BookService {
                 .collect(Collectors.toList());
 
         return new CollectionModel<>(books,
-                linkTo(methodOn(BookController.class).GetAll()).withSelfRel()); 
+                linkTo(methodOn(BookController.class).GetAll()).withSelfRel());
     }
 
     public ResponseEntity<EntityModel<Book>> GetById(Integer id) {
@@ -213,9 +213,9 @@ public class BookService {
 
     public ResponseEntity<EntityModel<Book>> Delete(Integer id) {
 
-        DeleteBookUserService(id);
-
         bookRepository.deleteById(id);
+
+        DeleteBookUserService(id);
 
         return ResponseEntity.noContent().build();
     }
