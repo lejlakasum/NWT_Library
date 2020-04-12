@@ -23,6 +23,11 @@ public class Book extends RepresentationModel<Book> {
         this.isbn=isbn;
     }
 
+    public Book(Integer id, String testIsbn) {
+        this.id=id;
+        this.isbn=testIsbn;
+    }
+
     public Integer getId() {
         return id;
     }

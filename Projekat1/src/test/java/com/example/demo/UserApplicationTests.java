@@ -35,7 +35,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -178,7 +177,8 @@ class UserApplicationTests {
 		URI uri = new URI(baseUrl);
 
 		String testIsbn="UnitTestBook";
-		Book book=new Book(testIsbn);
+		Integer id=0;
+		Book book=new Book(id,testIsbn);
 
 		HttpHeaders headers=new HttpHeaders();
 		headers.add("Content-Type","application/json");
@@ -199,13 +199,14 @@ class UserApplicationTests {
 		}
 
 		//Test post error
-		Book errorBook=new Book(null);
+		Book errorBook=new Book(id,null);
 		request=new HttpEntity<>(errorBook,headers);
 		try{
 			restTemplate.postForEntity(uri,request,Book.class);
 			Assert.fail();
 		}catch (HttpClientErrorException e){
 			Assert.assertEquals(400,e.getRawStatusCode());
+		}catch (Exception ex) {
 		}
 
 		String byIdUrl=baseUrl+"/"+createdId;
@@ -222,7 +223,7 @@ class UserApplicationTests {
 
 		//Test updateById
 		String testUpdateIsbn="UnitTestUpdateBook";
-		Book updateBook=new Book(testUpdateIsbn);
+		Book updateBook=new Book(id,testUpdateIsbn);
 
 		request=new HttpEntity<>(updateBook,headers);
 		try{
@@ -645,14 +646,13 @@ class UserApplicationTests {
 
 		Member member=new Member(profil,membershipType,testDate,active);
 		HttpEntity<Member> requestMember=new HttpEntity<>(member,headers);
-		ResponseEntity<Member> resultMember= restTemplate.postForEntity(uriMember,requestMember, Member.class);
 
 		//Test post
 		Integer createdId=0;
 
 		try {
 			ResponseEntity<Member> result = restTemplate.postForEntity(uriMember,requestMember, Member.class);
-			createdId=resultMember.getBody().getId();
+			createdId=result.getBody().getId();
 			Assert.assertEquals(201, result.getStatusCodeValue());
 			Assert.assertEquals(result.getBody().getProfile(),profil);
 			Assert.assertEquals(result.getBody().getProfile(),memberRepository.findById(createdId).get().getProfile());
@@ -872,7 +872,8 @@ class UserApplicationTests {
 		ResponseEntity<Member> resultMember= restTemplate.postForEntity(uriMember,requestMember, Member.class);
 		member.setId(resultMember.getBody().getId());
 
-		Book book=new Book("testisbn");
+		Integer id=0;
+		Book book=new Book(id,"testisbn");
 		HttpEntity<Book> requestBook=new HttpEntity<>(book,headers);
 		ResponseEntity<Book> resultBook= restTemplate.postForEntity(uriBook,requestBook, Book.class);
 		book.setId(resultBook.getBody().getId());
@@ -882,16 +883,15 @@ class UserApplicationTests {
 		ResponseEntity<Fee> resultFee= restTemplate.postForEntity(uriFee,requestFee, Fee.class);
 		fee.setId(resultFee.getBody().getId());
 
-		PaidFee paidfee=new PaidFee(member,fee,testDate,book);
-		HttpEntity<PaidFee> requestPaidFee=new HttpEntity<>(paidfee,headers);
-		ResponseEntity<PaidFee> resultPaidFee= restTemplate.postForEntity(uriPaidFee,requestPaidFee, PaidFee.class);
+		PaidFee paidFee=new PaidFee(member,fee,testDate,book);
+		HttpEntity<PaidFee> requestPaidFee=new HttpEntity<>(paidFee,headers);
 
 		//Test post
 		Integer createdId=0;
 
 		try {
 			ResponseEntity<PaidFee> result = restTemplate.postForEntity(uriPaidFee,requestPaidFee, PaidFee.class);
-			createdId=resultPaidFee.getBody().getId();
+			createdId=result.getBody().getId();
 			Assert.assertEquals(201, result.getStatusCodeValue());
 			Assert.assertEquals(result.getBody().getMember(),member);
 			Assert.assertEquals(result.getBody().getMember(),paidFeeRepository.findById(createdId).get().getMember());
@@ -905,16 +905,14 @@ class UserApplicationTests {
 		}
 
 		//Test post error
-		Book updateBook=new Book();
-		updateBook.setId(0);
-		updateBook.setIsbn("test");
-		PaidFee errorPaidFee=new PaidFee(member,fee,testDate,updateBook);
+		Date newDate=null;
+		PaidFee errorPaidFee=new PaidFee(member,fee,newDate,book);
 		requestPaidFee=new HttpEntity<>(errorPaidFee,headers);
 		try{
 			restTemplate.postForEntity(uriPaidFee,requestPaidFee,PaidFee.class);
 			Assert.fail();
 		}catch (HttpClientErrorException e){
-			Assert.assertEquals(404,e.getRawStatusCode());
+			Assert.assertEquals(400,e.getRawStatusCode());
 		}
 
 		String byIdUrl=urlPaidFee+"/"+createdId;
@@ -932,10 +930,10 @@ class UserApplicationTests {
 		}
 
 		//Test update error
-		Book novaBook=new Book();
-		novaBook.setId(0);
+		Member member22=new Member();
+		member22.setId(0);
 
-		PaidFee updatePaidFee=new PaidFee(member,fee,testDate,novaBook);
+		PaidFee updatePaidFee=new PaidFee(member22,fee,testDate,book);
 
 		requestPaidFee=new HttpEntity<>(updatePaidFee,headers);
 		try{
@@ -944,6 +942,7 @@ class UserApplicationTests {
 		}catch (HttpClientErrorException e){
 			Assert.assertEquals(404,e.getRawStatusCode());
 		}
+
 		//Test delete
 		try {
 			restTemplate.delete(uriPaidFee);
