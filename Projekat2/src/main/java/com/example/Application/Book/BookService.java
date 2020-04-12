@@ -213,9 +213,9 @@ public class BookService {
 
     public ResponseEntity<EntityModel<Book>> Delete(Integer id) {
 
-        DeleteBookUserService(id);
-
         bookRepository.deleteById(id);
+
+        DeleteBookUserService(id);
 
         return ResponseEntity.noContent().build();
     }

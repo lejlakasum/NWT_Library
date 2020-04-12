@@ -45,7 +45,7 @@ class BooksApplicationTests {
 	@LocalServerPort
 	int randomServerPort;
 
-	@Autowired
+	@Autowired 
 	GenreRepository genreRepository;
 	@Autowired
 	BookTypeRepository bookTypeRepository;
