@@ -5,6 +5,7 @@ import com.example.demo.Fee.Fee;
 import com.example.demo.Member.Member;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 import java.util.Date;
@@ -26,6 +27,7 @@ public class PaidFee {
     private Fee fee;
 
     @Column(name = "payment_date")
+    @NotNull
     private Date paymentDate;
 
     @ManyToOne

@@ -1,0 +1,20 @@
+syntax = "proto3";
+option java_package = "com.grpc";
+
+message SystemEventRequest {
+    string eventTimeStamp = 1;
+    string microservice = 2;
+    string user = 3;
+    string action = 4;
+    string resourceName = 5;
+    bool success = 6;
+    int32 responseCode = 7;
+}
+
+message SystemEventResponse {
+    bool success = 1;
+}
+
+service SystemEventService {
+    rpc logSystemEvent(SystemEventRequest) returns (SystemEventResponse);
+}
