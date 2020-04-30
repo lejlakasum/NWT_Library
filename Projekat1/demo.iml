@@ -124,10 +124,8 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: joda-time:joda-time:2.10.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:antlr-runtime:3.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:stringtemplate:3.2.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.commons:commons-math:2.2" level="project" />
     <orderEntry type="library" name="Maven: com.netflix.archaius:archaius-core:0.7.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.guava:guava:16.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: javax.ws.rs:jsr311-api:1.1.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.netflix.servo:servo-core:0.12.21" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.jersey:jersey-core:1.19.1" level="project" />
@@ -176,5 +174,32 @@
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.4.11.1" level="project" />
     <orderEntry type="library" name="Maven: xmlpull:xmlpull:1.1.3.1" level="project" />
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
+    <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.11.4" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-netty:1.16.1" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-core:1.16.1" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-context:1.16.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.17" level="project" />
+    <orderEntry type="library" name="Maven: io.opencensus:opencensus-api:0.12.3" level="project" />
+    <orderEntry type="library" name="Maven: io.opencensus:opencensus-contrib-grpc-metrics:0.12.3" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http2:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler-proxy:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec-socks:4.1.45.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-protobuf:1.16.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:26.0-android" level="project" />
+    <orderEntry type="library" name="Maven: org.checkerframework:checker-compat-qual:2.5.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.api.grpc:proto-google-common-protos:1.17.0" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-protobuf-lite:1.16.1" level="project" />
+    <orderEntry type="library" name="Maven: io.grpc:grpc-stub:1.16.1" level="project" />
   </component>
 </module>
