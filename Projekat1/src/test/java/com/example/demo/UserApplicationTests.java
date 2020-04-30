@@ -941,7 +941,7 @@ class UserApplicationTests {
 			Assert.fail();
 		}catch (HttpClientErrorException e){
 			Assert.assertEquals(404,e.getRawStatusCode());
-			
+
 		}
 
 		//Test delete
