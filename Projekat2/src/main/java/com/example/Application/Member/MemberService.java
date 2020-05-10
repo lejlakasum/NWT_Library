@@ -77,7 +77,7 @@ public class MemberService {
                 .body(entityModel);
     }
 
-    public void AddBorrowingToMember(Integer memberId, Integer bookId) {
+    public void AddBorrowingToMember(Integer memberId, Integer bookId, String token) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()->new NotFoundException("member", memberId));
@@ -86,7 +86,7 @@ public class MemberService {
 
         Borrowing borrowing = new Borrowing(book, member, new Date(), false);
 
-        borrowingService.Add(borrowing);
+        borrowingService.Add(borrowing, token);
     }
 
     public ResponseEntity<EntityModel<Member>> Update(Member newMember, Integer id) {
@@ -106,8 +106,8 @@ public class MemberService {
                 .body(entityModel);
     }
 
-    public void ReturnBook(Integer memberId, Integer bookId) {
-        borrowingService.UpdateReturned(bookId, memberId);
+    public void ReturnBook(Integer memberId, Integer bookId, String token) {
+        borrowingService.UpdateReturned(bookId, memberId, token);
     }
 
     public ResponseEntity<EntityModel<Member>> Delete(Integer id) {

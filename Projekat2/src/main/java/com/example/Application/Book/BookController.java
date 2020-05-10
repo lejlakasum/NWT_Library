@@ -73,10 +73,10 @@ public class BookController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Book>> Add(@RequestBody Book newBook) throws URISyntaxException {
+    ResponseEntity<EntityModel<Book>> Add(@RequestHeader("Authorization") String token, @RequestBody Book newBook) throws URISyntaxException {
 
         try {
-            return bookService.Add(newBook);
+            return bookService.Add(newBook, token);
         }
         catch (ConstraintViolationException ex) {
 
@@ -111,9 +111,9 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Book>> Update(@RequestBody Book newBook, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Book>> Update(@RequestHeader("Authorization") String token, @RequestBody Book newBook, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return bookService.Update(newBook, id);
+            return bookService.Update(newBook, id, token);
         }
         catch (ConstraintViolationException ex) {
 

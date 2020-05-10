@@ -90,16 +90,16 @@ public class BorrowingService {
         return members;
     }
 
-    public Borrowing Add(Borrowing newBorrowing) {
+    public Borrowing Add(Borrowing newBorrowing, String token) {
 
         Book book = newBorrowing.getBook();
         book.setAvailable(false);
-        bookService.Update(book, book.getId());
+        bookService.Update(book, book.getId(), token);
 
         return borrowingRepository.save(newBorrowing);
     }
 
-    public Borrowing UpdateReturned(Integer bookId, Integer memberId) {
+    public Borrowing UpdateReturned(Integer bookId, Integer memberId, String token) {
 
         List<Tuple> ids = borrowingRepository.findBorrowingId(memberId, bookId);
         Integer id = (Integer)ids.get(0).get("id");
@@ -113,7 +113,7 @@ public class BorrowingService {
 
         Book book = borrowing.getBook();
         book.setAvailable(true);
-        bookService.Update(book, book.getId());
+        bookService.Update(book, book.getId(), token);
 
        return borrowing;
     }
