@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +35,9 @@ public class MemberService {
     @Autowired
     MembershipTypeRepository membershipTypeRepository;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     public CollectionModel<EntityModel<Member>> GetAll() {
         List<EntityModel<Member>> members=memberRepository.findAll().stream()
                 .map(memberAssembler::toModel)
@@ -49,7 +55,7 @@ public class MemberService {
                 .body(memberAssembler.toModel(member));
     }
 
-    public ResponseEntity<EntityModel<Member>> AddMember(Member newMember){
+    public ResponseEntity<EntityModel<Member>> AddMember(Member newMember,String token){
         Integer profileId=newMember.getProfile().getId();
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
@@ -63,13 +69,18 @@ public class MemberService {
 
         EntityModel<Member> entityModel=memberAssembler.toModel(memberRepository.save(newMember));
 
-        return ResponseEntity
+        ResponseEntity<EntityModel<Member>> result= ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
 
+        MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), newMember.getProfile().getFirstName(),newMember.getProfile().getLastName(),newMember.getActive());
+        InsertMemberBookService(newMemberDTO,token);
+
+        return result;
+
     }
 
-    public ResponseEntity<EntityModel<Member>> ModifyMember(Member newMember,Integer id){
+    public ResponseEntity<EntityModel<Member>> ModifyMember(Member newMember,Integer id,String token){
         Integer profileId=newMember.getProfile().getId();
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
@@ -89,14 +100,42 @@ public class MemberService {
 
         EntityModel<Member> entityModel=memberAssembler.toModel(modifiedMember);
 
+        MemberDTO newMemberDTO=new MemberDTO(id, profile.getFirstName(),profile.getLastName(),newMember.getActive());
+        UpdateMemberBookService(id,newMemberDTO,token);
+
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
     }
 
     public ResponseEntity<EntityModel<Member>> DeleteMember(Integer id){
+        DeleteMemberBookService(id);
         memberRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    //private methods
+
+    private void InsertMemberBookService(MemberDTO newMember,String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("Authorization",token);
+        HttpEntity<MemberDTO> request = new HttpEntity<>(newMember, headers);
+
+        ResponseEntity<MemberDTO> result=restTemplate.postForEntity("http://book-service/members",request,MemberDTO.class);
+    }
+
+    private void UpdateMemberBookService(Integer id,MemberDTO newMember,String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.add("Authorization",token);
+        HttpEntity<MemberDTO> request = new HttpEntity<>(newMember, headers);
+
+        restTemplate.put("http://book-service/members/"+id,request);
+    }
+
+    private void DeleteMemberBookService(Integer id){
+        restTemplate.delete("http://book-service/members/"+id);
     }
 }
