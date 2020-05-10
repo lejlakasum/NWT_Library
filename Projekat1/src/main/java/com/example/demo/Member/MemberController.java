@@ -41,9 +41,9 @@ public class MemberController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Member>> AddMember(@RequestBody Member newMember) throws URISyntaxException {
+    ResponseEntity<EntityModel<Member>> AddMember(@RequestHeader("Authorization") String token,@RequestBody Member newMember) throws URISyntaxException {
         try {
-            return memberService.AddMember(newMember);
+            return memberService.AddMember(newMember, token);
         }catch (NotFoundException e){
             throw e;
         }catch (ConstraintViolationException e){
@@ -54,9 +54,9 @@ public class MemberController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Member>> ModifyMember(@RequestBody Member newMember, @PathVariable Integer id) throws URISyntaxException {
+    ResponseEntity<EntityModel<Member>> ModifyMember(@RequestHeader("Authorization") String token,@RequestBody Member newMember, @PathVariable Integer id) throws URISyntaxException {
         try {
-            return memberService.ModifyMember(newMember,id);
+            return memberService.ModifyMember(newMember,id,token);
 
         }catch (NotFoundException e){
             throw e;

@@ -30,15 +30,19 @@ public class Profile extends RepresentationModel<Profile> {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    private String username;
+    private String password;
 
     public Profile() {
     }
 
-    public Profile(String ime, String prezime, Date datum, Role rola){
+    public Profile(String ime, String prezime, Date datum, Role rola, String username, String password){
         this.firstName=ime;
         this.lastName=prezime;
         this.birthDate=datum;
         this.role=rola;
+        this.username=username;
+        this.password=password;
     }
 
     public Integer getId() {
@@ -81,5 +85,20 @@ public class Profile extends RepresentationModel<Profile> {
         this.birthDate = birthDate;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }
