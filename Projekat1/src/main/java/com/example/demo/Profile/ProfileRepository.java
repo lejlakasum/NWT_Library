@@ -13,5 +13,5 @@ public interface ProfileRepository extends CrudRepository<Profile,Integer> {
     List<Profile> findAll();
     Profile findById(ID id);
     void deleteById(ID id);
-    void findByUsername(String username);
+    Profile findByUsername(String username);
 }
