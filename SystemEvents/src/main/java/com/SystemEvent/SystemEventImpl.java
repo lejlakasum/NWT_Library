@@ -1,16 +1,16 @@
 package com.SystemEvent;
 
+import com.BeanUtil;
 import com.grpc.SystemEventServiceGrpc;
 import com.grpc.SystemEvents;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceImplBase {
-
-    @Autowired
-    private SystemEventRepository eventRepository;
 
     @Override
     public void logSystemEvent(SystemEvents.SystemEventRequest request, StreamObserver<SystemEvents.SystemEventResponse> responseObserver) {
@@ -28,6 +28,7 @@ public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceIm
 
         Boolean success = true;
         try {
+            SystemEventRepository eventRepository = BeanUtil.getBean(SystemEventRepository.class);
             eventRepository.save(event);
             System.out.println(request.getAction());
         }
