@@ -89,7 +89,7 @@ public class GenreController {
     @DeleteMapping("/{id}")
     ResponseEntity<EntityModel<Genre>> DeleteGenre(@PathVariable Integer id) {
         try {
-            LogActivity(new Date().toString(), "BookMicroservice", "Default", "DELETE", "Genre", true, 200);
+            LogActivity(new Date().toString(), "BookMicroservice", "Default", "DELETE", "Genre", true, 204);
             return genreService.DeleteGenre(id);
         }
         catch (EmptyResultDataAccessException ex) {
