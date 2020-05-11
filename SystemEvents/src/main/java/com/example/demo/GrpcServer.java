@@ -1,4 +1,4 @@
-package com;
+package com.example.demo;
 
 import com.SystemEvent.SystemEventImpl;
 import io.grpc.Server;
