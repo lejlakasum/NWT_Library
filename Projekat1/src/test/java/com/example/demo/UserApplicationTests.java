@@ -388,7 +388,7 @@ class UserApplicationTests {
 		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
 		role.setId(resultRole.getBody().getId());
 
-		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		Profile profil=new Profile("Dolores","Jureta",testDate, role,"admin","admin");
 		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
 		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
 		profil.setId(resultProfile.getBody().getId());
@@ -507,7 +507,7 @@ class UserApplicationTests {
 		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
 		role.setId(resultRole.getBody().getId());
 
-		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		Profile profil=new Profile("Dolores","Jureta",testDate, role, "admin", "admin");
 		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
 		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
 		profil.setId(resultProfile.getBody().getId());
@@ -634,7 +634,7 @@ class UserApplicationTests {
 		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
 		role.setId(resultRole.getBody().getId());
 
-		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		Profile profil=new Profile("Dolores","Jureta",testDate, role, "admin","admin");
 		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
 		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
 		profil.setId(resultProfile.getBody().getId());
@@ -857,7 +857,7 @@ class UserApplicationTests {
 		ResponseEntity<Role> resultRole = restTemplate.postForEntity(uriRole,request, Role.class);
 		role.setId(resultRole.getBody().getId());
 
-		Profile profil=new Profile("Dolores","Jureta",testDate, role);
+		Profile profil=new Profile("Dolores","Jureta",testDate, role,"admin","admin");
 		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
 		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
 		profil.setId(resultProfile.getBody().getId());
@@ -941,7 +941,7 @@ class UserApplicationTests {
 			Assert.fail();
 		}catch (HttpClientErrorException e){
 			Assert.assertEquals(404,e.getRawStatusCode());
-			
+
 		}
 
 		//Test delete
@@ -996,7 +996,7 @@ class UserApplicationTests {
 		String firstname="Dolores";
 		String lastname="Jureta";
 		Date testDate=new Date();
-		Profile profil=new Profile(firstname,lastname,testDate, role);
+		Profile profil=new Profile(firstname,lastname,testDate, role, "admin","admin");
 		HttpEntity<Profile> requestProfile=new HttpEntity<>(profil,headers);
 		ResponseEntity<Profile> resultProfile = restTemplate.postForEntity(uriProfile,requestProfile, Profile.class);
 
@@ -1018,7 +1018,7 @@ class UserApplicationTests {
 		}
 
 		//Test post error
-		Profile errorProfile=new Profile(null,lastname,testDate,role);
+		Profile errorProfile=new Profile(null,lastname,testDate,role,"admin","admin");
 		requestProfile=new HttpEntity<>(errorProfile,headers);
 		try{
 			restTemplate.postForEntity(uriProfile,requestProfile,Profile.class);
@@ -1042,7 +1042,7 @@ class UserApplicationTests {
 
 		//Test updateById
 		String firstnameUpdate="DoloresTest";
-		Profile updateProfile=new Profile(firstnameUpdate,lastname,testDate,role);
+		Profile updateProfile=new Profile(firstnameUpdate,lastname,testDate,role,"admin","admin");
 
 		requestProfile=new HttpEntity<>(updateProfile,headers);
 		try{

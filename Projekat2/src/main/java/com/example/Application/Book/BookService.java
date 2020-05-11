@@ -115,7 +115,7 @@ public class BookService {
         return impressions;
     }
 
-    public ResponseEntity<EntityModel<Book>> Add(Book newBook) {
+    public ResponseEntity<EntityModel<Book>> Add(Book newBook, String token) {
 
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
@@ -146,7 +146,7 @@ public class BookService {
                 .body(entityModel);
 
         BookDTO newBookDTO = new BookDTO(result.getBody().getContent().getId(), newBook.getIsbn());
-        InsertBookUserService(newBookDTO);
+        InsertBookUserService(newBookDTO, token);
 
         return result;
     }
@@ -170,7 +170,7 @@ public class BookService {
         return impressionService.GetImpressionsByBook(bookId);
     }
 
-    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id) {
+    public ResponseEntity<EntityModel<Book>> Update(Book newBook, Integer id, String token) {
         Integer copyId = newBook.getCopy().getId();
         Integer bookTypeId = newBook.getBookType().getId();
         Integer genreId = newBook.getGenre().getId();
@@ -204,7 +204,7 @@ public class BookService {
         EntityModel<Book> entityModel = assembler.toModel(updatedBook);
 
         BookDTO newBookDto = new BookDTO(id, newBook.getIsbn());
-        UpdateBookUserService(id, newBookDto);
+        UpdateBookUserService(id, newBookDto, token);
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -222,20 +222,22 @@ public class BookService {
 
     //Private helper methods
 
-    private void InsertBookUserService(BookDTO newBook) {
+    private void InsertBookUserService(BookDTO newBook, String token) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+        headers.add("Authorization", token);
         HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
 
         ResponseEntity<BookDTO> result = restTemplate.postForEntity("http://user-service/books", request, BookDTO.class);
 
     }
 
-    private void UpdateBookUserService(Integer id, BookDTO newBook) {
+    private void UpdateBookUserService(Integer id, BookDTO newBook, String token) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+        headers.add("Authorization", token);
         HttpEntity<BookDTO> request = new HttpEntity<>(newBook, headers);
 
         restTemplate.put("http://user-service/books/"+id, request);

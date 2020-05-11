@@ -69,9 +69,9 @@ public class MemberController {
         }
 
     @PostMapping("/{idmember}/borrowings/{idbook}")
-    public CollectionModel<EntityModel<Book>> AddBorrowing(@PathVariable Integer idmember, @PathVariable Integer idbook) {
+    public CollectionModel<EntityModel<Book>> AddBorrowing(@RequestHeader("Authorization") String token,@PathVariable Integer idmember, @PathVariable Integer idbook) {
         try {
-            memberService.AddBorrowingToMember(idmember, idbook);
+            memberService.AddBorrowingToMember(idmember, idbook, token);
             return memberService.GetBorrowings(idmember);
         }
         catch (ConstraintViolationException ex) {
@@ -99,9 +99,9 @@ public class MemberController {
         }
 
     @PutMapping("/{idmember}/borrowings/{idbook}")
-    public CollectionModel<EntityModel<Book>> ReturnBook(@PathVariable Integer idmember, @PathVariable Integer idbook) {
+    public CollectionModel<EntityModel<Book>> ReturnBook(@RequestHeader("Authorization") String token,@PathVariable Integer idmember, @PathVariable Integer idbook) {
         try {
-            memberService.ReturnBook(idmember, idbook);
+            memberService.ReturnBook(idmember, idbook, token);
             return memberService.GetBorrowings(idmember);
         }
         catch (ConstraintViolationException ex) {

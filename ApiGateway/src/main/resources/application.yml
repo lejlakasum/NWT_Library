@@ -1,0 +1,44 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+      hostname: localhost
+
+ribbon:
+  ReadTimeout: 1000000
+
+zuul:
+  host:
+    connect-timeout-millis: 1000000
+    socket-timeout-millis: 1000000
+  routes:
+    books:
+      sensitiveHeaders:
+      path: /book-service/**
+      serviceId: book-service
+      stripPrefix: true
+    users:
+      sensitiveHeaders:
+      path: /user-service/**
+      serviceId: user-service
+      stripPrefix: true
+    analytics:
+      sensitiveHeaders:
+      path: http://analytic-service/**
+      serviceId: analytics-service
+      stripPrefix: true
+    reservations:
+      sensitiveHeaders:
+      path: http://reservation-service/**
+      serviceId: reservation-service
+      stripPrefix: true

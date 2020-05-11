@@ -53,6 +53,8 @@ public class ProfileService {
         newProfile.setFirstName(newProfile.getFirstName());
         newProfile.setLastName(newProfile.getLastName());
         newProfile.setBirthDate(newProfile.getBirthDate());
+        newProfile.setPassword(newProfile.getPassword());
+        newProfile.setUsername(newProfile.getUsername());
 
         EntityModel<Profile> entityModel=profileAssembler.toModel(profileRepository.save(newProfile));
 
@@ -73,6 +75,8 @@ public class ProfileService {
                     profile.setFirstName(newProfile.getFirstName());
                     profile.setLastName(newProfile.getLastName());
                     profile.setBirthDate(newProfile.getBirthDate());
+                    profile.setUsername(newProfile.getUsername());
+                    profile.setPassword(newProfile.getPassword());
                     return profileRepository.save(profile);
                 })
                 .orElseThrow(()->new NotFoundException("profile",id));
