@@ -4,10 +4,13 @@ import com.example.demo.Exception.NotFoundException;
 import com.example.demo.Role.Role;
 import com.example.demo.Role.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +30,11 @@ public class ProfileService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Bean
+    private PasswordEncoder passwordEncoderP() {
+        return new BCryptPasswordEncoder();
+    }
 
     public CollectionModel<EntityModel<Profile>> GetAll() {
         List<EntityModel<Profile>> profiles=profileRepository.findAll().stream()
@@ -53,7 +61,7 @@ public class ProfileService {
         newProfile.setFirstName(newProfile.getFirstName());
         newProfile.setLastName(newProfile.getLastName());
         newProfile.setBirthDate(newProfile.getBirthDate());
-        newProfile.setPassword(newProfile.getPassword());
+        newProfile.setPassword("{bcrypt}" + passwordEncoderP().encode(newProfile.getPassword()));
         newProfile.setUsername(newProfile.getUsername());
 
         EntityModel<Profile> entityModel=profileAssembler.toModel(profileRepository.save(newProfile));
