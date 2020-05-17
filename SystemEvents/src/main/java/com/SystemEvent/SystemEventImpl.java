@@ -28,9 +28,12 @@ public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceIm
 
         Boolean success = true;
         try {
-            SystemEventRepository eventRepository = BeanUtil.getBean(SystemEventRepository.class);
-            eventRepository.save(event);
+            //SystemEventRepository eventRepository = BeanUtil.getBean(SystemEventRepository.class);
+            //eventRepository.save(event);
             System.out.println(request.getAction());
+            System.out.println(request.getMicroservice());
+            System.out.println(request.getResourceName());
+
         }
         catch (Exception ex) {
             success = false;
