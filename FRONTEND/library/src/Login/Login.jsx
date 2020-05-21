@@ -1,7 +1,6 @@
 import React from 'react';
 import "./Login.css"
 import logo from './logo.jpg'
-import user from './user.jpg'
 
 class Login extends React.Component {
     render() {
