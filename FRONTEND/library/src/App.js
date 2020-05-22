@@ -6,7 +6,7 @@ import Genre from "./Genre/Genre"
 
 function App() {
   return (
-    <Genre />
+    <Login />
   );
 }
 
