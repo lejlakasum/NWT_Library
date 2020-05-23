@@ -20,6 +20,9 @@ public class ProfileController {
     @Autowired
     ProfileService profileService;
 
+    @Autowired
+    ProfileRepository profileRepository;
+
     @GetMapping()
     public CollectionModel<EntityModel<Profile>> GetAll(){
         try {
@@ -76,5 +79,10 @@ public class ProfileController {
         }catch (Exception e){
             throw new InternalServerException();
         }
+    }
+
+    @GetMapping("/username/{username}")
+    Profile GetProfileByUsername(@PathVariable String username) {
+        return profileRepository.findByUsername(username);
     }
 }
