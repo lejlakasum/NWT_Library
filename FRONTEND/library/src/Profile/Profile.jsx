@@ -32,15 +32,12 @@ export class Profile extends Component {
                 Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNjIwODMzLCJpYXQiOjE1OTA1OTIwMzN9.UXhalqCMnRhrqXufEI3V5uxKiM03TkAbX3J7iQwzva4"
             }
         }).then((response) => {
-            console.log("Res.data"+response.data)
-            console.log("Res.data.embedded"+response.data._embedded)
-            console.log("Res.data.embedded.roleList"+response.data._embedded.profileList)
-            console.log("Res.data.embedded.roleList"+response.data._embedded.profileList[0].role.name)
+           
             var temp = [];
             for (var i = 0; i < response.data._embedded.profileList.length; i++) {
                 temp.push({ name: `${response.data._embedded.profileList[i].firstName}`, value: response.data._embedded.profileList[i].firstName,firstName:response.data._embedded.profileList[i].firstName, lastName:response.data._embedded.profileList[i].lastName, birthDate:response.data._embedded.profileList[i].birthDate, roleId:response.data._embedded.profileList[i].role.roleId , roleName:response.data._embedded.profileList[i].role.name, id: response.data._embedded.profileList[i].id });
             }
-            console.log("Profil  "+temp);
+            
             this.setState({ profile: temp });
 
         }, (error) => {
@@ -59,7 +56,6 @@ export class Profile extends Component {
             for (var i = 0; i < response.data._embedded.roleList.length; i++) {
                 temp.push({ name: `${response.data._embedded.roleList[i].name}`, value: response.data._embedded.roleList[i].name, id: response.data._embedded.roleList[i].id });
             }
-            console.log("TTR;P: " + temp);
             this.setState({ role: temp });
         }, (error) => {
             console.log(error)
@@ -240,7 +236,7 @@ export class Profile extends Component {
                             onChange={(e) => {
                                 this.handleChangeRole(e);
                             }}
-                            placeholder="Odaberite ponuđeni tip vještine"
+                            placeholder="Odaberite ponuđeni tip uloge"
                         />
                     </div>
                     <button type="button" className="btn" onClick={this.kreirajProfile}>
