@@ -4,6 +4,10 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./Login/Login"
 import Admin from './Admin/Admin';
 import Book from './Book/Book'
+import Genre from "./Genre/Genre"
+import { Profile } from "./Profile/index"
+import { Role } from "./Role/index"
+import { Employee } from "./Employee/index"
 
 
 function App() {
