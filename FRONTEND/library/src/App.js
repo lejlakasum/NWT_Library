@@ -8,6 +8,7 @@ import Genre from "./Genre/Genre"
 import { Profile } from "./Profile/index"
 import { Role } from "./Role/index"
 import { Employee } from "./Employee/index"
+import Member from './Member/Member'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/profiles" component={Profile} />
         <Route path="/roles" component={Role} />
         <Route path="/employees" component={Employee} />
+        <Route path="/member" component={Member} />
       </Router>
     </div>
   );

@@ -1,0 +1,51 @@
+.global {
+    background-color: #f3f3f3;
+    width: 70%;
+    border-radius: 15px;
+    margin: 30px;
+}
+
+.btn {
+  border: none;
+  color: white;
+  padding: 7px 14px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-akcija {
+  width: 80px;
+}
+
+.add {
+    margin: 10px;
+}
+
+.success {background-color: #4CAF50;} /* Green */
+.success:hover {background-color: #46a049;}
+
+.info {background-color: #2196F3;} /* Blue */
+.info:hover {background: #0b7dda;}
+
+.warning {background-color: #ff9800;} /* Orange */
+.warning:hover {background: #e68a00;}
+
+.danger {background-color: #f44336;} /* Red */ 
+.danger:hover {background: #da190b;}
+
+table {
+  border-collapse: collapse;
+  width: 90%;
+  padding: 10px;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.naslov {
+    margin-left: 10px;
+    padding-top: 10px;
+}

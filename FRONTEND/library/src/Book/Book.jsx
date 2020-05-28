@@ -233,7 +233,7 @@ class Book extends React.Component {
     }
 
     //Prikaz u tabeli
-    prikazKorisnika() {
+    prikazKnjigu() {
         return this.state.books.map((book, index) => {
             const { id, isbn, copy, bookType, genre, publisher, publishedDate, available } = book
             var rent = "Iznajmi"
@@ -378,10 +378,10 @@ class Book extends React.Component {
                             <button className="btn info" onClick={this.searchBook}>Pretraga</button>
                         </form>
                     </div>
-                    <table id='korisnici'>
+                    <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
-                            {this.prikazKorisnika()}
+                            {this.prikazKnjigu()}
                         </tbody>
                     </table>
                 </div>
