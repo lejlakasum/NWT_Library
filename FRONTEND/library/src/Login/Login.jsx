@@ -30,13 +30,32 @@ class Login extends React.Component {
         })
             .then((response) => {
                 localStorage.token = response.data.token
-                console.log(JSON.parse(atob(localStorage.token.split('.')[1])).sub)
+                localStorage.username = JSON.parse(atob(localStorage.token.split('.')[1])).sub
+                localStorage.logedIn = true
+                var url = "http://localhost:8090/user-service/profiles/username/" + localStorage.username
+                axios.get(url, {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.token
+                    }
+                })
+                    .then((response) => {
+
+                        localStorage.id = response.data.id
+                        localStorage.role = response.data.role.name
+
+                    }, (error) => {
+                        console.log(error)
+                        alert("GET" + error)
+                    });
+
             }, (error) => {
                 alert(error)
             });
 
         event.preventDefault()
     }
+
+
 
     render() {
         return (
