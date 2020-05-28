@@ -17,6 +17,9 @@ function App() {
         <Route path="/login" component={Login} />
         <Route path="/admin" component={Admin} />
         <Route path="/books" component={Book} />
+        <Route path="/profiles" component={Profile} />
+        <Route path="/roles" component={Role} />
+        <Route path="/employees" component={Employee} />
       </Router>
     </div>
   );
