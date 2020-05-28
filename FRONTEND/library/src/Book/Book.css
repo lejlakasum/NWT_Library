@@ -13,6 +13,10 @@
   cursor: pointer;
 }
 
+.btn-akcija {
+  width: 80px;
+}
+
 .add {
     margin: 10px;
 }
@@ -59,6 +63,16 @@ input[type=text], select {
   box-sizing: border-box;
 }
 
+input[type=search], select {
+  width: 30%;
+  padding: 7px 14px;
+  margin: 10px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 input[type=submit]:hover {
   background-color: #45a049;
 }
@@ -74,4 +88,9 @@ input[type=submit]:hover {
 
 .close {
     margin: 8px 0;
+}
+
+.search input{
+  width: 150px;
+  margin: 15px;
 }

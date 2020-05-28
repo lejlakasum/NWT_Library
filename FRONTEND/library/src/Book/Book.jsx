@@ -25,11 +25,21 @@ class Book extends React.Component {
             selectedGenre: '',
             publisherOptions: [],
             publisherTemp: '',
-            selectedPublisher: ''
+            selectedPublisher: '',
+            modalRentIsOpen: false,
+            rentId: -1,
+            rentAvailable: false,
+            memberOptions: [],
+            memberTemp: '',
+            selectedMember: '',
+            nazivKnjige: '',
+            copyBooks: []
         };
 
         this.handleChange = this.handleChange.bind(this)
         this.createBook = this.createBook.bind(this)
+        this.rentBook = this.rentBook.bind(this)
+        this.searchBook = this.searchBook.bind(this)
         //this.deleteBook = this.deleteBook.bind(this)
     }
 
@@ -42,7 +52,7 @@ class Book extends React.Component {
             }
         })
             .then((response) => {
-                this.setState({ books: response.data._embedded.bookList })
+                this.setState({ books: response.data._embedded.bookList, copyBooks: response.data._embedded.bookList })
 
             }, (error) => {
                 console.log(error)
@@ -138,10 +148,98 @@ class Book extends React.Component {
         alert("Uspješno obrisana knjiga!");
     }
 
+    rentModal(id, available) {
+        this.setState({ rentId: id })
+        this.setState({ rentAvailable: available })
+        this.setState({ modalRentIsOpen: true })
+
+        var url = "http://localhost:8090/book-service/members"
+        axios.get(url, {
+            headers: {
+                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+            }
+        })
+            .then((response) => {
+                var temp = []
+                var data = response.data._embedded.memberList
+                for (var i = 0; i < data.length; i++) {
+                    temp.push({
+                        firstName: `${data[i].firstName}`,
+                        lastName: `${data[i].lastName}`,
+                        value: data[i].id + " " + data[i].firstName + " " + data[i].lastName,
+                        id: data[i].id
+                    })
+                }
+                this.setState({ memberOptions: temp })
+
+            }, (error) => {
+                console.log(error)
+                alert(error)
+            });
+    }
+
+    rentBook() {
+
+        var idMember = this.state.memberOptions.find(option => option.value === this.state.selectedMember).id
+        var url = 'http://localhost:8090/book-service/members/' + idMember + '/borrowings/' + this.state.rentId
+        if (this.state.rentAvailable) {
+
+            axios.post(url,
+                {},
+                {
+                    headers: {
+                        Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNzE3MzM1LCJpYXQiOjE1OTA2ODg1MzV9.DP8RPvApKX4vELiMvQia76SjVWkH0ieP0tbKpstbh_s"
+                    }
+                })
+                .then((response) => {
+
+                    var temp = this.state.books
+                    for (var i = 0; i < temp.length; i++) {
+                        if (temp[i].id === this.state.rentId) {
+                            temp[i].available = false
+                        }
+                    }
+                    this.setState({ books: temp })
+
+                }, (error) => {
+                    console.log(error)
+                    alert(error)
+                });
+            alert("Knjiga uspješno iznajmljena")
+        }
+        else {
+            axios.put(url,
+                {},
+                {
+                    headers: {
+                        Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNzE3MzM1LCJpYXQiOjE1OTA2ODg1MzV9.DP8RPvApKX4vELiMvQia76SjVWkH0ieP0tbKpstbh_s"
+                    }
+                })
+                .then((response) => {
+                    var temp = this.state.books
+                    for (var i = 0; i < temp.length; i++) {
+                        if (temp[i].id === this.state.rentId) {
+                            temp[i].available = true
+                        }
+                    }
+                    this.setState({ books: temp })
+
+                }, (error) => {
+                    console.log(error)
+                    alert(error)
+                });
+            alert("Knjiga uspješno vraćena")
+        }
+    }
+
     //Prikaz u tabeli
     prikazKorisnika() {
         return this.state.books.map((book, index) => {
             const { id, isbn, copy, bookType, genre, publisher, publishedDate, available } = book
+            var rent = "Iznajmi"
+            if (!available) {
+                rent = "Vrati"
+            }
             return (
                 <tr key={id}>
                     <td>{id}</td>
@@ -151,7 +249,9 @@ class Book extends React.Component {
                     <td>{genre.name}</td>
                     <td>{publisher.name}</td>
                     <td>
-                        <button className="btn danger" onClick={e => this.deleteBook(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteBook(id)} > Obrisi</button>
+                        <p> </p>
+                        <button className="btn warning btn-akcija" onClick={e => this.rentModal(id, available)} >{rent}</button>
                     </td>
                 </tr >
             )
@@ -200,6 +300,13 @@ class Book extends React.Component {
         }
     }
 
+    handleChangeMember = (selectedOption) => {
+        if (selectedOption) {
+            this.setState({ selectedMember: selectedOption.value })
+            this.setState({ memberTemp: selectedOption });
+        }
+    }
+
     createBook() {
 
         var idCopy = this.state.copyOptions.find(option => option.value === this.state.selectedCopy).id
@@ -243,11 +350,34 @@ class Book extends React.Component {
 
     }
 
+    searchBook(e) {
+        e.preventDefault();
+
+        if (this.state.nazivKnjige.length == 0) {
+            this.setState({ books: this.state.copyBooks })
+        }
+        else {
+            var temp = []
+            for (var i = 0; i < this.state.copyBooks.length; i++) {
+                if (this.state.copyBooks[i].copy.bookName == this.state.nazivKnjige) {
+                    temp.push(this.state.copyBooks[i])
+                }
+            }
+            this.setState({ books: temp })
+        }
+    }
+
     render() {
         return (
             <div>
                 <div className="global">
                     <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu knjigu</button>
+                    <div>
+                        <form className="seacrh">
+                            <input type="search" name="nazivKnjige" placeholder="Naziv knjige" onChange={this.handleChange} />
+                            <button className="btn info" onClick={this.searchBook}>Pretraga</button>
+                        </form>
+                    </div>
                     <table id='korisnici'>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
@@ -289,6 +419,24 @@ class Book extends React.Component {
 
                         </form>
                         <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
+                    </div>
+                </Modal>
+
+                <Modal isOpen={this.state.modalRentIsOpen}>
+                    <div className="modal">
+                        <h2>Iznajmljivanje/vraćanje knjige</h2>
+                        <form>
+                            <Dropdown
+                                options={this.state.memberOptions}
+                                value={this.state.memberTemp}
+                                onChange={(e) => { this.handleChangeMember(e); }}
+                                placeholder="Odaberite člana"
+                                className="dropdown"
+                            />
+                        </form>
+                        <button className="btn btn-akcija success" onClick={this.rentBook}>Završi</button>
+                        <p></p>
+                        <button className="btn btn-akcija danger" onClick={() => this.setState({ modalRentIsOpen: false })}>Zatvori</button>
                     </div>
                 </Modal>
             </div>
