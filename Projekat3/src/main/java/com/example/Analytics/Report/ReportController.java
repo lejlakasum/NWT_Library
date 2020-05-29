@@ -47,9 +47,9 @@ public class ReportController {
     }
 
     @PostMapping()
-    ResponseEntity<EntityModel<Report>> Add(@RequestBody Report newReport) throws URISyntaxException {
+    ResponseEntity<EntityModel<Report>> Add(@RequestHeader("Authorization") String token,@RequestBody Report newReport) throws URISyntaxException {
         try {
-            return reportService.Add(newReport);
+            return reportService.Add(token,newReport);
         }
         catch (ConstraintViolationException exception) {
             throw new BadRequestException(exception.getMessage());
