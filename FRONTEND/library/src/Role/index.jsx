@@ -1,2 +1,2 @@
-import "./Role.scss";
+import "./Role.css";
 export { Role } from "./Role";

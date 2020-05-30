@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import Modal from 'react-modal';
 
 export class Role extends Component {
     constructor(props) {
@@ -12,7 +13,7 @@ export class Role extends Component {
             ],
             role: [],
             uloga: '',
-            id: '',
+            modalIsOpen: ''
         };
     }
 
@@ -21,11 +22,11 @@ export class Role extends Component {
         var url = "http://localhost:8081/roles"
         axios.get(url, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNjIwODMzLCJpYXQiOjE1OTA1OTIwMzN9.UXhalqCMnRhrqXufEI3V5uxKiM03TkAbX3J7iQwzva4"
+                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
             }
 
         }).then((response) => {
-            
+
             var temp = [];
             for (var i = 0; i < response.data._embedded.roleList.length; i++) {
                 temp.push({ name: `${response.data._embedded.roleList[i].name}`, value: response.data._embedded.roleList[i].name, id: response.data._embedded.roleList[i].id });
@@ -44,24 +45,24 @@ export class Role extends Component {
         this.state.id = this.state.role[index].id;
     }
 
-    obrisiRolu = () => {
-        var url="http://localhost:8081/roles/"+this.state.id;
+    obrisiRolu = (id) => {
+        var url = "http://localhost:8081/roles/" + id;
         console.log(url);
-        axios.delete(url,{
+        axios.delete(url, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNjIwODMzLCJpYXQiOjE1OTA1OTIwMzN9.UXhalqCMnRhrqXufEI3V5uxKiM03TkAbX3J7iQwzva4"
+                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
             }
 
         })
-        .then(response =>{
-        var TEMP = [...this.state.role];
-        for (var i = 0; i < TEMP.length; i++) {
-            if (TEMP[i].id === this.state.id) TEMP.splice(i, 1);
-        }
-        this.setState({ role: TEMP })
-        }).then(function (response) {
-            alert("Uloga uspješno obrisana!");
-        })
+            .then(response => {
+                var TEMP = [...this.state.role];
+                for (var i = 0; i < TEMP.length; i++) {
+                    if (TEMP[i].id === id) TEMP.splice(i, 1);
+                }
+                this.setState({ role: TEMP })
+            }).then(function (response) {
+                alert("Uloga uspješno obrisana!");
+            })
             .catch(function (error) {
                 alert(error);
             });
@@ -69,13 +70,14 @@ export class Role extends Component {
 
     kreirajRolu = () => {
 
+ 
         axios.post('http://localhost:8081/roles',
-        {
-            name: this.state.uloga,
-            
-        }, {
+            {
+                name: this.state.uloga,
+
+            }, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwNjIwODMzLCJpYXQiOjE1OTA1OTIwMzN9.UXhalqCMnRhrqXufEI3V5uxKiM03TkAbX3J7iQwzva4"
+                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
             }
         }).then(function (response) {
             alert("Uloga uspješno dodana!");
@@ -95,19 +97,13 @@ export class Role extends Component {
 
     prikazRole() {
         return this.state.role.map((uloga, index) => {
-            const { name } = uloga
+            const { id, name } = uloga
             const brisati = false;
             return (
-                <tr key={name}>
+                <tr key={id}>
                     <td>{name}</td>
-                    <td>{brisati}
-                        <div className="brisanje">
-                            <label>
-                                <input type="checkbox"
-                                    brisati={this.state.checked}
-                                    onChange={e => this.handleChangeId(e, index)} />
-                            </label>
-                        </div>
+                    <td>
+                        <button className="btn danger btn-akcija" onClick={e => this.obrisiRolu(id)} > Obrisi</button>
                     </td>
                 </tr>
             )
@@ -129,32 +125,31 @@ export class Role extends Component {
 
     render() {
         return (
-            <div>
+            <div className="global">
                 <h2 id='title'>Pregled/brisanje uloge</h2>
-                <table id='korisnici'>
+                <table >
                     <tbody>
                         <tr>{this.headerTabele()}</tr>
                         {this.prikazRole()}
                     </tbody>
                 </table>
-                <div className="footer">
-                    <button type="button" className="btn" onClick={this.obrisiRolu}>
-                        Obriši ulogu
-                </button>
-                </div>
-                <div className="forma">
-                    <h2 id='title'>Dodavanje nove uloge</h2>
-                    <div className="form-grupa">
-                        <label htmlFor="username">Naziv:</label>
+                <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj ulogu</button>
+                <Modal isOpen={this.state.modalIsOpen} >
+                    <div className="modal">
+                        <h2 id='title'>Dodavanje nove uloge</h2>
+
                         <input type="text"
                             name="uloga"
-                            value={this.state.uloga}
                             onChange={e => this.unosNovog(e)} />
+
+
                     </div>
-                    <button type="button" className="btn" onClick={this.kreirajRolu}>
+                    <button type="button" className="btn success add" onClick={this.kreirajRolu}>
                         Dodavanje nove uloge
                     </button>
-                </div>
+                    <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
+
+                </Modal>
             </div>
         )
     }

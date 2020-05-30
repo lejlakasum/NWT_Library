@@ -4,7 +4,7 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Modal from 'react-modal'
+import Modal from 'react-modal';
 
 export class Employee extends Component {
     constructor(props) {
