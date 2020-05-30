@@ -33,7 +33,8 @@ class Book extends React.Component {
             memberTemp: '',
             selectedMember: '',
             nazivKnjige: '',
-            copyBooks: []
+            copyBooks: [],
+            validToken: false
         };
 
         this.handleChange = this.handleChange.bind(this)
@@ -45,94 +46,111 @@ class Book extends React.Component {
 
     componentWillMount() {
 
-        var url = "http://localhost:8090/book-service/books"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
+        //CHECK TOKEN
+        var url = "http://localhost:8090/user-service/validate-token"
+        axios.post(url, {
+            token: localStorage.token,
+            username: localStorage.username
         })
             .then((response) => {
-                this.setState({ books: response.data._embedded.bookList, copyBooks: response.data._embedded.bookList })
+                localStorage.role = response.data.role
+                localStorage.id = response.data.userId
+                if (localStorage.role == "STUFF") {
+                    this.setState({ validToken: true })
 
-            }, (error) => {
-                console.log(error)
-                alert(error)
-            });
+                    var url = "http://localhost:8090/book-service/books"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                        }
+                    })
+                        .then((response) => {
+                            this.setState({ books: response.data._embedded.bookList, copyBooks: response.data._embedded.bookList })
 
-        var url = "http://localhost:8090/book-service/copies"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
-        })
-            .then((response) => {
-                var temp = []
-                var data = response.data._embedded.copyList
-                for (var i = 0; i < data.length; i++) {
-                    temp.push({ bookName: `${data[i].bookName}`, value: data[i].bookName, id: data[i].id })
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
+
+                    var url = "http://localhost:8090/book-service/copies"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                        }
+                    })
+                        .then((response) => {
+                            var temp = []
+                            var data = response.data._embedded.copyList
+                            for (var i = 0; i < data.length; i++) {
+                                temp.push({ bookName: `${data[i].bookName}`, value: data[i].bookName, id: data[i].id })
+                            }
+                            this.setState({ copyOptions: temp })
+
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
+
+                    var url = "http://localhost:8090/book-service/booktypes"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                        }
+                    })
+                        .then((response) => {
+                            var temp = []
+                            var data = response.data._embedded.bookTypeList
+                            for (var i = 0; i < data.length; i++) {
+                                temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
+                            }
+                            this.setState({ typeOptions: temp })
+
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
+
+                    var url = "http://localhost:8090/book-service/genres"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                        }
+                    })
+                        .then((response) => {
+                            var temp = []
+                            var data = response.data._embedded.genreList
+                            for (var i = 0; i < data.length; i++) {
+                                temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
+                            }
+                            this.setState({ genreOptions: temp })
+
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
+
+                    var url = "http://localhost:8090/book-service/publishers"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                        }
+                    })
+                        .then((response) => {
+                            var temp = []
+                            var data = response.data._embedded.publisherList
+                            for (var i = 0; i < data.length; i++) {
+                                temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
+                            }
+                            this.setState({ publisherOptions: temp })
+
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
                 }
-                this.setState({ copyOptions: temp })
 
             }, (error) => {
-                console.log(error)
-                alert(error)
-            });
-
-        var url = "http://localhost:8090/book-service/booktypes"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
-        })
-            .then((response) => {
-                var temp = []
-                var data = response.data._embedded.bookTypeList
-                for (var i = 0; i < data.length; i++) {
-                    temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
-                }
-                this.setState({ typeOptions: temp })
-
-            }, (error) => {
-                console.log(error)
-                alert(error)
-            });
-
-        var url = "http://localhost:8090/book-service/genres"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
-        })
-            .then((response) => {
-                var temp = []
-                var data = response.data._embedded.genreList
-                for (var i = 0; i < data.length; i++) {
-                    temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
-                }
-                this.setState({ genreOptions: temp })
-
-            }, (error) => {
-                console.log(error)
-                alert(error)
-            });
-
-        var url = "http://localhost:8090/book-service/publishers"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
-        })
-            .then((response) => {
-                var temp = []
-                var data = response.data._embedded.publisherList
-                for (var i = 0; i < data.length; i++) {
-                    temp.push({ name: `${data[i].name}`, value: data[i].name, id: data[i].id })
-                }
-                this.setState({ publisherOptions: temp })
-
-            }, (error) => {
-                console.log(error)
-                alert(error)
+                this.setState({ validToken: false })
             });
     }
 
@@ -368,6 +386,12 @@ class Book extends React.Component {
     }
 
     render() {
+        if (!this.state.validToken) {
+            return (
+                <div></div>
+            )
+        }
+
         return (
             <div>
                 <div className="global">

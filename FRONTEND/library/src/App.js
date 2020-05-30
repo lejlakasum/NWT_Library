@@ -9,13 +9,17 @@ import { Profile } from "./Profile/index"
 import { Role } from "./Role/index"
 import { Employee } from "./Employee/index"
 import Member from './Member/Member'
+import Stuff from './Paneli/Stuff'
+import AdminPage from './Paneli/AdminPage'
 
 
 function App() {
   return (
     <div>
       <Router>
-        <Route path="/login" component={Login} />
+        <Route path="/stuff" component={Stuff} />
+        <Route path="/adminpage" component={AdminPage} />
+        <Route path="/" exact component={Login} />
         <Route path="/admin" component={Admin} />
         <Route path="/books" component={Book} />
         <Route path="/profiles" component={Profile} />

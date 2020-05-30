@@ -9,7 +9,8 @@ class Login extends React.Component {
         super()
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            errorMessage: ""
         }
 
         this.handleChange = this.handleChange.bind(this)
@@ -29,27 +30,26 @@ class Login extends React.Component {
             password: this.state.password
         })
             .then((response) => {
+                this.setState({ errorMessage: "" })
                 localStorage.token = response.data.token
                 localStorage.username = JSON.parse(atob(localStorage.token.split('.')[1])).sub
-                localStorage.logedIn = true
-                var url = "http://localhost:8090/user-service/profiles/username/" + localStorage.username
-                axios.get(url, {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.token
-                    }
+
+                var url = "http://localhost:8090/user-service/validate-token"
+                axios.post(url, {
+                    token: localStorage.token,
+                    username: localStorage.username
                 })
                     .then((response) => {
-
-                        localStorage.id = response.data.id
-                        localStorage.role = response.data.role.name
-
-                    }, (error) => {
-                        console.log(error)
-                        alert("GET" + error)
-                    });
+                        if (response.data.role == "STUFF") {
+                            this.props.history.push('/stuff')
+                        }
+                        else if (response.data.role == "ADMIN") {
+                            this.props.history.push('/adminpage')
+                        }
+                    })
 
             }, (error) => {
-                alert(error)
+                this.setState({ errorMessage: "Pogrešni podaci" })
             });
 
         event.preventDefault()
@@ -64,6 +64,7 @@ class Login extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <input type="text" name="username" placeholder="Username" onChange={this.handleChange} />
                     <input type="password" name="password" placeholder="Password" onChange={this.handleChange} />
+                    <label style={{ color: "red" }}>{this.state.errorMessage}</label>
                     <input className="submit-btn" type="submit" value="Login" />
                 </form>
             </div>
