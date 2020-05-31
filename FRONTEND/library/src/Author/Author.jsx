@@ -41,7 +41,7 @@ class Author extends React.Component {
                     var url = "http://localhost:8090/book-service/authors"
                     axios.get(url, {
                         headers: {
-                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                            Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
@@ -55,7 +55,7 @@ class Author extends React.Component {
                     url = "http://localhost:8090/book-service/countries"
                     axios.get(url, {
                         headers: {
-                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                            Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
@@ -136,7 +136,7 @@ class Author extends React.Component {
             },
             {
                 headers: {
-                    Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                    Authorization: "Bearer " + localStorage.token
                 }
             })
             .then((response) => {

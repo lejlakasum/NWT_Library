@@ -207,7 +207,7 @@ class Copy extends React.Component {
             },
             {
                 headers: {
-                    Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                    Authorization: "Bearer " + localStorage.token
                 }
             })
             .then((response) => {
