@@ -18,6 +18,7 @@ class Stuff extends React.Component {
         this.state = {
             validToken: false
         };
+        this.logout = this.logout.bind(this)
     }
 
     componentWillMount() {
@@ -36,6 +37,7 @@ class Stuff extends React.Component {
                 }
 
             }, (error) => {
+                alert("usao")
                 this.setState({ validToken: false })
             });
     }

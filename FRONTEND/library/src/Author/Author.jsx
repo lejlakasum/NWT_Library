@@ -27,6 +27,7 @@ class Author extends React.Component {
 
     componentWillMount() {
 
+        console.log("USAO")
         var url = "http://localhost:8090/user-service/validate-token"
         axios.post(url, {
             token: localStorage.token,
@@ -170,7 +171,7 @@ class Author extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje autora</h2>
+                    <h2 id='title'>Pregled/brisanje autora</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
