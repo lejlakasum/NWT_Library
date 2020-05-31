@@ -11,6 +11,9 @@ class Book extends React.Component {
             BookHeader: [
                 { Id: "", ISBN: "", Naziv: "", Tip: "", Zanr: "", Izdavac: "", Akcije: "" }
             ],
+            CommentHeader: [
+                { Komentar: "", Ocjena: "", Član: "" }
+            ],
             books: [],
             modalIsOpen: false,
             isbn: '',
@@ -34,7 +37,9 @@ class Book extends React.Component {
             selectedMember: '',
             nazivKnjige: '',
             copyBooks: [],
-            validToken: false
+            validToken: false,
+            commentModalIsOpen: false,
+            komentari: []
         };
 
         this.handleChange = this.handleChange.bind(this)
@@ -250,6 +255,38 @@ class Book extends React.Component {
         }
     }
 
+    commentModal(id) {
+        this.setState({ commentModalIsOpen: true })
+
+        var url = "http://localhost:8090/book-service/books/" + id + "/impressions"
+        axios.get(url, {
+            headers: {
+                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+            }
+        })
+            .then((response) => {
+                this.setState({ komentari: response.data })
+
+            }, (error) => {
+                console.log(error)
+                alert(error)
+            });
+    }
+
+    prikaziKomentare() {
+        return this.state.komentari.map((komentar, index) => {
+            const { comment, rating, member } = komentar
+            var user = member.firstName + " " + member.lastName
+            return (
+                <tr key={comment}>
+                    <td>{comment}</td>
+                    <td>{rating}</td>
+                    <td>{user}</td>
+                </tr >
+            )
+        })
+    }
+
     //Prikaz u tabeli
     prikazKnjigu() {
         return this.state.books.map((book, index) => {
@@ -270,6 +307,8 @@ class Book extends React.Component {
                         <button className="btn danger btn-akcija" onClick={e => this.deleteBook(id)} > Obrisi</button>
                         <p> </p>
                         <button className="btn warning btn-akcija" onClick={e => this.rentModal(id, available)} >{rent}</button>
+                        <p> </p>
+                        <button className="btn warning " onClick={e => this.commentModal(id)} >Komentari</button>
                     </td>
                 </tr >
             )
@@ -278,6 +317,13 @@ class Book extends React.Component {
 
     headerTabele() {
         let header = Object.keys(this.state.BookHeader[0])
+        return header.map((key, index) => {
+            return <th key={index}>{key.toUpperCase()}</th>
+        })
+    }
+
+    headerComment() {
+        let header = Object.keys(this.state.CommentHeader[0])
         return header.map((key, index) => {
             return <th key={index}>{key.toUpperCase()}</th>
         })
@@ -462,6 +508,15 @@ class Book extends React.Component {
                         <p></p>
                         <button className="btn btn-akcija danger" onClick={() => this.setState({ modalRentIsOpen: false })}>Zatvori</button>
                     </div>
+                </Modal>
+                <Modal isOpen={this.state.commentModalIsOpen}>
+                    <button className="btn btn-akcija danger" onClick={() => this.setState({ commentModalIsOpen: false })}>Zatvori</button>
+                    <table>
+                        <tbody>
+                            <tr>{this.headerComment()}</tr>
+                            {this.prikaziKomentare()}
+                        </tbody>
+                    </table>
                 </Modal>
             </div>
         )
