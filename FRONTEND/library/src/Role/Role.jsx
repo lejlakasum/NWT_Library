@@ -13,28 +13,47 @@ export class Role extends Component {
             ],
             role: [],
             uloga: '',
-            modalIsOpen: ''
+            modalIsOpen: '',
+            validToken: false
         };
     }
 
     componentWillMount() {
 
-        var url = "http://localhost:8081/roles"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
-            }
+        var url = "http://localhost:8081/validate-token"
+        axios.post(url, {
+            token: localStorage.token,
+            username: localStorage.username
+        })
+            .then((response) => {
+                localStorage.role = response.data.role
+                localStorage.id = response.data.userId
+                if (localStorage.role == "ADMIN") {
+                    this.setState({ validToken: true })
 
-        }).then((response) => {
+                    var url = "http://localhost:8081/roles"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.token
+                        }
 
-            var temp = [];
-            for (var i = 0; i < response.data._embedded.roleList.length; i++) {
-                temp.push({ name: `${response.data._embedded.roleList[i].name}`, value: response.data._embedded.roleList[i].name, id: response.data._embedded.roleList[i].id });
-            }
-            this.setState({ role: temp });
-        }, (error) => {
-            alert("GET" + error)
-        });
+                    }).then((response) => {
+
+                        var temp = [];
+                        for (var i = 0; i < response.data._embedded.roleList.length; i++) {
+                            temp.push({ name: `${response.data._embedded.roleList[i].name}`, value: response.data._embedded.roleList[i].name, id: response.data._embedded.roleList[i].id });
+                        }
+                        this.setState({ role: temp });
+                    }, (error) => {
+                        alert("GET" + error)
+                    });
+                }
+
+            }, (error) => {
+                this.setState({ validToken: false })
+            });
+
+
     }
 
     handleChange = (e, index) => {
@@ -70,7 +89,7 @@ export class Role extends Component {
 
     kreirajRolu = () => {
 
- 
+
         axios.post('http://localhost:8081/roles',
             {
                 name: this.state.uloga,
@@ -124,6 +143,11 @@ export class Role extends Component {
     }
 
     render() {
+        if (!this.state.validToken) {
+            return (
+                <div></div>
+            )
+        }
         return (
             <div className="global">
                 <h2 id='title'>Pregled/brisanje uloge</h2>
