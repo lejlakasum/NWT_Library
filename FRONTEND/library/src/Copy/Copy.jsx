@@ -11,14 +11,25 @@ class Copy extends React.Component {
             CopyHeader: [
                 { Id: "", Naziv: "", Akcije: "" }
             ],
+            AuthorHeader: [
+                { Id: "", Ime: "", Prezime: "", Drzava: "" }
+            ],
             copies: [],
             modalIsOpen: false,
             validToken: false,
-            name: ""
+            name: "",
+            modalAddIsOpen: false,
+            idCopy: -1,
+            authorOptions: [],
+            authorTemp: "",
+            selectedAuthor: "",
+            modalShowIsOpen: false,
+            authors: []
         };
 
         this.handleChange = this.handleChange.bind(this)
         this.createCopy = this.createCopy.bind(this)
+        this.addAuthor = this.addAuthor.bind(this)
     }
 
     componentWillMount() {
@@ -80,6 +91,96 @@ class Copy extends React.Component {
         alert("Uspješno obrisana kopija!");
     }
 
+    addAuthorModal(id) {
+        this.setState({ modalAddIsOpen: true, idCopy: id })
+        var url = "http://localhost:8090/book-service/authors"
+        axios.get(url, {
+            headers: {
+                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+            }
+        })
+            .then((response) => {
+                var temp = []
+                var data = response.data._embedded.authorList
+                for (var i = 0; i < data.length; i++) {
+                    temp.push({ firstName: `${data[i].firstName}`, lastName: `${data[i].lastName}`, value: data[i].firstName + " " + data[i].lastName, id: data[i].id })
+                }
+                this.setState({ authorOptions: temp })
+
+            }, (error) => {
+                console.log(error)
+                alert(error)
+            });
+    }
+
+    handleChangeAuthor = (selectedOption) => {
+        if (selectedOption) {
+            this.setState({ selectedAuthor: selectedOption.value })
+            this.setState({ authorTemp: selectedOption });
+        }
+    }
+
+    addAuthor(e) {
+
+        var idAuthor = this.state.authorOptions.find(option => option.value === this.state.selectedAuthor).id
+
+        var url = 'http://localhost:8090/book-service/copies/' + this.state.idCopy + '/authors/' + idAuthor
+        axios.post(url,
+            {},
+            {
+                headers: {
+                    Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                }
+            })
+            .then((response) => {
+                alert("Autor uspjesno dodan")
+
+            }, (error) => {
+                console.log(error)
+                alert(error)
+            });
+        e.preventDefault();
+    }
+
+    showAuthorModal(id) {
+        this.setState({ modalShowIsOpen: true })
+        var url = "http://localhost:8090/book-service/copies/" + id + '/authors'
+        axios.get(url, {
+            headers: {
+                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+            }
+        })
+            .then((response) => {
+                this.setState({ authors: response.data._embedded.authorList })
+
+            }, (error) => {
+                console.log(error)
+                alert(error)
+            });
+    }
+
+    headerAuthor() {
+        let header = Object.keys(this.state.AuthorHeader[0])
+        return header.map((key, index) => {
+            return <th key={index}>{key.toUpperCase()}</th>
+        })
+    }
+
+    prikazAutora() {
+        return this.state.authors.map((author, index) => {
+            const { id, firstName, lastName, country } = author
+
+            return (
+                <tr key={id}>
+                    <td>{id}</td>
+                    <td>{firstName}</td>
+                    <td>{lastName}</td>
+                    <td>{country.name}</td>
+                </tr >
+            )
+        })
+    }
+
     prikazKopije() {
         return this.state.copies.map((copy, index) => {
             const { id, bookName } = copy
@@ -90,6 +191,8 @@ class Copy extends React.Component {
                     <td>{bookName}</td>
                     <td>
                         <button className="btn danger btn-akcija" onClick={e => this.deleteCopy(id)} > Obrisi</button>
+                        <button className="btn warning btn-akcija" onClick={e => this.addAuthorModal(id)} > Dodaj autora</button>
+                        <button className="btn warning btn-akcija" onClick={e => this.showAuthorModal(id)} > Prikaz autora</button>
                     </td>
                 </tr >
             )
@@ -150,6 +253,30 @@ class Copy extends React.Component {
                         </form>
                         <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
                     </div>
+                </Modal>
+                <Modal isOpen={this.state.modalAddIsOpen}>
+                    <h2>Dodavanje novog autora</h2>
+                    <form >
+                        <Dropdown options={this.state.authorOptions}
+                            value={this.state.authorTemp}
+                            onChange={(e) => { this.handleChangeAuthor(e); }}
+                            placeholder="Odaberi autora"
+                            className="dropdown"
+                        />
+                        <button className="btn success" onClick={this.addAuthor}>Dodaj</button>
+
+                    </form>
+                    <button className="btn danger close" onClick={() => this.setState({ modalAddIsOpen: false })}>Zatvori</button>
+                </Modal>
+                <Modal isOpen={this.state.modalShowIsOpen}>
+                    <button className="btn danger close" onClick={() => this.setState({ modalShowIsOpen: false })}>Zatvori</button>
+
+                    <table>
+                        <tbody>
+                            <tr>{this.headerAuthor()}</tr>
+                            {this.prikazAutora()}
+                        </tbody>
+                    </table>
                 </Modal>
             </div>
         )
