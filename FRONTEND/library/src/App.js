@@ -11,6 +11,7 @@ import Member from './Member/Member'
 import Copy from './Copy/Copy'
 import Stuff from './Paneli/Stuff'
 import AdminPage from './Paneli/AdminPage'
+import Author from './Author/Author'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Router>
         <Route path="/stuff" exact component={Stuff} />
         <Route path="/stuff/copy" component={Copy} />
+        <Route path="/stuff/author" component={Author} />
         <Route path="/adminpage" component={AdminPage} />
         <Route path="/" exact component={Login} />
         <Route path="/admin" component={Admin} />
