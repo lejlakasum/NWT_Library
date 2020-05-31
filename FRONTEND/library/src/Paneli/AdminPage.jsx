@@ -16,6 +16,8 @@ class AdminPage extends React.Component {
         this.state = {
             validToken: false
         };
+
+        this.logout = this.logout.bind(this)
     }
 
     componentWillMount() {
