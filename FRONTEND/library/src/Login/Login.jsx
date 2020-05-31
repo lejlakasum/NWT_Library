@@ -46,6 +46,9 @@ class Login extends React.Component {
                         else if (response.data.role == "ADMIN") {
                             this.props.history.push('/adminpage')
                         }
+                        else if (response.data.role == "MEMBER") {
+                            this.props.history.push('/member')
+                        }
                     })
 
             }, (error) => {

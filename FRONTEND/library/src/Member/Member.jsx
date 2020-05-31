@@ -2,6 +2,7 @@ import React from 'react';
 import "./Member.css"
 import axios from 'axios'
 import Modal from 'react-modal'
+import MemberNavbar from '../Navigation/MemberNavbar'
 
 class Member extends React.Component {
 
@@ -152,35 +153,43 @@ class Member extends React.Component {
         })
     }
 
+    logout() {
+        localStorage.token = ""
+    }
+
     render() {
         return (
-            <div className="global">
-                <h3 className="naslov">Prikaz historije iznajmljivanja knjiga</h3>
-                <table>
-                    <tbody>
-                        <tr>{this.headerTabele()}</tr>
-                        {this.prikazKnjigu()}
-                    </tbody>
-                </table>
-                <Modal isOpen={this.state.commentModalIsOpen}>
-                    <button className="btn btn-akcija danger" onClick={() => this.setState({ commentModalIsOpen: false })}>Zatvori</button>
+            <div>
+                <MemberNavbar />
+                <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
+                <div className="global">
+                    <h3 className="naslov">Prikaz historije iznajmljivanja knjiga</h3>
                     <table>
                         <tbody>
-                            <tr>{this.headerComment()}</tr>
-                            {this.prikaziKomentare()}
+                            <tr>{this.headerTabele()}</tr>
+                            {this.prikazKnjigu()}
                         </tbody>
                     </table>
-                </Modal>
-                <Modal isOpen={this.state.commentAddModalIsOpen}>
-                    <h2>Dodavanje nove knjige</h2>
-                    <form >
-                        <input type="text" name="comment" placeholder="Komentar" onChange={this.handleChange} />
-                        <input type="number" name="ocjena" placeholder="Ocjena" onChange={this.handleChange} />
-                        <button className="btn success" onClick={this.addComent}>Dodaj</button>
+                    <Modal isOpen={this.state.commentModalIsOpen}>
+                        <button className="btn btn-akcija danger" onClick={() => this.setState({ commentModalIsOpen: false })}>Zatvori</button>
+                        <table>
+                            <tbody>
+                                <tr>{this.headerComment()}</tr>
+                                {this.prikaziKomentare()}
+                            </tbody>
+                        </table>
+                    </Modal>
+                    <Modal isOpen={this.state.commentAddModalIsOpen}>
+                        <h2>Dodavanje nove knjige</h2>
+                        <form >
+                            <input type="text" name="comment" placeholder="Komentar" onChange={this.handleChange} />
+                            <input type="number" name="ocjena" placeholder="Ocjena" onChange={this.handleChange} />
+                            <button className="btn success" onClick={this.addComent}>Dodaj</button>
 
-                    </form>
-                    <button className="btn btn-akcija danger" onClick={() => this.setState({ commentAddModalIsOpen: false })}>Zatvori</button>
-                </Modal>
+                        </form>
+                        <button className="btn btn-akcija danger" onClick={() => this.setState({ commentAddModalIsOpen: false })}>Zatvori</button>
+                    </Modal>
+                </div>
             </div>
         )
     }

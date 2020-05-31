@@ -371,7 +371,7 @@ class Book extends React.Component {
         }
     }
 
-    createBook() {
+    createBook(e) {
 
         var idCopy = this.state.copyOptions.find(option => option.value === this.state.selectedCopy).id
         var idType = this.state.typeOptions.find(option => option.value === this.state.selectedType).id
@@ -411,6 +411,8 @@ class Book extends React.Component {
                 console.log(error)
                 alert(error)
             });
+
+        e.preventDefault();
 
     }
 
