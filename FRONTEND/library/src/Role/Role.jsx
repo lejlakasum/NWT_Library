@@ -69,7 +69,7 @@ export class Role extends Component {
         console.log(url);
         axios.delete(url, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
+                Authorization: "Bearer "+localStorage.token
             }
 
         })
@@ -96,7 +96,7 @@ export class Role extends Component {
 
             }, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
+                Authorization: "Bearer "+localStorage.token
             }
         }).then(function (response) {
             alert("Uloga uspješno dodana!");

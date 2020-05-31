@@ -103,7 +103,7 @@ export class Profile extends Component {
         console.log(url);
         axios.delete(url, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwOTY4NzY1LCJpYXQiOjE1OTA5Mzk5NjV9.rLpqbS-29fjRpOdV05cjqq-yIJGGAlRi55aIgq-SWiI"
+                Authorization: "Bearer "+localStorage.token
             }
 
         })
@@ -140,7 +140,7 @@ export class Profile extends Component {
                 password: "user"
             }, {
             headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwOTY4NzY1LCJpYXQiOjE1OTA5Mzk5NjV9.rLpqbS-29fjRpOdV05cjqq-yIJGGAlRi55aIgq-SWiI"
+                Authorization: "Bearer "+localStorage.token
             }
         }).then(function (response) {
             alert("Profil uspješno dodan!");
