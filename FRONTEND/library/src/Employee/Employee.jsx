@@ -22,48 +22,68 @@ export class Employee extends Component {
             temp: '',
             id: '',
             birthDate: new Date(),
-            modalIsOpen: false
+            modalIsOpen: false,
+            validToken: false
         };
 
     }
 
     componentWillMount() {
-        var url = "http://localhost:8081/profiles"
 
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
-            }
-        }).then((response) => {
+        var url = "http://localhost:8090/user-service/validate-token"
+        axios.post(url, {
+            token: localStorage.token,
+            username: localStorage.username
+        })
+            .then((response) => {
+                localStorage.role = response.data.role
+                localStorage.id = response.data.userId
+                if (localStorage.role == "ADMIN") {
+                    this.setState({ validToken: true })
 
-            var temp = [];
-            for (var i = 0; i < response.data._embedded.profileList.length; i++) {
-                temp.push({ name: `${response.data._embedded.profileList[i].firstName}`, value: response.data._embedded.profileList[i].firstName + " " + response.data._embedded.profileList[i].lastName, firstName: response.data._embedded.profileList[i].firstName, lastName: response.data._embedded.profileList[i].lastName, birthDate: response.data._embedded.profileList[i].birthDate, roleId: response.data._embedded.profileList[i].role.roleId, roleName: response.data._embedded.profileList[i].role.name, id: response.data._embedded.profileList[i].id });
-            }
+                    var url = "http://localhost:8090/user-service/profiles"
 
-            this.setState({ profile: temp });
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.token
+                        }
+                    }).then((response) => {
 
-        }, (error) => {
-            console.log(error)
-            alert("GET" + error)
-        });
-        var url2 = "http://localhost:8081/employees"
-        axios.get(url2, {
-            headers: {
-                Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkb2xvcmVzIiwiZXhwIjoxNTkwODI0NjkzLCJpYXQiOjE1OTA3OTU4OTN9.5E2tq4N2qvEonDKvtH-xUuvsI-MlhRJMDcTyuimfyCM"
-            }
+                        var temp = [];
+                        for (var i = 0; i < response.data._embedded.profileList.length; i++) {
+                            temp.push({ name: `${response.data._embedded.profileList[i].firstName}`, value: response.data._embedded.profileList[i].firstName + " " + response.data._embedded.profileList[i].lastName, firstName: response.data._embedded.profileList[i].firstName, lastName: response.data._embedded.profileList[i].lastName, birthDate: response.data._embedded.profileList[i].birthDate, roleId: response.data._embedded.profileList[i].role.roleId, roleName: response.data._embedded.profileList[i].role.name, id: response.data._embedded.profileList[i].id });
+                        }
 
-        }).then((response) => {
+                        this.setState({ profile: temp });
 
-            var temp = [];
-            for (var i = 0; i < response.data._embedded.employeeList.length; i++) {
-                temp.push({ name: `${response.data._embedded.employeeList[i].profile.firstName}`, value: response.data._embedded.employeeList[i].profile.firstName, firstName: response.data._embedded.employeeList[i].profile.firstName, lastName: response.data._embedded.employeeList[i].profile.lastName, birthDate: response.data._embedded.employeeList[i].profile.birthDate, salary: response.data._embedded.employeeList[i].salary, id: response.data._embedded.employeeList[i].id });
-            }
-            this.setState({ employee: temp });
-        }, (error) => {
-            console.log(error)
-            alert("GET" + error)
-        });
+                    }, (error) => {
+                        console.log(error)
+                        alert("GET" + error)
+                    });
+                    var url2 = "http://localhost:8090/user-service/employees"
+                    axios.get(url2, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.token
+                        }
+
+                    }).then((response) => {
+
+                        var temp = [];
+                        for (var i = 0; i < response.data._embedded.employeeList.length; i++) {
+                            temp.push({ name: `${response.data._embedded.employeeList[i].profile.firstName}`, value: response.data._embedded.employeeList[i].profile.firstName, firstName: response.data._embedded.employeeList[i].profile.firstName, lastName: response.data._embedded.employeeList[i].profile.lastName, birthDate: response.data._embedded.employeeList[i].profile.birthDate, salary: response.data._embedded.employeeList[i].salary, id: response.data._embedded.employeeList[i].id });
+                        }
+                        this.setState({ employee: temp });
+                    }, (error) => {
+                        console.log(error)
+                        alert("GET" + error)
+                    });
+                }
+
+            }, (error) => {
+                this.setState({ validToken: false })
+            });
+
+
     }
 
     handleChange = (e, index) => {
@@ -88,7 +108,7 @@ export class Employee extends Component {
     }
 
     obrisiEmployee = (id) => {
-        var url = "http://localhost:8081/employees/" +id;
+        var url = "http://localhost:8090/user-service/employees/" + id;
         console.log(url);
         axios.delete(url, {
             headers: {
@@ -117,7 +137,7 @@ export class Employee extends Component {
         }
         console.log(this.state.ime + " " + this.state.prezime + " " + this.state.birthDate + " " + idProfila);
 
-        axios.post('http://localhost:8081/employees',
+        axios.post('http://localhost:8090/user-service/employees',
             {
 
                 profile: {
@@ -149,7 +169,7 @@ export class Employee extends Component {
 
     prikazEmployee() {
         return this.state.employee.map((uposlenik, index) => {
-            const { id,firstName, lastName, birthDate, salary } = uposlenik
+            const { id, firstName, lastName, birthDate, salary } = uposlenik
             const brisati = false;
             return (
                 <tr key={id}>
@@ -215,7 +235,7 @@ export class Employee extends Component {
                         Dodavanje novog zaposlenika
                     </button>
                     <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
-                    
+
 
                 </Modal>
 
