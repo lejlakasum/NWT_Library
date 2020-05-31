@@ -62,6 +62,6 @@ public class AuthenticationController {
         }
 
         Profile profile = profileRepository.findByUsername(validationRQ.getUsername());
-        return ResponseEntity.ok(new ValidationRS(userDetails.getUsername(), userDetails.getPassword(), profile.getRole().getName()));
+        return ResponseEntity.ok(new ValidationRS(userDetails.getUsername(), userDetails.getPassword(), profile.getRole().getName(), profile.getRole().getName(), profile.getId()));
     }
 }
