@@ -220,10 +220,10 @@ export class Member extends Component {
 
     prikazMembera() {
         return this.state.members.map((clan, index) => {
-            const { name, firstName, lastName, birthDate, joinDate, active } = clan
+            const { id, name, firstName, lastName, birthDate, joinDate, active } = clan
             const brisati = false;
             return (
-                <tr key={name}>
+                <tr key={id}>
                     <td>{firstName}</td>
                     <td>{lastName}</td>
                     <td>{birthDate}</td>
