@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import "./Genre.css"
+import "./Publisher.css"
 import axios from 'axios'
 import Modal from 'react-modal'
 import Dropdown from 'react-dropdown';
 
-class Genre extends React.Component {
+class Publisher extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            GenreHeader: [
+            PublisherHeader: [
                 { Id: "", Naziv: "", Akcije: "" }
             ],
-            genres: [],
+            publishers: [],
             modalIsOpen: false,
             validToken: false,
             name: ""
         };
 
         this.handleChange = this.handleChange.bind(this)
-        this.createGenre = this.createGenre.bind(this)
+        this.createPublisher = this.createPublisher.bind(this)
     }
 
     componentWillMount() {
@@ -34,14 +34,14 @@ class Genre extends React.Component {
                 if (localStorage.role == "STUFF") {
                     this.setState({ validToken: true })
 
-                    var url = "http://localhost:8090/book-service/genres"
+                    var url = "http://localhost:8090/book-service/publishers"
                     axios.get(url, {
                         headers: {
                             Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
-                            this.setState({ genres: response.data._embedded.genreList })
+                            this.setState({ publishers: response.data._embedded.publisherList })
 
                         }, (error) => {
                             console.log(error)
@@ -62,43 +62,43 @@ class Genre extends React.Component {
     }
 
     headerTabele() {
-        let header = Object.keys(this.state.GenreHeader[0])
+        let header = Object.keys(this.state.PublisherHeader[0])
         return header.map((key, index) => {
             return <th key={index}>{key.toUpperCase()}</th>
         })
     }
 
-    deleteGenre(id) {
-        var url = "http://localhost:8090/book-service/genres/" + id;
+    deletePublisher(id) {
+        var url = "http://localhost:8090/book-service/publishers/" + id;
         axios.delete(url)
 
-        var TEMP = [...this.state.genres];
+        var TEMP = [...this.state.publishers];
         for (var i = 0; i < TEMP.length; i++) {
             if (TEMP[i].id === id) TEMP.splice(i, 1);
         }
-        this.setState({ genres: TEMP })
-        alert("Uspješno obrisan žanr!");
+        this.setState({ publishers: TEMP })
+        alert("Uspješno obrisan izdavač!");
     }
 
-    prikazZanra() {
-        return this.state.genres.map((genre, index) => {
-            const { id, name } = genre
+    prikazIzdavaca() {
+        return this.state.publishers.map((publisher, index) => {
+            const { id, name } = publisher
 
             return (
                 <tr key={id}>
                     <td>{id}</td>
                     <td>{name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteGenre(id)} > Obriši</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deletePublisher(id)} > Obriši</button>
                     </td>
                 </tr >
             )
         })
     }
 
-    createGenre(e) {
+    createPublisher(e) {
 
-        axios.post('http://localhost:8090/book-service/genres',
+        axios.post('http://localhost:8090/book-service/publishers',
             {
                 name: this.state.name,
             },
@@ -108,10 +108,10 @@ class Genre extends React.Component {
                 }
             })
             .then((response) => {
-                var temp = this.state.genres
+                var temp = this.state.publishers
                 temp.push(response.data)
-                this.setState({ genres: temp })
-                alert("Žanr uspješno dodan")
+                this.setState({ publishers: temp })
+                alert("Izdavač uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -132,22 +132,22 @@ class Genre extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje žanra</h2>
+                    <h2 id='title'>Pregled/brisanje izdavača</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
-                            {this.prikazZanra()}
+                            {this.prikazIzdavaca()}
                         </tbody>
                     </table>
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi žanr</button>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novog izdavača</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
-                        <h2>Dodavanje novog žanra</h2>
+                        <h2>Dodavanje novog izdavača</h2>
                         <form >
-                            <input type="text" name="name" placeholder="Naziv zanra" onChange={this.handleChange} />
+                            <input type="text" name="name" placeholder="Naziv izdavača" onChange={this.handleChange} />
 
-                            <button className="btn success" onClick={this.createGenre}>Dodaj</button>
+                            <button className="btn success" onClick={this.createPublisher}>Dodaj</button>
 
                         </form>
                         <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
@@ -158,4 +158,4 @@ class Genre extends React.Component {
     }
 }
 
-export default Genre
+export default Publisher

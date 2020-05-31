@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import "./Genre.css"
+import "./BookType.css"
 import axios from 'axios'
 import Modal from 'react-modal'
 import Dropdown from 'react-dropdown';
 
-class Genre extends React.Component {
+class BookType extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            GenreHeader: [
-                { Id: "", Naziv: "", Akcije: "" }
+            BookTypeHeader: [
+                { Id: "", Naziv: "", Naknada_za_kasnjenje: "", Akcije: "" }
             ],
-            genres: [],
+            bookTypes: [],
             modalIsOpen: false,
             validToken: false,
-            name: ""
+            name: "",
+            naknada: -1
         };
 
         this.handleChange = this.handleChange.bind(this)
-        this.createGenre = this.createGenre.bind(this)
+        this.createBookType = this.createBookType.bind(this)
     }
 
     componentWillMount() {
@@ -34,14 +35,14 @@ class Genre extends React.Component {
                 if (localStorage.role == "STUFF") {
                     this.setState({ validToken: true })
 
-                    var url = "http://localhost:8090/book-service/genres"
+                    var url = "http://localhost:8090/book-service/booktypes"
                     axios.get(url, {
                         headers: {
                             Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
-                            this.setState({ genres: response.data._embedded.genreList })
+                            this.setState({ bookTypes: response.data._embedded.bookTypeList })
 
                         }, (error) => {
                             console.log(error)
@@ -62,45 +63,48 @@ class Genre extends React.Component {
     }
 
     headerTabele() {
-        let header = Object.keys(this.state.GenreHeader[0])
+        let header = Object.keys(this.state.BookTypeHeader[0])
         return header.map((key, index) => {
             return <th key={index}>{key.toUpperCase()}</th>
         })
     }
 
-    deleteGenre(id) {
-        var url = "http://localhost:8090/book-service/genres/" + id;
+    deleteBookType(id) {
+        var url = "http://localhost:8090/book-service/booktypes/" + id;
         axios.delete(url)
 
-        var TEMP = [...this.state.genres];
+        var TEMP = [...this.state.bookTypes];
         for (var i = 0; i < TEMP.length; i++) {
             if (TEMP[i].id === id) TEMP.splice(i, 1);
         }
-        this.setState({ genres: TEMP })
-        alert("Uspješno obrisan žanr!");
+        this.setState({ bookTypes: TEMP })
+        alert("Uspješno obrisan tip knjige!");
     }
 
-    prikazZanra() {
-        return this.state.genres.map((genre, index) => {
-            const { id, name } = genre
+    prikazBookType() {
+        return this.state.bookTypes.map((bookType, index) => {
+            const { id, name, latencyFee } = bookType
 
             return (
                 <tr key={id}>
                     <td>{id}</td>
                     <td>{name}</td>
+                    <td>{latencyFee}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteGenre(id)} > Obriši</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteBookType(id)} > Obriši</button>
                     </td>
                 </tr >
             )
         })
     }
 
-    createGenre(e) {
+    createBookType(e) {
 
-        axios.post('http://localhost:8090/book-service/genres',
+        axios.post('http://localhost:8090/book-service/booktypes',
             {
                 name: this.state.name,
+                latencyFee: this.state.naknada,
+                libraryReadOnly: false
             },
             {
                 headers: {
@@ -108,10 +112,10 @@ class Genre extends React.Component {
                 }
             })
             .then((response) => {
-                var temp = this.state.genres
+                var temp = this.state.bookTypes
                 temp.push(response.data)
-                this.setState({ genres: temp })
-                alert("Žanr uspješno dodan")
+                this.setState({ bookTypes: temp })
+                alert("Tip knjige uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -132,22 +136,23 @@ class Genre extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje žanra</h2>
+                <h2 id='title'>Pregled/brisanje tipa knjige</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
-                            {this.prikazZanra()}
+                            {this.prikazBookType()}
                         </tbody>
                     </table>
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi žanr</button>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi tip knjige</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
-                        <h2>Dodavanje novog žanra</h2>
+                        <h2>Dodavanje novog tipa knjige</h2>
                         <form >
-                            <input type="text" name="name" placeholder="Naziv zanra" onChange={this.handleChange} />
+                            <input type="text" name="name" placeholder="Naziv tipa" onChange={this.handleChange} />
+                            <input type="number" name="naknada" placeholder="Iznos naknade za kasnjenje" onChange={this.handleChange} />
 
-                            <button className="btn success" onClick={this.createGenre}>Dodaj</button>
+                            <button className="btn success" onClick={this.createBookType}>Dodaj</button>
 
                         </form>
                         <button className="btn danger close" onClick={() => this.setState({ modalIsOpen: false })}>Zatvori</button>
@@ -158,4 +163,4 @@ class Genre extends React.Component {
     }
 }
 
-export default Genre
+export default BookType

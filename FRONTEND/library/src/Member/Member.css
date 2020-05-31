@@ -45,52 +45,7 @@ th, td {
   border-bottom: 1px solid #ddd;
 }
 
-.modal {
-    background-color: #f3f3f3;
-    margin: auto;
-    padding: 20px;
-    width: 40%;
-    border-radius: 15px;
-}
-
-input[type=text], select {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-input[type=search], select {
-  width: 30%;
-  padding: 7px 14px;
-  margin: 10px;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-input[type=submit]:hover {
-  background-color: #45a049;
-}
-
-.dropdown {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.close {
-    margin: 8px 0;
-}
-
-.search input{
-  width: 150px;
-  margin: 15px;
+.naslov {
+    margin-left: 10px;
+    padding-top: 10px;
 }
