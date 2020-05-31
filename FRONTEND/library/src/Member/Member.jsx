@@ -105,7 +105,7 @@ class Member extends React.Component {
                 }
             })
             .then((response) => {
-                alert("Komentar uspjesno dodan")
+                alert("Komentar uspješno dodan")
 
             }, (error) => {
                 console.log(error)

@@ -196,6 +196,11 @@ export class Profile extends Component {
     }
 
     render() {
+        if (!this.state.validToken) {
+            return (
+                <div></div>
+            )
+        }
         return (
             <div className="global">
                 <h2 id='title'>Pregled/brisanje profila</h2>

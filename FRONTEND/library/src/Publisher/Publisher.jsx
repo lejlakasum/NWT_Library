@@ -77,7 +77,7 @@ class Publisher extends React.Component {
             if (TEMP[i].id === id) TEMP.splice(i, 1);
         }
         this.setState({ publishers: TEMP })
-        alert("Uspješno obrisan izdavac!");
+        alert("Uspješno obrisan izdavač!");
     }
 
     prikazIzdavaca() {
@@ -89,7 +89,7 @@ class Publisher extends React.Component {
                     <td>{id}</td>
                     <td>{name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deletePublisher(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deletePublisher(id)} > Obriši</button>
                     </td>
                 </tr >
             )
@@ -111,7 +111,7 @@ class Publisher extends React.Component {
                 var temp = this.state.publishers
                 temp.push(response.data)
                 this.setState({ publishers: temp })
-                alert("Izdavac uspjesno dodan")
+                alert("Izdavač uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -132,19 +132,20 @@ class Publisher extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novog izdavaca</button>
+                    <h2 id='title'>Pregled/brisanje izdavača</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazIzdavaca()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novog izdavača</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
-                        <h2>Dodavanje novog izdavaca</h2>
+                        <h2>Dodavanje novog izdavača</h2>
                         <form >
-                            <input type="text" name="name" placeholder="Naziv izdavaca" onChange={this.handleChange} />
+                            <input type="text" name="name" placeholder="Naziv izdavača" onChange={this.handleChange} />
 
                             <button className="btn success" onClick={this.createPublisher}>Dodaj</button>
 

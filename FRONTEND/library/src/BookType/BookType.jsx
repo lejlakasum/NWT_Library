@@ -91,7 +91,7 @@ class BookType extends React.Component {
                     <td>{name}</td>
                     <td>{latencyFee}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteBookType(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteBookType(id)} > Obriši</button>
                     </td>
                 </tr >
             )
@@ -115,7 +115,7 @@ class BookType extends React.Component {
                 var temp = this.state.bookTypes
                 temp.push(response.data)
                 this.setState({ bookTypes: temp })
-                alert("Tip knjige uspjesno dodan")
+                alert("Tip knjige uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -136,13 +136,14 @@ class BookType extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi tip knjige</button>
+                <h2 id='title'>Pregled/brisanje tipa knjige</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazBookType()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi tip knjige</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">

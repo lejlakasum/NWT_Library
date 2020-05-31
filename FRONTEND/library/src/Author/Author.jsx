@@ -114,7 +114,7 @@ class Author extends React.Component {
                     <td>{lastName}</td>
                     <td>{country.name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteAuthor(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteAuthor(id)} > Obriši</button>
                     </td>
                 </tr >
             )
@@ -143,7 +143,7 @@ class Author extends React.Component {
                 var temp = this.state.copies
                 temp.push(response.data)
                 this.setState({ copies: temp })
-                alert("Kopija uspjesno dodana")
+                alert("Kopija uspješno dodana")
 
             }, (error) => {
                 console.log(error)
@@ -170,13 +170,14 @@ class Author extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novog autora</button>
+                <h2 id='title'>Pregled/brisanje autora</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazAutora()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novog autora</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
@@ -187,7 +188,7 @@ class Author extends React.Component {
                             <Dropdown options={this.state.conutryOptions}
                                 value={this.state.countryTemp}
                                 onChange={(e) => { this.handleChangeCountry(e); }}
-                                placeholder="Drzava"
+                                placeholder="Država"
                                 className="dropdown"
                             />
                             <button className="btn success" onClick={this.createAuthor}>Dodaj</button>

@@ -77,7 +77,7 @@ class Genre extends React.Component {
             if (TEMP[i].id === id) TEMP.splice(i, 1);
         }
         this.setState({ genres: TEMP })
-        alert("Uspješno obrisan zanr!");
+        alert("Uspješno obrisan žanr!");
     }
 
     prikazZanra() {
@@ -89,7 +89,7 @@ class Genre extends React.Component {
                     <td>{id}</td>
                     <td>{name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteGenre(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteGenre(id)} > Obriši</button>
                     </td>
                 </tr >
             )
@@ -111,7 +111,7 @@ class Genre extends React.Component {
                 var temp = this.state.genres
                 temp.push(response.data)
                 this.setState({ genres: temp })
-                alert("Zanr uspjesno dodan")
+                alert("Žanr uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -132,17 +132,18 @@ class Genre extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi zanr</button>
+                <h2 id='title'>Pregled/brisanje žanra</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazZanra()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novi žanr</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
-                        <h2>Dodavanje novog zanra</h2>
+                        <h2>Dodavanje novog žanra</h2>
                         <form >
                             <input type="text" name="name" placeholder="Naziv zanra" onChange={this.handleChange} />
 

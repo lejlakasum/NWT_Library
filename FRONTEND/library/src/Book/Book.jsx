@@ -304,7 +304,7 @@ class Book extends React.Component {
                     <td>{genre.name}</td>
                     <td>{publisher.name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteBook(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteBook(id)} > Obriši</button>
                         <p> </p>
                         <button className="btn warning btn-akcija" onClick={e => this.rentModal(id, available)} >{rent}</button>
                         <p> </p>
@@ -405,7 +405,7 @@ class Book extends React.Component {
                 var temp = this.state.books
                 temp.push(response.data)
                 this.setState({ books: temp })
-                alert("Knjiga uspjesno dodana")
+                alert("Knjiga uspješno dodana")
 
             }, (error) => {
                 console.log(error)
@@ -443,7 +443,7 @@ class Book extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu knjigu</button>
+                <h2 id='title'>Pregled knjiga</h2>
                     <div>
                         <form className="seacrh">
                             <input type="search" name="nazivKnjige" placeholder="Naziv knjige" onChange={this.handleChange} />
@@ -456,6 +456,7 @@ class Book extends React.Component {
                             {this.prikazKnjigu()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu knjigu</button>
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
@@ -478,13 +479,13 @@ class Book extends React.Component {
                             <Dropdown options={this.state.genreOptions}
                                 value={this.state.genreTemp}
                                 onChange={(e) => { this.handleChangeGenre(e); }}
-                                placeholder="Zanr"
+                                placeholder="Žanr"
                                 className="dropdown"
                             />
                             <Dropdown options={this.state.publisherOptions}
                                 value={this.state.publisherTemp}
                                 onChange={(e) => { this.handleChangePublisher(e); }}
-                                placeholder="Izdavac"
+                                placeholder="Izdavač"
                                 className="dropdown"
                             />
                             <button className="btn success" onClick={this.createBook}>Dodaj</button>
