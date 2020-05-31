@@ -62,10 +62,6 @@ public class MemberService {
         Integer membershipTypeId=newMember.getMembershipType().getId();
         MembershipType membershipType=membershipTypeRepository.findById(membershipTypeId)
                 .orElseThrow(()->new NotFoundException("membership type", membershipTypeId));
-        newMember.setProfile(profile);
-        newMember.setMembershipType(membershipType);
-        newMember.setActive(newMember.getActive());
-        newMember.setJoinDate(newMember.getJoinDate());
 
         EntityModel<Member> entityModel=memberAssembler.toModel(memberRepository.save(newMember));
 
@@ -73,7 +69,8 @@ public class MemberService {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
 
-        MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), newMember.getProfile().getFirstName(),newMember.getProfile().getLastName(),newMember.getActive());
+        //MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), profile.getFirstName(),profile.getLastName(),newMember.getActive());
+        MemberDTO newMemberDTO=new MemberDTO(400,"testiiranje","testiranjeee",true);
         InsertMemberBookService(newMemberDTO,token);
 
         return result;
@@ -117,7 +114,7 @@ public class MemberService {
 
     //private methods
 
-    private void InsertMemberBookService(MemberDTO newMember,String token){
+    private void InsertMemberBookService(MemberDTO newMember, String token){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Authorization",token);
