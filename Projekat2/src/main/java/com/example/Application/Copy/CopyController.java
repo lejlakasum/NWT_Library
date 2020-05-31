@@ -15,6 +15,7 @@ import javax.validation.ConstraintViolationException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
 @RequestMapping("/copies")
 public class CopyController {
