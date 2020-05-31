@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import Login from "./Login/Login"
 import Admin from './Admin/Admin';
 import Book from './Book/Book'
-import Genre from "./Genre/Genre"
 import { Profile } from "./Profile/index"
 import { Role } from "./Role/index"
 import { Employee } from "./Employee/index"
 import Member from './Member/Member'
+import Copy from './Copy/Copy'
 import Stuff from './Paneli/Stuff'
 import AdminPage from './Paneli/AdminPage'
 
@@ -17,7 +17,8 @@ function App() {
   return (
     <div>
       <Router>
-        <Route path="/stuff" component={Stuff} />
+        <Route path="/stuff" exact component={Stuff} />
+        <Route path="/stuff/copy" component={Copy} />
         <Route path="/adminpage" component={AdminPage} />
         <Route path="/" exact component={Login} />
         <Route path="/admin" component={Admin} />
