@@ -19,6 +19,7 @@ export class Role extends Component {
     }
 
     componentWillMount() {
+        console.log("USAO_ROLE")
 
         var url = "http://localhost:8090/user-service/validate-token"
         axios.post(url, {
@@ -69,7 +70,7 @@ export class Role extends Component {
         console.log(url);
         axios.delete(url, {
             headers: {
-                Authorization: "Bearer "+localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
 
         })
@@ -96,7 +97,7 @@ export class Role extends Component {
 
             }, {
             headers: {
-                Authorization: "Bearer "+localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
         }).then(function (response) {
             alert("Uloga uspješno dodana!");

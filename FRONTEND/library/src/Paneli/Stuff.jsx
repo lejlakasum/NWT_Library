@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter, Redirect, Router, Route } from 'react-router-dom';
+import { withRouter, Redirect, BrowserRouter as Router, Route } from 'react-router-dom';
 import './style.css';
 import axios from 'axios'
 import Author from '../Author/Author'
@@ -18,6 +18,7 @@ class Stuff extends React.Component {
         this.state = {
             validToken: false
         };
+        this.logout = this.logout.bind(this)
     }
 
     componentWillMount() {
@@ -36,6 +37,7 @@ class Stuff extends React.Component {
                 }
 
             }, (error) => {
+                alert("usao")
                 this.setState({ validToken: false })
             });
     }
