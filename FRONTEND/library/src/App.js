@@ -12,6 +12,9 @@ import Copy from './Copy/Copy'
 import Stuff from './Paneli/Stuff'
 import AdminPage from './Paneli/AdminPage'
 import Author from './Author/Author'
+import Genre from './Genre/Genre'
+import BookType from './BookType/BookType'
+import Publisher from './Publisher/Publisher'
 
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
         <Route path="/stuff" exact component={Stuff} />
         <Route path="/stuff/copy" component={Copy} />
         <Route path="/stuff/author" component={Author} />
+        <Route path="/stuff/genre" component={Genre} />
+        <Route path="/stuff/booktype" component={BookType} />
+        <Route path="/stuff/publisher" component={Publisher} />
         <Route path="/adminpage" component={AdminPage} />
         <Route path="/" exact component={Login} />
         <Route path="/admin" component={Admin} />
