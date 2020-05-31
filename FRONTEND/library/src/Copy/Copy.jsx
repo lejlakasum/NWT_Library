@@ -133,7 +133,7 @@ class Copy extends React.Component {
                 }
             })
             .then((response) => {
-                alert("Autor uspjesno dodan")
+                alert("Autor uspješno dodan")
 
             }, (error) => {
                 console.log(error)
@@ -190,7 +190,7 @@ class Copy extends React.Component {
                     <td>{id}</td>
                     <td>{bookName}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.deleteCopy(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.deleteCopy(id)} > Obriši</button>
                         <button className="btn warning btn-akcija" onClick={e => this.addAuthorModal(id)} > Dodaj autora</button>
                         <button className="btn warning btn-akcija" onClick={e => this.showAuthorModal(id)} > Prikaz autora</button>
                     </td>
@@ -214,7 +214,7 @@ class Copy extends React.Component {
                 var temp = this.state.copies
                 temp.push(response.data)
                 this.setState({ copies: temp })
-                alert("Kopija uspjesno dodana")
+                alert("Kopija uspješno dodana")
 
             }, (error) => {
                 console.log(error)
@@ -234,13 +234,15 @@ class Copy extends React.Component {
         return (
             <div>
                 <div className="global">
-                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu kopiju</button>
-                    <table>
+                <h2 id='title'>Pregled/brisanje kopije knjige</h2>
+                   <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazKopije()}
                         </tbody>
                     </table>
+                    <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu kopiju</button>
+                    
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">
