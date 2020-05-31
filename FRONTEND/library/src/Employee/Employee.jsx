@@ -30,7 +30,7 @@ export class Employee extends Component {
 
     componentWillMount() {
 
-        var url = "http://localhost:8081/validate-token"
+        var url = "http://localhost:8090/user-service/validate-token"
         axios.post(url, {
             token: localStorage.token,
             username: localStorage.username
@@ -41,7 +41,7 @@ export class Employee extends Component {
                 if (localStorage.role == "ADMIN") {
                     this.setState({ validToken: true })
 
-                    var url = "http://localhost:8081/profiles"
+                    var url = "http://localhost:8090/user-service/profiles"
 
                     axios.get(url, {
                         headers: {
@@ -60,7 +60,7 @@ export class Employee extends Component {
                         console.log(error)
                         alert("GET" + error)
                     });
-                    var url2 = "http://localhost:8081/employees"
+                    var url2 = "http://localhost:8090/user-service/employees"
                     axios.get(url2, {
                         headers: {
                             Authorization: "Bearer " + localStorage.token
@@ -108,7 +108,7 @@ export class Employee extends Component {
     }
 
     obrisiEmployee = (id) => {
-        var url = "http://localhost:8081/employees/" + id;
+        var url = "http://localhost:8090/user-service/employees/" + id;
         console.log(url);
         axios.delete(url, {
             headers: {
@@ -137,7 +137,7 @@ export class Employee extends Component {
         }
         console.log(this.state.ime + " " + this.state.prezime + " " + this.state.birthDate + " " + idProfila);
 
-        axios.post('http://localhost:8081/employees',
+        axios.post('http://localhost:8090/user-service/employees',
             {
 
                 profile: {

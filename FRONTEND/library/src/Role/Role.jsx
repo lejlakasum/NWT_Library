@@ -20,7 +20,7 @@ export class Role extends Component {
 
     componentWillMount() {
 
-        var url = "http://localhost:8081/validate-token"
+        var url = "http://localhost:8090/user-service/validate-token"
         axios.post(url, {
             token: localStorage.token,
             username: localStorage.username
@@ -31,7 +31,7 @@ export class Role extends Component {
                 if (localStorage.role == "ADMIN") {
                     this.setState({ validToken: true })
 
-                    var url = "http://localhost:8081/roles"
+                    var url = "http://localhost:8090/user-service/roles"
                     axios.get(url, {
                         headers: {
                             Authorization: "Bearer " + localStorage.token
@@ -65,7 +65,7 @@ export class Role extends Component {
     }
 
     obrisiRolu = (id) => {
-        var url = "http://localhost:8081/roles/" + id;
+        var url = "http://localhost:8090/user-service/roles/" + id;
         console.log(url);
         axios.delete(url, {
             headers: {
@@ -90,7 +90,7 @@ export class Role extends Component {
     kreirajRolu = () => {
 
 
-        axios.post('http://localhost:8081/roles',
+        axios.post('http://localhost:8090/user-service/roles',
             {
                 name: this.state.uloga,
 

@@ -39,7 +39,7 @@ export class Profile extends Component {
                 if (localStorage.role == "ADMIN") {
                     this.setState({ validToken: true })
 
-                    var url = "http://localhost:8081/profiles"
+                    var url = "http://localhost:8090/user-service/profiles"
 
                     axios.get(url, {
                         headers: {
@@ -58,7 +58,7 @@ export class Profile extends Component {
                         console.log(error)
                         alert("GET" + error)
                     });
-                    var url2 = "http://localhost:8081/roles"
+                    var url2 = "http://localhost:8090/user-service/roles"
                     axios.get(url2, {
                         headers: {
                             Authorization: "Bearer "+localStorage.token
@@ -99,7 +99,7 @@ export class Profile extends Component {
     }
 
     obrisiProfil = (id) => {
-        var url = "http://localhost:8081/profiles/" + id;
+        var url = "http://localhost:8090/user-service/profiles/" + id;
         console.log(url);
         axios.delete(url, {
             headers: {
@@ -128,7 +128,7 @@ export class Profile extends Component {
         }
         console.log(this.state.ime + " " + this.state.prezime + " " + this.state.birthDate + " " + idRole);
 
-        axios.post('http://localhost:8081/profiles',
+        axios.post('http://localhost:8090/user-service/profiles',
             {
                 firstName: this.state.ime,
                 lastName: this.state.prezime,
