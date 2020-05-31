@@ -2,6 +2,14 @@ import React from "react";
 import { withRouter, Redirect, Router, Route } from 'react-router-dom';
 import './style.css';
 import axios from 'axios'
+import Author from '../Author/Author'
+import Genre from '../Genre/Genre'
+import BookType from '../BookType/BookType'
+import Publisher from '../Publisher/Publisher'
+import Copy from '../Copy/Copy'
+import Book from '../Book/Book'
+import Login from "../Login/Login"
+import StuffNavbar from '../Navigation/StuffNavbar'
 
 class Stuff extends React.Component {
 
@@ -24,7 +32,7 @@ class Stuff extends React.Component {
                 localStorage.id = response.data.userId
                 if (localStorage.role == "STUFF") {
                     this.setState({ validToken: true })
-                   //DO LOADING IF NEEDED
+                    //DO LOADING IF NEEDED
                 }
 
             }, (error) => {
@@ -44,9 +52,19 @@ class Stuff extends React.Component {
         return (
 
             <div>
-                Welcome stuff
-                
-            <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
+                <Router>
+                    <div>
+                        <StuffNavbar />
+                        <Route path="/stuff/books" component={Book} />
+                        <Route path="/stuff/copy" component={Copy} />
+                        <Route path="/stuff/author" component={Author} />
+                        <Route path="/stuff/genre" component={Genre} />
+                        <Route path="/stuff/booktype" component={BookType} />
+                        <Route path="/stuff/publisher" component={Publisher} />
+                        <Route path="/" exact component={Login} />
+                    </div>
+                    <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
+                </Router>
             </div>
         )
     }

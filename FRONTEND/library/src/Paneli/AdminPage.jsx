@@ -2,6 +2,12 @@ import React from "react";
 import { withRouter, Redirect, Router, Route } from 'react-router-dom';
 import './style.css';
 import axios from 'axios'
+import Admin from '../Admin/Admin';
+import { Profile } from "../Profile/index"
+import { Role } from "../Role/index"
+import { Employee } from "../Employee/index"
+import Login from "../Login/Login"
+import AdminNavbar from '../Navigation/AdminNavbar'
 
 class AdminPage extends React.Component {
 
@@ -24,7 +30,7 @@ class AdminPage extends React.Component {
                 localStorage.id = response.data.userId
                 if (localStorage.role == "ADMIN") {
                     this.setState({ validToken: true })
-                   //DO LOADING IF NEEDED
+                    //DO LOADING IF NEEDED
                 }
 
             }, (error) => {
@@ -42,11 +48,17 @@ class AdminPage extends React.Component {
             )
         }
         return (
-
             <div>
-                Welcome admin
-                
-            <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
+                <Router>
+                    <div>
+                        <AdminNavbar />
+                        <Route path="/adminpage/profiles" component={Profile} />
+                        <Route path="/adminpage/roles" component={Role} />
+                        <Route path="/adminpage/employees" component={Employee} />
+                        <Route path="/" exact component={Login} />
+                    </div>
+                    <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
+                </Router>
             </div>
         )
     }
