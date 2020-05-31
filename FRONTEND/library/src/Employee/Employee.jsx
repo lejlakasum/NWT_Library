@@ -178,7 +178,7 @@ export class Employee extends Component {
                     <td>{birthDate}</td>
                     <td>{salary}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.obrisiEmployee(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.obrisiEmployee(id)} > Obriši</button>
                     </td>
                 </tr>
             )

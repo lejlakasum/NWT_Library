@@ -1,2 +1,2 @@
-import "./Member.scss";
+import "./Member.css";
 export { Member } from "./Member";

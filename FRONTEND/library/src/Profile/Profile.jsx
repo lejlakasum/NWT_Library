@@ -175,7 +175,7 @@ export class Profile extends Component {
                     <td>{lastName}</td>
                     <td>{roleName}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.obrisiProfil(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.obrisiProfil(id)} > Obriši</button>
                     </td>
                 </tr>
             )

@@ -122,7 +122,7 @@ export class Role extends Component {
                 <tr key={id}>
                     <td>{name}</td>
                     <td>
-                        <button className="btn danger btn-akcija" onClick={e => this.obrisiRolu(id)} > Obrisi</button>
+                        <button className="btn danger btn-akcija" onClick={e => this.obrisiRolu(id)} > Obriši</button>
                     </td>
                 </tr>
             )
