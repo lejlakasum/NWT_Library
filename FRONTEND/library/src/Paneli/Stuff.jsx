@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter, Redirect, Router, Route } from 'react-router-dom';
+import { withRouter, Redirect, BrowserRouter as Router, Route } from 'react-router-dom';
 import './style.css';
 import axios from 'axios'
 import Author from '../Author/Author'

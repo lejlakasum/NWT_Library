@@ -1,8 +1,7 @@
 import React from "react";
-import { withRouter, Redirect, Router, Route } from 'react-router-dom';
+import { withRouter, Redirect, BrowserRouter as Router, Route } from 'react-router-dom';
 import './style.css';
 import axios from 'axios'
-import Admin from '../Admin/Admin';
 import { Profile } from "../Profile/index"
 import { Role } from "../Role/index"
 import { Employee } from "../Employee/index"
@@ -59,8 +58,8 @@ class AdminPage extends React.Component {
                         <Route path="/adminpage/employees" component={Employee} />
                         <Route path="/" exact component={Login} />
                     </div>
-                    <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
                 </Router>
+                <a href="/" onClick={this.logout} className="odjavaLink">Odjava</a>
             </div>
         )
     }

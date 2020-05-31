@@ -23,7 +23,7 @@ class StuffNavbar extends React.Component {
                     <Link to="/stuff/copy">
                         <li>Kopije</li>
                     </Link>
-                    <Link to="/stuff/books">
+                    <Link to="/stuff/genre">
                         <li>Zanrovi</li>
                     </Link>
                     <Link to="/stuff/booktype">

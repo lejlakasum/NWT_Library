@@ -22,26 +22,43 @@ class Member extends React.Component {
             commentAddModalIsOpen: false,
             comment: "",
             ocjena: "",
-            idBook: -1
+            idBook: -1,
+            validToken: false
         }
         this.handleChange = this.handleChange.bind(this)
         this.addComent = this.addComent.bind(this)
     }
 
     componentWillMount() {
-        //dodati id iz local storage
-        var url = "http://localhost:8090/book-service/members/1/borrowings"
-        axios.get(url, {
-            headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
-            }
+
+        var url = "http://localhost:8090/user-service/validate-token"
+        axios.post(url, {
+            token: localStorage.token,
+            username: localStorage.username
         })
             .then((response) => {
-                this.setState({ books: response.data._embedded.bookList })
+                localStorage.role = response.data.role
+                localStorage.id = response.data.userId
+                if (localStorage.role == "MEMBER") {
+                    this.setState({ validToken: true })
+                    var url = "http://localhost:8090/book-service/members/" + localStorage.id + "/borrowings"
+                    axios.get(url, {
+                        headers: {
+                            Authorization: "Bearer " + localStorage.token
+                        }
+                    })
+                        .then((response) => {
+                            this.setState({ books: response.data._embedded.bookList })
+
+                        }, (error) => {
+                            console.log(error)
+                            alert(error)
+                        });
+
+                }
 
             }, (error) => {
-                console.log(error)
-                alert(error)
+                this.setState({ validToken: false })
             });
     }
 
@@ -89,14 +106,13 @@ class Member extends React.Component {
 
     addComent(e) {
 
-        //DODATI USERA IZ LOCAL STORAGE-a OVO JE HARDKODIRANO
         var url = 'http://localhost:8090/book-service/books/' + this.state.idBook + "/impressions"
         axios.post(url,
             {
                 comment: this.state.comment,
                 rating: this.state.ocjena,
                 member: {
-                    id: 1
+                    id: localStorage.id
                 }
             },
             {
@@ -158,6 +174,13 @@ class Member extends React.Component {
     }
 
     render() {
+
+        if (!this.state.validToken) {
+            return (
+                <div></div>
+            )
+        }
+
         return (
             <div>
                 <MemberNavbar />
