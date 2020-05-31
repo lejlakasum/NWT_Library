@@ -3,7 +3,7 @@
     font-family: arial, sans-serif;
   }
 
-  #Employee {
+  #Member {
     text-align: center;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
@@ -11,16 +11,16 @@
     width: 100%;
   }
 
-  #Employee td, #Employee th {
+  #Member td, #Member th {
     border: 1px solid #ddd;
     padding: 8px;
   }
 
-  #Employee tr:nth-child(even){background-color: #f2f2f2;}
+  #Member tr:nth-child(even){background-color: #f2f2f2;}
 
-  #Employee tr:hover {background-color: #ddd;}
+  #Member tr:hover {background-color: #ddd;}
 
-  #Employee th {
+  #Member th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: center;
