@@ -23,7 +23,8 @@ class Member extends React.Component {
             comment: "",
             ocjena: "",
             idBook: -1,
-            validToken: false
+            validToken: false,
+            idMember: -1
         }
         this.handleChange = this.handleChange.bind(this)
         this.addComent = this.addComent.bind(this)
@@ -41,20 +42,35 @@ class Member extends React.Component {
                 localStorage.id = response.data.userId
                 if (localStorage.role == "MEMBER") {
                     this.setState({ validToken: true })
-                    var url = "http://localhost:8090/book-service/members/" + localStorage.id + "/borrowings"
+
+                    var url = "http://localhost:8090/user-service/members/profile/" + localStorage.id
                     axios.get(url, {
                         headers: {
                             Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
-                            this.setState({ books: response.data._embedded.bookList })
+                            this.setState({ idMember: response.data.id })
+                            var url = "http://localhost:8090/book-service/members/" + response.data.id + "/borrowings"
+                            axios.get(url, {
+                                headers: {
+                                    Authorization: "Bearer " + localStorage.token
+                                }
+                            })
+                                .then((response) => {
+                                    if (response.data._embedded != undefined) {
+                                        this.setState({ books: response.data._embedded.bookList })
+                                    }
+
+                                }, (error) => {
+                                    console.log(error)
+                                    alert(error)
+                                });
 
                         }, (error) => {
                             console.log(error)
                             alert(error)
                         });
-
                 }
 
             }, (error) => {
@@ -68,7 +84,7 @@ class Member extends React.Component {
         var url = "http://localhost:8090/book-service/books/" + id + "/impressions"
         axios.get(url, {
             headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                Authorization: "Bearer " + localStorage.token
             }
         })
             .then((response) => {
@@ -112,12 +128,12 @@ class Member extends React.Component {
                 comment: this.state.comment,
                 rating: this.state.ocjena,
                 member: {
-                    id: localStorage.id
+                    id: this.state.idMember
                 }
             },
             {
                 headers: {
-                    Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                    Authorization: "Bearer " + localStorage.token
                 }
             })
             .then((response) => {

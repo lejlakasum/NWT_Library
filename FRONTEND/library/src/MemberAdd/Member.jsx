@@ -190,7 +190,7 @@ export class Member extends Component {
                     id: idMembershipa
                 },
                 joinDate: this.state.joinDate,
-                active: this.state.tipAktivnosti
+                active: true
             }, {
             headers: {
                 Authorization: "Bearer " + localStorage.token
@@ -278,7 +278,7 @@ export class Member extends Component {
                             onChange={(e) => {
                                 this.handleChangeProfile(e);
                             }}
-                            placeholder="Odaberite zaposlenika"
+                            placeholder="Odaberite člana"
                         />
 
 
@@ -288,15 +288,6 @@ export class Member extends Component {
                                 this.handleChangeMembershipType(e);
                             }}
                             placeholder="Odaberite tip članstva:"
-                        />
-
-
-                        <Dropdown options={this.state.aktivnost}
-                            value={this.state.tempAktivan}
-                            onChange={(e) => {
-                                this.handleChangeAktivnost(e);
-                            }}
-                            placeholder="Odaberite aktivnost članstva:"
                         />
                     </div>
                     <button type="button" className="btn success add" onClick={this.kreirajMembera}>

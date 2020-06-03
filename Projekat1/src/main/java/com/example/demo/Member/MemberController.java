@@ -77,4 +77,17 @@ public class MemberController {
             throw new InternalServerException();
         }
     }
+
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<EntityModel<Member>> GetByProfileId(@PathVariable Integer id) {
+        try {
+            return memberService.GetByProfileId(id);
+        }catch (NotFoundException e){
+            throw e;
+        }catch (Exception e){
+            throw new InternalServerException();
+        }
+    }
+
+
 }

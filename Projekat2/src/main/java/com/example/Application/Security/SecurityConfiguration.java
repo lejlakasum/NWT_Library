@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                     .authorizeRequests()
-                    .antMatchers("/books", "/members")
+                    .antMatchers("/books", "/members", "/members{id}", "/members/profile", "/books/{id}/impressions")
                     .hasAnyAuthority("STUFF", "MEMBER", "ADMIN")
                     .antMatchers("/members/{id}/borrowings")
                     .hasAnyAuthority("STUFF", "MEMBER", "ADMIN")

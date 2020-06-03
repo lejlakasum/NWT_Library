@@ -69,8 +69,7 @@ public class MemberService {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
 
-        //MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), profile.getFirstName(),profile.getLastName(),newMember.getActive());
-        MemberDTO newMemberDTO=new MemberDTO(400,"testiiranje","testiranjeee",true);
+        MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), profile.getFirstName(),profile.getLastName(),newMember.getActive());
         InsertMemberBookService(newMemberDTO,token);
 
         return result;
@@ -110,6 +109,22 @@ public class MemberService {
         memberRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    public ResponseEntity<EntityModel<Member>> GetByProfileId(Integer id){
+
+        List<Member> members = memberRepository.findAll();
+        Member member = new Member();
+        for(int i=0; i<members.size(); i++) {
+            System.out.println(members.get(i).getProfile().getId().intValue() + " " + id);
+            if(members.get(i).getProfile().getId().intValue()==id) {
+                member = members.get(i);
+                break;
+            }
+        }
+        return ResponseEntity
+                .ok()
+                .body(memberAssembler.toModel(member));
     }
 
     //private methods
