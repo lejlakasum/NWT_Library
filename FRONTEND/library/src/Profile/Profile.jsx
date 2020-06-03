@@ -22,7 +22,9 @@ export class Profile extends Component {
             id: '',
             birthDate: new Date(),
             modalIsOpen: false,
-            validToken: false
+            validToken: false,
+            username:'',
+            password:''
         };
         this.wrapper = React.createRef();
     }
@@ -61,7 +63,7 @@ export class Profile extends Component {
                     var url2 = "http://localhost:8090/user-service/roles"
                     axios.get(url2, {
                         headers: {
-                            Authorization: "Bearer "+localStorage.token
+                            Authorization: "Bearer " + localStorage.token
                         }
 
                     }).then((response) => {
@@ -103,7 +105,7 @@ export class Profile extends Component {
         console.log(url);
         axios.delete(url, {
             headers: {
-                Authorization: "Bearer "+localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
 
         })
@@ -136,11 +138,11 @@ export class Profile extends Component {
                 role: {
                     id: idRole
                 },
-                username: "user",
-                password: "user"
+                username: this.state.username,
+                password: this.state.password
             }, {
             headers: {
-                Authorization: "Bearer "+localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
         }).then(function (response) {
             alert("Profil uspješno dodan!");
@@ -157,8 +159,8 @@ export class Profile extends Component {
             role: {
                 id: idRole
             },
-            username: "user",
-            password: "user",
+            username: this.state.username,
+            password: this.state.password,
             obrisati: false
         }
         TEMP.push(temp);
@@ -237,6 +239,16 @@ export class Profile extends Component {
                             }}
                             placeholder="Odaberite ponuđeni tip uloge"
                         />
+
+                        <label htmlFor="username">Username:</label>
+                        <input type="text"
+                            name="username"
+                            onChange={e => this.unosNovog(e)} />
+
+                        <label htmlFor="username">Password:</label>
+                        <input type="password"
+                            name="password"
+                            onChange={e => this.unosNovog(e)} />
 
                         <button type="button" className="btn success add" onClick={this.kreirajProfile}>
                             Dodavanje novog profila
