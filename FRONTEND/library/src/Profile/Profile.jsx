@@ -14,6 +14,7 @@ export class Profile extends Component {
                 { Ime: "", Prezime: "", Uloga: "", obrisati: false }
             ],
             profile: [],
+            profili: [],
             role: [],
             ime: '',
             prezime: '',
@@ -23,10 +24,12 @@ export class Profile extends Component {
             birthDate: new Date(),
             modalIsOpen: false,
             validToken: false,
-            username:'',
-            password:''
+            username: '',
+            password: ''
         };
-        this.wrapper = React.createRef();
+        //this.wrapper = React.createRef();
+        this.kreirajProfile = this.kreirajProfile.bind(this)
+        this.prikazProfila = this.prikazProfila.bind(this)
     }
 
     componentWillMount() {
@@ -49,6 +52,8 @@ export class Profile extends Component {
                         }
                     }).then((response) => {
 
+                        console.log(response.data)
+                        this.setState({ profili: response.data._embedded.profileList })
                         var temp = [];
                         for (var i = 0; i < response.data._embedded.profileList.length; i++) {
                             temp.push({ name: `${response.data._embedded.profileList[i].firstName}`, value: response.data._embedded.profileList[i].firstName, firstName: response.data._embedded.profileList[i].firstName, lastName: response.data._embedded.profileList[i].lastName, birthDate: response.data._embedded.profileList[i].birthDate, roleId: response.data._embedded.profileList[i].role.roleId, roleName: response.data._embedded.profileList[i].role.name, id: response.data._embedded.profileList[i].id });
@@ -110,11 +115,11 @@ export class Profile extends Component {
 
         })
             .then(response => {
-                var TEMP = [...this.state.profile];
+                var TEMP = [...this.state.profili];
                 for (var i = 0; i < TEMP.length; i++) {
                     if (TEMP[i].id === id) TEMP.splice(i, 1);
                 }
-                this.setState({ profile: TEMP })
+                this.setState({ profili: TEMP })
             }).then(function (response) {
                 alert("Profil uspješno obrisan!");
             })
@@ -123,7 +128,8 @@ export class Profile extends Component {
             });
     }
 
-    kreirajProfile = () => {
+    kreirajProfile() {
+        console.log("NESTO" + this)
         var idRole = -1;
         for (var i = 0; i < this.state.role.length; i++) {
             if (this.state.role[i].value === this.state.tipRole) idRole = this.state.role[i].id;
@@ -144,38 +150,31 @@ export class Profile extends Component {
             headers: {
                 Authorization: "Bearer " + localStorage.token
             }
-        }).then(function (response) {
+        }).then((response) => {
+            console.log("RES: " + response.data)
+            console.log("THEN THIS: " + this)
+            console.log("THEN THIS STATE: " + this.state)
+            var temp = this.state.profili
+            temp.push(response.data)
+            this.setState({ profili: temp })
             alert("Profil uspješno dodan!");
+
         })
             .catch(function (error) {
                 alert(error);
             });
 
-        var TEMP = [...this.state.profile];
-        const temp = {
-            firstName: this.state.ime,
-            lastName: this.state.prezime,
-            birthDate: this.state.birthDate,
-            role: {
-                id: idRole
-            },
-            username: this.state.username,
-            password: this.state.password,
-            obrisati: false
-        }
-        TEMP.push(temp);
-        this.setState({ profile: TEMP })
     }
 
     prikazProfila() {
-        return this.state.profile.map((profil, index) => {
-            const { id, firstName, lastName, birthDate, roleId, roleName } = profil
+        return this.state.profili.map((profil, index) => {
+            const { id, firstName, lastName, role } = profil
             const brisati = false;
             return (
                 <tr key={id}>
                     <td>{firstName}</td>
                     <td>{lastName}</td>
-                    <td>{roleName}</td>
+                    <td>{role.name}</td>
                     <td>
                         <button className="btn danger btn-akcija" onClick={e => this.obrisiProfil(id)} > Obriši</button>
                     </td>

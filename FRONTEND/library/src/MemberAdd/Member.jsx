@@ -11,7 +11,7 @@ export class Member extends Component {
         super(props)
         this.state = {
             Clanovi: [
-                { Ime: "", Prezime: "", DatumRođenja: "", DatumUčlanjenja: "", Aktivan: "", obrisati: false }
+                { Ime: "", Prezime: "", DatumRođenja: "", DatumUčlanjenja: "", obrisati: false }
             ],
             profile: [],
             members: [],
@@ -32,7 +32,7 @@ export class Member extends Component {
             modalIsOpen: false,
             validToken: false
         };
-
+        this.kreirajMembera = this.kreirajMembera.bind(this)
     }
 
     componentWillMount() {
@@ -75,11 +75,7 @@ export class Member extends Component {
 
                     }).then((response) => {
 
-                        var temp = [];
-                        for (var i = 0; i < response.data._embedded.memberList.length; i++) {
-                            temp.push({ name: `${response.data._embedded.memberList[i].profile.firstName}`, value: response.data._embedded.memberList[i].profile.firstName + response.data._embedded.memberList[i].profile.lastName, firstName: response.data._embedded.memberList[i].profile.firstName, lastName: response.data._embedded.memberList[i].profile.lastName, birthDate: response.data._embedded.memberList[i].profile.birthDate, membershipType: response.data._embedded.memberList[i].membershipType.name, joinDate: response.data._embedded.memberList[i].joinDate, active: response.data._embedded.memberList[i].active, id: response.data._embedded.memberList[i].id });
-                        }
-                        this.setState({ members: temp });
+                        this.setState({ members: response.data._embedded.memberList });
                     }, (error) => {
                         console.log(error)
                         alert("GET" + error)
@@ -195,40 +191,28 @@ export class Member extends Component {
             headers: {
                 Authorization: "Bearer " + localStorage.token
             }
-        }).then(function (response) {
+        }).then((response) => {
+            console.log(response.data.profile)
+            var temp = this.state.members
+            temp.push(response.data)
+            this.setState({ members: temp })
             alert("Član uspješno dodan!");
         })
             .catch(function (error) {
                 alert(error);
             });
-
-        var TEMP = [...this.state.members];
-        const temp = {
-            profile: {
-                id: idProfila
-            },
-            membershipType: {
-                id: idMembershipa
-            },
-            joinDate: this.state.joinDate,
-            active: this.state.tipAktivnosti,
-            obrisati: false
-        }
-        TEMP.push(temp);
-        this.setState({ members: TEMP })
     }
 
     prikazMembera() {
         return this.state.members.map((clan, index) => {
-            const { id, name, firstName, lastName, birthDate, joinDate, active } = clan
+            const { id, profile, joinDate } = clan
             const brisati = false;
             return (
                 <tr key={id}>
-                    <td>{firstName}</td>
-                    <td>{lastName}</td>
-                    <td>{birthDate}</td>
+                    <td>{profile.firstName}</td>
+                    <td>{profile.lastName}</td>
+                    <td>{profile.birthDate}</td>
                     <td>{joinDate}</td>
-                    <td>{active}</td>
                     <td>
                         <button className="btn danger btn-akcija" onClick={e => this.obrisiMember(id)} > Obriši</button>
                     </td>

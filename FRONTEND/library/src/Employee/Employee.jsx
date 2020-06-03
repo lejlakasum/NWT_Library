@@ -25,6 +25,7 @@ export class Employee extends Component {
             modalIsOpen: false,
             validToken: false
         };
+        this.kreirajZaposlenika = this.kreirajZaposlenika.bind(this)
 
     }
 
@@ -67,12 +68,7 @@ export class Employee extends Component {
                         }
 
                     }).then((response) => {
-
-                        var temp = [];
-                        for (var i = 0; i < response.data._embedded.employeeList.length; i++) {
-                            temp.push({ name: `${response.data._embedded.employeeList[i].profile.firstName}`, value: response.data._embedded.employeeList[i].profile.firstName, firstName: response.data._embedded.employeeList[i].profile.firstName, lastName: response.data._embedded.employeeList[i].profile.lastName, birthDate: response.data._embedded.employeeList[i].profile.birthDate, salary: response.data._embedded.employeeList[i].salary, id: response.data._embedded.employeeList[i].id });
-                        }
-                        this.setState({ employee: temp });
+                        this.setState({ employee: response.data._embedded.employeeList });
                     }, (error) => {
                         console.log(error)
                         alert("GET" + error)
@@ -112,14 +108,14 @@ export class Employee extends Component {
         console.log(url);
         axios.delete(url, {
             headers: {
-                Authorization: "Bearer "+localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
 
         })
             .then(response => {
                 var TEMP = [...this.state.employee];
                 for (var i = 0; i < TEMP.length; i++) {
-                    if (TEMP[i].id === this.state.id) TEMP.splice(i, 1);
+                    if (TEMP[i].id === id) TEMP.splice(i, 1);
                 }
                 this.setState({ employee: TEMP })
             }).then(function (response) {
@@ -146,36 +142,28 @@ export class Employee extends Component {
                 salary: this.state.plata
             }, {
             headers: {
-                Authorization: "Bearer "+ localStorage.token
+                Authorization: "Bearer " + localStorage.token
             }
-        }).then(function (response) {
+        }).then((response) => {
+            var temp = this.state.employee
+            temp.push(response.data)
+            this.setState({ employee: temp })
             alert("Zaposlenik uspješno dodan!");
         })
             .catch(function (error) {
                 alert(error);
             });
-
-        var TEMP = [...this.state.employee];
-        const temp = {
-            profile: {
-                id: idProfila
-            },
-            salary: this.state.salary,
-            obrisati: false
-        }
-        TEMP.push(temp);
-        this.setState({ employee: TEMP })
     }
 
     prikazEmployee() {
         return this.state.employee.map((uposlenik, index) => {
-            const { id, firstName, lastName, birthDate, salary } = uposlenik
+            const { id, profile, salary } = uposlenik
             const brisati = false;
             return (
                 <tr key={id}>
-                    <td>{firstName}</td>
-                    <td>{lastName}</td>
-                    <td>{birthDate}</td>
+                    <td>{profile.firstName}</td>
+                    <td>{profile.lastName}</td>
+                    <td>{profile.birthDate}</td>
                     <td>{salary}</td>
                     <td>
                         <button className="btn danger btn-akcija" onClick={e => this.obrisiEmployee(id)} > Obriši</button>

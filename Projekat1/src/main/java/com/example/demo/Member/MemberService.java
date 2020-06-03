@@ -11,6 +11,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -57,11 +58,17 @@ public class MemberService {
 
     public ResponseEntity<EntityModel<Member>> AddMember(Member newMember,String token){
         Integer profileId=newMember.getProfile().getId();
+
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
+
         Integer membershipTypeId=newMember.getMembershipType().getId();
+
         MembershipType membershipType=membershipTypeRepository.findById(membershipTypeId)
                 .orElseThrow(()->new NotFoundException("membership type", membershipTypeId));
+
+        newMember.setMembershipType(membershipType);
+        newMember.setProfile(profile);
 
         EntityModel<Member> entityModel=memberAssembler.toModel(memberRepository.save(newMember));
 
@@ -104,8 +111,8 @@ public class MemberService {
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Member>> DeleteMember(Integer id){
-        DeleteMemberBookService(id);
+    public ResponseEntity<EntityModel<Member>> DeleteMember(Integer id, String token){
+        DeleteMemberBookService(id, token);
         memberRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
@@ -147,7 +154,10 @@ public class MemberService {
         restTemplate.put("http://book-service/members/"+id,request);
     }
 
-    private void DeleteMemberBookService(Integer id){
-        restTemplate.delete("http://book-service/members/"+id);
+    private void DeleteMemberBookService(Integer id, String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token.split(" ")[1]);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        restTemplate.exchange("http://book-service/members/"+id, HttpMethod.DELETE, entity, String.class);
     }
 }

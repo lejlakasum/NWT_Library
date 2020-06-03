@@ -68,9 +68,9 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<EntityModel<Member>> DeleteMember(@PathVariable Integer id){
+    ResponseEntity<EntityModel<Member>> DeleteMember(@RequestHeader("Authorization") String token, @PathVariable Integer id){
         try {
-            return memberService.DeleteMember(id);
+            return memberService.DeleteMember(id, token);
         }catch (EmptyResultDataAccessException e){
             throw new NotFoundException("member",id);
         }catch (Exception e){

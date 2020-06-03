@@ -16,10 +16,11 @@ export class Role extends Component {
             modalIsOpen: '',
             validToken: false
         };
+
+        this.kreirajRolu = this.kreirajRolu.bind(this)
     }
 
     componentWillMount() {
-        console.log("USAO_ROLE")
 
         var url = "http://localhost:8090/user-service/validate-token"
         axios.post(url, {
@@ -39,12 +40,7 @@ export class Role extends Component {
                         }
 
                     }).then((response) => {
-
-                        var temp = [];
-                        for (var i = 0; i < response.data._embedded.roleList.length; i++) {
-                            temp.push({ name: `${response.data._embedded.roleList[i].name}`, value: response.data._embedded.roleList[i].name, id: response.data._embedded.roleList[i].id });
-                        }
-                        this.setState({ role: temp });
+                        this.setState({ role: response.data._embedded.roleList });
                     }, (error) => {
                         alert("GET" + error)
                     });
@@ -99,20 +95,15 @@ export class Role extends Component {
             headers: {
                 Authorization: "Bearer " + localStorage.token
             }
-        }).then(function (response) {
+        }).then((response) => {
+            var temp = this.state.role
+            temp.push(response.data)
+            this.setState({ role: temp })
             alert("Uloga uspješno dodana!");
         })
             .catch(function (error) {
                 alert(error);
             });
-
-        var TEMP = [...this.state.role];
-        const temp = {
-            name: this.state.uloga,
-            obrisati: false
-        }
-        TEMP.push(temp);
-        this.setState({ role: TEMP })
     }
 
     prikazRole() {
