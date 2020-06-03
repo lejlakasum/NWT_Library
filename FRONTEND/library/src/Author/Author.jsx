@@ -94,7 +94,11 @@ class Author extends React.Component {
 
     deleteAuthor(id) {
         var url = "http://localhost:8090/book-service/authors/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
 
         var TEMP = [...this.state.authors];
         for (var i = 0; i < TEMP.length; i++) {

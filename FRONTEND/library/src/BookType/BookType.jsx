@@ -71,7 +71,11 @@ class BookType extends React.Component {
 
     deleteBookType(id) {
         var url = "http://localhost:8090/book-service/booktypes/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
 
         var TEMP = [...this.state.bookTypes];
         for (var i = 0; i < TEMP.length; i++) {
@@ -136,7 +140,7 @@ class BookType extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje tipa knjige</h2>
+                    <h2 id='title'>Pregled/brisanje tipa knjige</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>

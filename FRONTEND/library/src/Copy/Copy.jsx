@@ -48,7 +48,7 @@ class Copy extends React.Component {
                     var url = "http://localhost:8090/book-service/copies"
                     axios.get(url, {
                         headers: {
-                            Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                            Authorization: "Bearer " + localStorage.token
                         }
                     })
                         .then((response) => {
@@ -80,8 +80,14 @@ class Copy extends React.Component {
     }
 
     deleteCopy(id) {
+        console.log(localStorage.token)
         var url = "http://localhost:8090/book-service/copies/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
+
 
         var TEMP = [...this.state.copies];
         for (var i = 0; i < TEMP.length; i++) {
@@ -96,7 +102,7 @@ class Copy extends React.Component {
         var url = "http://localhost:8090/book-service/authors"
         axios.get(url, {
             headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                Authorization: "Bearer " + localStorage.token
             }
         })
             .then((response) => {
@@ -129,7 +135,7 @@ class Copy extends React.Component {
             {},
             {
                 headers: {
-                    Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                    Authorization: "Bearer " + localStorage.token
                 }
             })
             .then((response) => {
@@ -147,7 +153,7 @@ class Copy extends React.Component {
         var url = "http://localhost:8090/book-service/copies/" + id + '/authors'
         axios.get(url, {
             headers: {
-                Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWpsYWEiLCJleHAiOjE1OTA2MjA4MDAsImlhdCI6MTU5MDU5MjAwMH0.MplqOJowkXHcRUqkmRr6zoGxJEwHifzGmBP0ffDTVFk"
+                Authorization: "Bearer " + localStorage.token
             }
         })
             .then((response) => {
@@ -234,15 +240,15 @@ class Copy extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje kopije knjige</h2>
-                   <table>
+                    <h2 id='title'>Pregled/brisanje kopije knjige</h2>
+                    <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>
                             {this.prikazKopije()}
                         </tbody>
                     </table>
                     <button className="btn success add" onClick={() => this.setState({ modalIsOpen: true })}>Dodaj novu kopiju</button>
-                    
+
                 </div>
                 <Modal isOpen={this.state.modalIsOpen} >
                     <div className="modal">

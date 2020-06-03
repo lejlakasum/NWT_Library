@@ -70,7 +70,11 @@ class Publisher extends React.Component {
 
     deletePublisher(id) {
         var url = "http://localhost:8090/book-service/publishers/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
 
         var TEMP = [...this.state.publishers];
         for (var i = 0; i < TEMP.length; i++) {

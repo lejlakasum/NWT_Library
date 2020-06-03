@@ -70,7 +70,11 @@ class Genre extends React.Component {
 
     deleteGenre(id) {
         var url = "http://localhost:8090/book-service/genres/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
 
         var TEMP = [...this.state.genres];
         for (var i = 0; i < TEMP.length; i++) {
@@ -132,7 +136,7 @@ class Genre extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled/brisanje žanra</h2>
+                    <h2 id='title'>Pregled/brisanje žanra</h2>
                     <table>
                         <tbody>
                             <tr>{this.headerTabele()}</tr>

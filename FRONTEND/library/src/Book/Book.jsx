@@ -161,7 +161,11 @@ class Book extends React.Component {
 
     deleteBook(id) {
         var url = "http://localhost:8090/book-service/books/" + id;
-        axios.delete(url)
+        axios.delete(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.token
+            }
+        })
 
         var TEMP = [...this.state.books];
         for (var i = 0; i < TEMP.length; i++) {
@@ -211,7 +215,7 @@ class Book extends React.Component {
                 {},
                 {
                     headers: {
-                        Authorization: "Bearer "+ localStorage.token
+                        Authorization: "Bearer " + localStorage.token
                     }
                 })
                 .then((response) => {
@@ -443,7 +447,7 @@ class Book extends React.Component {
         return (
             <div>
                 <div className="global">
-                <h2 id='title'>Pregled knjiga</h2>
+                    <h2 id='title'>Pregled knjiga</h2>
                     <div>
                         <form className="seacrh">
                             <input type="search" name="nazivKnjige" placeholder="Naziv knjige" onChange={this.handleChange} />
