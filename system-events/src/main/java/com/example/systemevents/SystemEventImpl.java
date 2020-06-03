@@ -1,20 +1,19 @@
-package com.SystemEvent;
+package com.example.systemevents;
 
-import com.BeanUtil;
-import com.grpc.SystemEventServiceGrpc;
-import com.grpc.SystemEvents;
 import io.grpc.stub.StreamObserver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Service;
+import org.lognet.springboot.grpc.GRpcService;
 
-@Service
-public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceImplBase {
+@GRpcService
+public class SystemEventImpl extends  SystemEventServiceGrpc.SystemEventServiceImplBase {
+
+    final SystemEventRepository systemEventRepository;
+
+    public SystemEventImpl(SystemEventRepository systemEventRepository) {
+        this.systemEventRepository = systemEventRepository;
+    }
 
     @Override
     public void logSystemEvent(SystemEvents.SystemEventRequest request, StreamObserver<SystemEvents.SystemEventResponse> responseObserver) {
-
         SystemEvent event = new SystemEvent(
                 0,
                 request.getEventTimeStamp(),
@@ -28,8 +27,7 @@ public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceIm
 
         Boolean success = true;
         try {
-            //SystemEventRepository eventRepository = BeanUtil.getBean(SystemEventRepository.class);
-            //eventRepository.save(event);
+            systemEventRepository.save(event);
             System.out.println(request.getAction());
             System.out.println(request.getMicroservice());
             System.out.println(request.getResourceName());
@@ -46,6 +44,5 @@ public class SystemEventImpl extends SystemEventServiceGrpc.SystemEventServiceIm
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-
     }
 }

@@ -1,4 +1,4 @@
-package com.SystemEvent;
+package com.example.systemevents;
 
 import javax.persistence.*;
 
