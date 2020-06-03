@@ -33,6 +33,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                     .antMatchers("/books", "/members")
                     .hasAnyAuthority("STUFF", "MEMBER", "ADMIN")
+                    .antMatchers("/members/{id}/borrowings")
+                    .hasAnyAuthority("STUFF", "MEMBER", "ADMIN")
                     .antMatchers("/**")
                     .hasAuthority("STUFF")
                     .anyRequest()

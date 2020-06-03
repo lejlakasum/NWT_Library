@@ -127,6 +127,7 @@ public class GenreController {
         }
         catch (Exception ex) {
 
+            System.out.println("greska");
         }
     }
 }
