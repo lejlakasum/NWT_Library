@@ -15,9 +15,12 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestTemplate;
 
 import javax.swing.text.*;
@@ -58,7 +61,7 @@ public class ReportService {
         return new CollectionModel<>(reports, linkTo(methodOn(ReportController.class).GetAll()).withSelfRel());
     }
 
-    public ResponseEntity<EntityModel<Report>> Add(Report newReport) throws JsonProcessingException, FileNotFoundException, DocumentException {
+    public ResponseEntity<EntityModel<Report>> Add(String token, Report newReport) throws JsonProcessingException, FileNotFoundException, DocumentException {
         Integer reportTypeId = newReport.getReportType().getId();
         ReportType reportType = reportTypeRepository.findById(reportTypeId).orElseThrow(()->new NotFoundException("report_type", reportTypeId));
         newReport.setReportType(reportType);
@@ -68,46 +71,14 @@ public class ReportService {
         newReport.setCreationDate(new Date());
 
         String userDirectory = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
-        //System.out.println(userDirectory);
 
-        /*
-        SLJEDECE LINIJE KODA BO TREBALO DA RADE, ALI DOHVATI MI PRAZNU LISTU, PITATI IRFANA
-        BookList response = restTemplate.getForObject("http://book-service/books",BookList.class);
-        //List<Book> knjigeee = response.getBooks();
-        List<BookNEW> books = null;
-        response.getBooks().stream().map( book -> {
-            Impression im=restTemplate.getForObject("http://book-service/books/"+book.getId()+"/impressions",Impression.class);
-            BookNEW k=new BookNEW(book.getId(),book.getIsbn(),book.getBookType().getName(),book.getBookType().getLibraryReadOnly(),
-                    book.getGenre().getName(),book.getPublisher().getName(),book.getPublishedDate(),book.getAvailable(),
-                    im.getRating(),im.getMember());
-            books.add(k);
-            return books;
-        }).collect(Collectors.toList());
-        */
-        ResponseEntity<CollectionModel<Book>> book= restTemplate.exchange("http://book-service/books/", HttpMethod.GET, null, new ParameterizedTypeReference<CollectionModel<Book>>() {});
 
-        /*System.out.println(book.getBody().getContent().size());
-        BookNEWList books= null;
-        for (Book b:book.getBody().getContent()) {
-            System.out.println(b.getCopy().getBookName());
-            ResponseEntity<List<Impression>> impressions= restTemplate.exchange("http://book-service/books/"+b.getId()+"/impressions", HttpMethod.GET, null, new ParameterizedTypeReference<List<Impression>>() {});
-            //System.out.println(impressions.getBody().size());
-            double rate=0.;
-            List<Member> lista=null;
-            if (impressions.getBody()!=null) {
-                for (int i = 0; i < impressions.getBody().size(); i++) {
-                    System.out.println("Uslo je u petlju");
-                    rate += impressions.getBody().get(i).getRating();
-                    //lista.add(impressions.getBody().get(i).getMember());
-                    //System.out.println(impressions.getBody().get(i).getRating());
-                }
-                rate = rate / impressions.getBody().size();
-            }
-            BookNEW k=new BookNEW(b.getId(),b.getIsbn(),b.getCopy().getBookName(),b.getBookType().getLibraryReadOnly(),
-                    b.getGenre().getName(),b.getPublisher().getName(),b.getPublishedDate(),b.getAvailable(),
-                    rate,lista);
-            //books.Add(k);
-        }*/
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token.split(" ")[1]);
+        HttpEntity<CollectionModel<Book>> entity=new HttpEntity<CollectionModel<Book>>(headers);
+        ResponseEntity<CollectionModel<Book>> book= restTemplate.exchange("http://book-service/books/", HttpMethod.GET, entity, new ParameterizedTypeReference<CollectionModel<Book>>() {});
+
+
         System.out.println(book.getBody().getContent().size());
         Document document= new Document();
         Font font= FontFactory.getFont(FontFactory.COURIER, 12, BaseColor.BLACK);
@@ -125,7 +96,7 @@ public class ReportService {
             document.add(Chunk.NEWLINE);
             for (Book b:book.getBody().getContent()) {
                 //System.out.println(b.getCopy().getBookName());
-                ResponseEntity<List<Impression>> impressions = restTemplate.exchange("http://book-service/books/" + b.getId() + "/impressions", HttpMethod.GET, null, new ParameterizedTypeReference<List<Impression>>() {
+                ResponseEntity<List<Impression>> impressions = restTemplate.exchange("http://book-service/books/" + b.getId() + "/impressions", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Impression>>() {
                 });
                 double rate = 0.;
                 List<Member> lista = null;
