@@ -11,6 +11,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -57,15 +58,17 @@ public class MemberService {
 
     public ResponseEntity<EntityModel<Member>> AddMember(Member newMember,String token){
         Integer profileId=newMember.getProfile().getId();
+
         Profile profile=profileRepository.findById(profileId)
                 .orElseThrow(()->new NotFoundException("profile", profileId));
+
         Integer membershipTypeId=newMember.getMembershipType().getId();
+
         MembershipType membershipType=membershipTypeRepository.findById(membershipTypeId)
                 .orElseThrow(()->new NotFoundException("membership type", membershipTypeId));
-        newMember.setProfile(profile);
+
         newMember.setMembershipType(membershipType);
-        newMember.setActive(newMember.getActive());
-        newMember.setJoinDate(newMember.getJoinDate());
+        newMember.setProfile(profile);
 
         EntityModel<Member> entityModel=memberAssembler.toModel(memberRepository.save(newMember));
 
@@ -73,7 +76,7 @@ public class MemberService {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
 
-        MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), newMember.getProfile().getFirstName(),newMember.getProfile().getLastName(),newMember.getActive());
+        MemberDTO newMemberDTO=new MemberDTO(result.getBody().getContent().getId(), profile.getFirstName(),profile.getLastName(),newMember.getActive());
         InsertMemberBookService(newMemberDTO,token);
 
         return result;
@@ -108,16 +111,32 @@ public class MemberService {
                 .body(entityModel);
     }
 
-    public ResponseEntity<EntityModel<Member>> DeleteMember(Integer id){
-        DeleteMemberBookService(id);
+    public ResponseEntity<EntityModel<Member>> DeleteMember(Integer id, String token){
+        DeleteMemberBookService(id, token);
         memberRepository.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }
 
+    public ResponseEntity<EntityModel<Member>> GetByProfileId(Integer id){
+
+        List<Member> members = memberRepository.findAll();
+        Member member = new Member();
+        for(int i=0; i<members.size(); i++) {
+            System.out.println(members.get(i).getProfile().getId().intValue() + " " + id);
+            if(members.get(i).getProfile().getId().intValue()==id) {
+                member = members.get(i);
+                break;
+            }
+        }
+        return ResponseEntity
+                .ok()
+                .body(memberAssembler.toModel(member));
+    }
+
     //private methods
 
-    private void InsertMemberBookService(MemberDTO newMember,String token){
+    private void InsertMemberBookService(MemberDTO newMember, String token){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Authorization",token);
@@ -135,7 +154,10 @@ public class MemberService {
         restTemplate.put("http://book-service/members/"+id,request);
     }
 
-    private void DeleteMemberBookService(Integer id){
-        restTemplate.delete("http://book-service/members/"+id);
+    private void DeleteMemberBookService(Integer id, String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token.split(" ")[1]);
+        HttpEntity<String> entity = new HttpEntity<>("body", headers);
+        restTemplate.exchange("http://book-service/members/"+id, HttpMethod.DELETE, entity, String.class);
     }
 }

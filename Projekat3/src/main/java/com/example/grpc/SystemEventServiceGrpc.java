@@ -1,18 +1,11 @@
 package com.example.grpc;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
@@ -27,30 +20,30 @@ public final class SystemEventServiceGrpc {
   public static final String SERVICE_NAME = "SystemEventService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<com.example.grpc.SystemEvents.SystemEventRequest,
-      com.example.grpc.SystemEvents.SystemEventResponse> getLogSystemEventMethod;
+  private static volatile io.grpc.MethodDescriptor<SystemEvents.SystemEventRequest,
+      SystemEvents.SystemEventResponse> getLogSystemEventMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "logSystemEvent",
-      requestType = com.example.grpc.SystemEvents.SystemEventRequest.class,
-      responseType = com.example.grpc.SystemEvents.SystemEventResponse.class,
+      requestType = SystemEvents.SystemEventRequest.class,
+      responseType = SystemEvents.SystemEventResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.example.grpc.SystemEvents.SystemEventRequest,
-      com.example.grpc.SystemEvents.SystemEventResponse> getLogSystemEventMethod() {
-    io.grpc.MethodDescriptor<com.example.grpc.SystemEvents.SystemEventRequest, com.example.grpc.SystemEvents.SystemEventResponse> getLogSystemEventMethod;
+  public static io.grpc.MethodDescriptor<SystemEvents.SystemEventRequest,
+      SystemEvents.SystemEventResponse> getLogSystemEventMethod() {
+    io.grpc.MethodDescriptor<SystemEvents.SystemEventRequest, SystemEvents.SystemEventResponse> getLogSystemEventMethod;
     if ((getLogSystemEventMethod = SystemEventServiceGrpc.getLogSystemEventMethod) == null) {
       synchronized (SystemEventServiceGrpc.class) {
         if ((getLogSystemEventMethod = SystemEventServiceGrpc.getLogSystemEventMethod) == null) {
           SystemEventServiceGrpc.getLogSystemEventMethod = getLogSystemEventMethod = 
-              io.grpc.MethodDescriptor.<com.example.grpc.SystemEvents.SystemEventRequest, com.example.grpc.SystemEvents.SystemEventResponse>newBuilder()
+              io.grpc.MethodDescriptor.<SystemEvents.SystemEventRequest, SystemEvents.SystemEventResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "SystemEventService", "logSystemEvent"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.example.grpc.SystemEvents.SystemEventRequest.getDefaultInstance()))
+                  SystemEvents.SystemEventRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.example.grpc.SystemEvents.SystemEventResponse.getDefaultInstance()))
+                  SystemEvents.SystemEventResponse.getDefaultInstance()))
                   .setSchemaDescriptor(new SystemEventServiceMethodDescriptorSupplier("logSystemEvent"))
                   .build();
           }
@@ -88,8 +81,8 @@ public final class SystemEventServiceGrpc {
 
     /**
      */
-    public void logSystemEvent(com.example.grpc.SystemEvents.SystemEventRequest request,
-        io.grpc.stub.StreamObserver<com.example.grpc.SystemEvents.SystemEventResponse> responseObserver) {
+    public void logSystemEvent(SystemEvents.SystemEventRequest request,
+                               io.grpc.stub.StreamObserver<SystemEvents.SystemEventResponse> responseObserver) {
       asyncUnimplementedUnaryCall(getLogSystemEventMethod(), responseObserver);
     }
 
@@ -99,8 +92,8 @@ public final class SystemEventServiceGrpc {
             getLogSystemEventMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                com.example.grpc.SystemEvents.SystemEventRequest,
-                com.example.grpc.SystemEvents.SystemEventResponse>(
+                SystemEvents.SystemEventRequest,
+                SystemEvents.SystemEventResponse>(
                   this, METHODID_LOG_SYSTEM_EVENT)))
           .build();
     }
@@ -126,8 +119,8 @@ public final class SystemEventServiceGrpc {
 
     /**
      */
-    public void logSystemEvent(com.example.grpc.SystemEvents.SystemEventRequest request,
-        io.grpc.stub.StreamObserver<com.example.grpc.SystemEvents.SystemEventResponse> responseObserver) {
+    public void logSystemEvent(SystemEvents.SystemEventRequest request,
+                               io.grpc.stub.StreamObserver<SystemEvents.SystemEventResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getLogSystemEventMethod(), getCallOptions()), request, responseObserver);
     }
@@ -153,7 +146,7 @@ public final class SystemEventServiceGrpc {
 
     /**
      */
-    public com.example.grpc.SystemEvents.SystemEventResponse logSystemEvent(com.example.grpc.SystemEvents.SystemEventRequest request) {
+    public SystemEvents.SystemEventResponse logSystemEvent(SystemEvents.SystemEventRequest request) {
       return blockingUnaryCall(
           getChannel(), getLogSystemEventMethod(), getCallOptions(), request);
     }
@@ -179,8 +172,8 @@ public final class SystemEventServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.example.grpc.SystemEvents.SystemEventResponse> logSystemEvent(
-        com.example.grpc.SystemEvents.SystemEventRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<SystemEvents.SystemEventResponse> logSystemEvent(
+        SystemEvents.SystemEventRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getLogSystemEventMethod(), getCallOptions()), request);
     }
@@ -206,8 +199,8 @@ public final class SystemEventServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_LOG_SYSTEM_EVENT:
-          serviceImpl.logSystemEvent((com.example.grpc.SystemEvents.SystemEventRequest) request,
-              (io.grpc.stub.StreamObserver<com.example.grpc.SystemEvents.SystemEventResponse>) responseObserver);
+          serviceImpl.logSystemEvent((SystemEvents.SystemEventRequest) request,
+              (io.grpc.stub.StreamObserver<SystemEvents.SystemEventResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -231,7 +224,7 @@ public final class SystemEventServiceGrpc {
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return com.example.grpc.SystemEvents.getDescriptor();
+      return SystemEvents.getDescriptor();
     }
 
     @java.lang.Override
