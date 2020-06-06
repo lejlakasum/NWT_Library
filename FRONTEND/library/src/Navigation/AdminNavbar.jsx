@@ -26,6 +26,9 @@ class AdminNavbar extends React.Component {
                     <Link to="/adminpage/addmember">
                         <li>Dodavanje člana</li>
                     </Link>
+                    <Link to="/adminpage/izvjestaj">
+                        <li>Izvjestaj</li>
+                    </Link>
                 </ul>
             </nav>
         )

@@ -8,6 +8,7 @@ import { Employee } from "../Employee/index"
 import Login from "../Login/Login"
 import AdminNavbar from '../Navigation/AdminNavbar'
 import { Member } from '../MemberAdd/Member'
+import Izvjestaj from '../PrikazPdf/PrikazPdf'
 
 class AdminPage extends React.Component {
 
@@ -58,6 +59,7 @@ class AdminPage extends React.Component {
                         <Route path="/adminpage/roles" component={Role} />
                         <Route path="/adminpage/employees" component={Employee} />
                         <Route path="/adminpage/addmember" component={Member} />
+                        <Route path="/adminpage/izvjestaj" component={Izvjestaj} />
                         <Route path="/" exact component={Login} />
                     </div>
                 </Router>
