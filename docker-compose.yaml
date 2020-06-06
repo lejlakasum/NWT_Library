@@ -1,0 +1,91 @@
+version: '3'
+networks:
+  library:
+    driver: bridge
+
+services:
+  discovery:
+    image: eureka
+    build:
+      context: ./EurekaServer
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    networks:
+      - library
+
+  gateway:
+    image: gateway
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - 8090:8090
+    depends_on:
+      - discovery
+    networks:
+      - library
+
+
+  user:
+    image: user
+    build:
+      context: ./Projekat1
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    depends_on:
+      - discovery
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:8761/eureka
+    networks:
+      - library
+
+  book:
+    image: book
+    build:
+      context: ./Projekat2
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    depends_on:
+      - discovery
+      - user
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery:8761/eureka
+    networks:
+      - library
+
+  analytics:
+    image: analytics
+    build:
+      context: ./Projekat3
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    depends_on:
+      - discovery
+      - user
+      - book
+    environment:
+      - JAVA_OPTS
+      - EUREKA_SERVER=http://discovery:8761/eureka
+    networks:
+      - library
+
+  frontend:
+    image: frontend
+    build:
+      context: ./FRONTEND/library
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - discovery
+      - user
+      - book
+      - analytics
+    networks:
+      - library
